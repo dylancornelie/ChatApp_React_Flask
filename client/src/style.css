@@ -1,0 +1,12 @@
+body {
+    height:100%;
+}
+
+.messageInput::-webkit-scrollbar {
+    display: none;
+}
+
+.messageInput {
+    -ms-overflow-style: none;
+    scrollbar-width:none;
+}
