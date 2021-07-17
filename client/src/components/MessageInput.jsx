@@ -12,33 +12,18 @@ const MessageInput = () => {
     return newHeight;
   }
 
-  const [height,setHeight] = useState(40);
+  const [height, setHeight] = useState(40);
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'absolute',
-      }}
-    >
-      <div
-        style={{
-          backgroundColor: '#DBE9EE',
-          borderRadius: '50px 0px 0px 50px',
-          paddingLeft: '10px',
-        }}
-      >
+    <div className='messageInput-container'>
+      <div className='left-logo-container'>
         <label htmlFor='file-input'>
           <GrAttachment
+            className='logo'
             size='30'
             color='#4F6D7A'
             style={{
-              cursor: 'pointer',
-              margin: (height / 2 - 7) + 'px 0px ' + (height / 2 - 7) + 'px 0px',
-              backgroundColor: '#DBE9EE',
+              margin: height / 2 - 7 + 'px 0px ' + (height / 2 - 7) + 'px 0px',
             }}
           />
         </label>
@@ -47,38 +32,30 @@ const MessageInput = () => {
       <textarea
         placeholder='write a message...'
         style={{
-          width: '200px',
           height: height + 'px',
-          resize: 'none',
-          lineHeight: '20px',
-          padding: '20px 10px 0px 10px',
-          backgroundColor: '#DBE9EE',
-          color: '#4F6D7A',
-          border: 'none',
-          textAlign: 'left',
-          verticalAlign: 'center',
         }}
         className='messageInput'
         onKeyUp={(event) => {
           //event.target.style.height = calcHeight(event.target.value) + 'px';
           calcHeight(event.target.value);
         }}
+        onKeyPress={(event) => {
+          if (event.key === 'Enter' && !event.shiftKey) {
+            //event.preventDefault();
+            console.log('sending message...');
+          }
+        }}
       ></textarea>
       <div
-        style={{
-          backgroundColor: '#DBE9EE',
-          borderRadius: '0px 50px 50px 0px',
-          paddingRight: '10px',
-        }}
+        className='right-logo-container'
         onClick={() => console.log('sending message...')}
       >
         <IoSend
           size='30'
           color='#4F6D7A'
+          className='logo'
           style={{
-            cursor: 'pointer',
-            backgroundColor: '#DBE9EE',
-            margin:(height / 2 - 7) + 'px 0px ' + (height / 2 - 7) + 'px 0px',
+            margin: height / 2 - 7 + 'px 0px ' + (height / 2 - 7) + 'px 0px',
           }}
         />
       </div>

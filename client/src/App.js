@@ -1,12 +1,12 @@
 import React from 'react';
-import MessageInput from './components/MessageInput'
+import Chat from './components/Chat'
 
 const App = () => {
 
 
   return (
     <div>
-      <MessageInput/>
+      <Chat/>
     </div>
   );
 };
