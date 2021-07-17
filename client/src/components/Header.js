@@ -1,15 +1,13 @@
 import React from 'react';
 import { ImArrowLeft2 } from 'react-icons/im';
-import { IoLogoTableau } from 'react-icons/io5';
+import {IoIosArrowDown} from 'react-icons/io'
 
-const Header = () => {
+const Header = ({title}) => {
   return (
-    <header style={{ backgroundColor: '4F6D7A' }}>
-      <div style={{ height: '40px',display: 'flex', justifyContent: 'space-between', alignItems:'center' }}>
+    <header>
         <ImArrowLeft2 size={30} />
-        <p>Réunion TX</p>
-        <IoLogoTableau size={30} />
-      </div>
+        <p>{title}</p>
+        <IoIosArrowDown size={30} />
     </header>
   );
 };

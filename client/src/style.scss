@@ -4,8 +4,23 @@
 }
 
 body {
-  background-color: azure;
+  background-color: #f8f9fa;
   font-family: lato;
+  color:#dbe9ee;
+}
+
+header {
+  background-color: #4f6d7a;
+  height:40px;
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+  padding:0px 20px 0px 20px;
+}
+
+.chat-participant-list {
+  /*hauteur flottante*/
+  background-color: #4f6d7a;
 }
 
 .messageInput-container {
@@ -32,7 +47,7 @@ body {
   }
 
   textarea {
-      width:70vw;
+    width: 70vw;
     resize: none;
     line-height: 20px;
     padding: 20px 10px 0px 10px;
@@ -57,12 +72,51 @@ body {
 .message-list {
   overflow: scroll;
   width: 100%;
-  height: calc(100vh - 40px - 60px);
-  background-color: beige;
   -ms-overflow-style: none;
   scrollbar-width: none;
 
   &::-webkit-scrollbar {
     display: none;
+  }
+
+  .message-item {
+    display: flex;
+    margin-bottom: 20px;
+  }
+
+  .message-bubble {
+    max-width: 70vw;
+    word-break: break-all;
+    display:flex;
+    flex-direction: column;
+  }
+
+  .message-sender {
+    font-size: 12px;
+    margin: 10px 15px 10px 15px;
+    font-weight: bold;
+  }
+
+  .message-receiver {
+    font-size: 8px;
+    font-style: italic;
+    margin: 0px 15px 10px 15px;
+  }
+
+  .message-content {
+    font-size: 12px;
+    margin: 10px 15px 10px 15px;
+
+    & a{
+      color:#dbe9ee;
+      font-style: oblique;
+    }
+  }
+
+  .message-image {
+    align-self: center;
+    max-width: 90%;
+    max-height: 200px;
+    margin: 10px 15px 10px 15px;
   }
 }

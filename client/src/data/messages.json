@@ -1,0 +1,38 @@
+[
+  {
+    "id":1,
+    "sender": "Dylan",
+    "receiver": "George",
+    "content": "Ramènes-moi du lait stpl",
+    "date":"09-10-2003",
+    "image":"",
+    "file":""
+  },
+  {
+    "id":2,
+    "sender": "George",
+    "receiver": "Everyone",
+    "content": "Regarde ce lien : https://puginarug.com/",
+    "date":"09-10-2003",
+    "image":"",
+    "file":""
+  },
+  {
+    "id":3,
+    "sender": "Dylan",
+    "receiver":"Everyone",
+    "content": "Ahhh oui je l'ai déjà vu celui là en cliquant sur ce lien, attention il faut cliquer 1 fois et 1seul sinon le lien ne marchera peut être plus. Voilà le lien : https://theuselessweb.com/",
+    "date":"09-10-2003",
+    "image":"",
+    "file":""
+  },
+  {
+    "id":4,
+    "sender": "Dylan",
+    "receiver":"George",
+    "content": "Check l'image que je vais t'envoyer elle est trop cool !!",
+    "date":"09-10-2003",
+    "file":"./img/test_image.jpg",
+    "fileType":"img"
+  }
+]
