@@ -1,6 +1,6 @@
 import React from 'react';
 import { CgProfile } from 'react-icons/cg';
-import { addAnchorTag, isEmpty } from '../utils/utils';
+import { addAnchorTag, isEmpty } from '../../utils/utils';
 import parser from 'html-react-parser'
 
 const Message = ({ data }) => {

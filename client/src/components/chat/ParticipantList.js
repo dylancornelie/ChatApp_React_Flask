@@ -3,7 +3,7 @@ import ParticipantItem from './ParticipantItem'
 
 const ParticipantList = () => {
   return (
-    <div className='chat-participant-list' style={{display:'flex', flexDirection:'row', flexWrap:'nowrap', overflow:'scroll'}}>
+    <div className='chat-participant-list'>
       <ParticipantItem/>
       <ParticipantItem/>
       <ParticipantItem/>
