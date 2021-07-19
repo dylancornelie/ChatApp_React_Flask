@@ -1,20 +1,14 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from flask_bcrypt import Bcrypt
+from flask_restx import Api
+from flask import Blueprint
 
-from src.chat.config import config_by_name
+from src.chat.controller.v1.user_controller import api as user_ns_v1
 
-db = SQLAlchemy()
-flask_bcrypt = Bcrypt()
-migrate = Migrate()
+blueprint_v1 = Blueprint('api/v1', __name__)
 
+api = Api(blueprint_v1,
+          title='FLASK RESTPLUS API CHAT',
+          version='1.0',
+          description='a chat systems for flask restplus web service'
+          )
 
-def create_app(config_name):
-    app = Flask(__name__)
-    app.config.from_object(config_by_name[config_name])
-    db.init_app(app)
-    migrate.init_app(app, db)
-    flask_bcrypt.init_app(app)
-
-    return app
+api.add_namespace(user_ns_v1, path='/user')

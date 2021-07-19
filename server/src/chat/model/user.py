@@ -1,6 +1,4 @@
-import uuid
-
-from src import db, flask_bcrypt
+from src.chat import db, flask_bcrypt
 
 
 class User(db.Model):
@@ -21,7 +19,7 @@ class User(db.Model):
     def password(self, password):
         self.password_hash = flask_bcrypt.generate_password_hash(password).decode('utf-8')
 
-    def check_password(self, password):
+    def check_password(self, password: str) -> bool:
         return flask_bcrypt.check_password_hash(self.password_hash, password)
 
     def __repr__(self):
