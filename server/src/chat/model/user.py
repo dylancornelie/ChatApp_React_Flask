@@ -1,6 +1,6 @@
 import uuid
 
-from .. import db, flask_bcrypt
+from src import db, flask_bcrypt
 
 
 class User(db.Model):
