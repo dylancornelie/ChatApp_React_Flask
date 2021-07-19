@@ -9,3 +9,6 @@
   - CMD: `set FLASK_ENV=development`
   - Powershell: `$env:FLASK_ENV = "development"` 
 - Execute: `flask run`
+- Initial database: `flask db init`
+- Generate an initial migration: `flask db migrate -m "Initial migration."`
+- Migration: `flask db upgrade`
