@@ -4,10 +4,11 @@ import unittest
 from src.chat import db
 from src.chat.model.user import User
 from src.chat.service.blacklist_service import save_token
+from src.chat.service.auth_service import encode_auth_token, decode_auth_token
 from test.base import BaseTestCase
 
 
-class TestUserModel(BaseTestCase):
+class TestAuthService(BaseTestCase):
     def setUp(self):
         super().setUp()
         self.seed()
@@ -21,16 +22,16 @@ class TestUserModel(BaseTestCase):
         db.session.commit()
 
     def test_encode_auth_token(self):
-        auth_token = User.encode_auth_token(self.user.id)
+        auth_token = encode_auth_token(self.user.id)
         self.assertTrue(isinstance(auth_token, str))
 
     def test_decode_auth_token(self):
-        auth_token = User.encode_auth_token(self.user.id)
+        auth_token = encode_auth_token(self.user.id)
         self.assertTrue(isinstance(auth_token, str))
-        self.assertTrue(User.decode_auth_token(auth_token) == 1)
+        self.assertTrue(decode_auth_token(auth_token) == 1)
 
     def test_save_black_token(self):
-        auth_token = User.encode_auth_token(self.user.id)
+        auth_token = encode_auth_token(self.user.id)
         response_object, response_status = save_token(auth_token)
 
         self.assertEqual('success', response_object['status'])
