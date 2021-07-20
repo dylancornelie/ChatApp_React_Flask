@@ -1,11 +1,11 @@
 import uuid
-from typing import Dict, Tuple
 from http import HTTPStatus
+from typing import Dict, Tuple
 
 from src.chat import db
+from src.chat.model.pagination import Pagination
 from src.chat.model.user import User
-
-from sqlalchemy import or_
+from src.chat.util.pagination import paginate
 
 
 def save_new_user(data: Dict[str, str]) -> Tuple[Dict[str, str], int]:
@@ -32,11 +32,11 @@ def save_new_user(data: Dict[str, str]) -> Tuple[Dict[str, str], int]:
         return response_object, HTTPStatus.CONFLICT
 
 
-def get_all_users():
-    return User.query.all()
+def get_all_users() -> Pagination:
+    return paginate(User.query)
 
 
-def get_a_user(public_id):
+def get_a_user(public_id) -> User:
     return User.query.filter_by(public_id=public_id).first()
 
 
