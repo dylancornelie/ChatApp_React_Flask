@@ -11,7 +11,7 @@ _user_post = UserDto.user_post
 
 
 @api.route('/')
-class UserList(Resource):
+class List(Resource):
     @api.doc('list_of_registered_users')
     @api.marshal_list_with(_user_get, envelope='data')
     def get(self):
@@ -31,7 +31,7 @@ class UserList(Resource):
 @api.route('/<string:public_id>')
 @api.param('public_id', 'The User identifier')
 @api.response(HTTPStatus.NOT_FOUND.numerator, 'User not found.')
-class User(Resource):
+class Item(Resource):
     @api.doc('get a user')
     @api.marshal_with(_user_get)
     def get(self, public_id):
