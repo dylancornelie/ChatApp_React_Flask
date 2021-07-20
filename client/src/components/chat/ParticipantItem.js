@@ -1,15 +1,14 @@
 import React from 'react';
-import { CgProfile } from 'react-icons/cg';
 import { useDispatch } from 'react-redux';
-import { ShowContextMenu } from '../../actions/chat.action';
+import { showContextMenu } from '../../actions/chat.action';
 
 const ParticipantItem = () => {
 
   const dispatch = useDispatch();
 
   return (
-    <div className='chat-participant-item' onClick={()=> dispatch(ShowContextMenu())}>
-      <CgProfile size='45'/>
+    <div className='chat-participant-item' onClick={()=> dispatch(showContextMenu())}>
+      <img src='./img/avatar.svg' alt='profil pic' style={{height:'48px', backgroundColor:'#DBE9EE', borderRadius:'50%', marginBottom:'5px'}}/>
       <p className='chat-participant-item-name'>Paul Anguerand</p>
     </div>
   );

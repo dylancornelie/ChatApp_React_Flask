@@ -7,6 +7,7 @@ const MessageList = () => {
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
+    console.log(messagesEndRef);
     messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -24,13 +25,15 @@ const MessageList = () => {
       className='message-list'
       style={
         chatState.showParticipants
-          ? { height: 'calc(100vh - 40px  - 60px - 90px)' }
-          : { height: 'calc(100vh - 40px  - 60px - 0px)' }
+          ? { height: 'calc(100vh - 40px  - 60px - 90px - 5px)' }
+          : { height: 'calc(100vh - 40px  - 60px - 0px - 5px)' }
       }
     >
-      {data.map((element) => (
-        <Message data={element} key={element.id} />
-      ))}
+      {data.map((element) => {
+        if (element.id % 2 === 0)
+          return <Message data={element} key={element.id} position='right' />;
+        else return <Message data={element} key={element.id} position='left' />;
+      })}
       <div ref={messagesEndRef} />
     </div>
   );

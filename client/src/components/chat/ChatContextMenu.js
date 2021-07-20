@@ -1,43 +1,28 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { ShowContextMenu } from '../../actions/chat.action';
+import { setMessageReceiver, showContextMenu } from '../../actions/chat.action';
 
-const Popup = () => {
+const ChatContextMenu = () => {
 
   const dispatch = useDispatch();
 
   return (
     <div
-      style={{
-        position: 'absolute',
-        top: '0px',
-        height: '100vh',
-        backgroundColor: 'black',
-        width: '100vw',
-        opacity: '0.8',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-      onClick={() => dispatch(ShowContextMenu())}
+      className='context-menu-backdrop'
+      onClick={() => dispatch(showContextMenu())}
     >
       <div
-        style={{
-          backgroundColor: 'green',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
+        className='context-menu-button-container'
         onClick={(e) => {
-          e.stopPropagation();
-          console.log('on a prevenu');
+          //e.stopPropagation();
         }}
       >
-        <button>Send private message</button>
-        <button>Designate coach</button>
-        <button>Remove participant</button>
+        <button className='context-menu-button' onClick={()=>dispatch(setMessageReceiver('usernaaamme !!'))}>Send a private message</button>
+        <button className='context-menu-button'>Designate coach</button>
+        <button className='context-menu-button'>Remove participant</button>
       </div>
     </div>
   );
 };
 
-export default Popup;
+export default ChatContextMenu;

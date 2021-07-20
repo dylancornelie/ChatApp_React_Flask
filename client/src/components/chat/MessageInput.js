@@ -1,24 +1,38 @@
 import React, { useState } from 'react';
-import { GrAttachment } from 'react-icons/gr';
-import { IoSend } from 'react-icons/io5';
+import { FiPaperclip } from 'react-icons/fi';
+import { IoAdd, IoSend } from 'react-icons/io5';
+import { TiDeleteOutline } from 'react-icons/ti';
+import { useDispatch, useSelector } from 'react-redux';
+import { isEmpty } from '../../utils/utils';
+import {setMessageReceiver} from '../../actions/chat.action'
 
 const MessageInput = () => {
+  const chatState = useSelector((state) => state.chatReducer);
+  const dispatch = useDispatch();
+
   function calcHeight(value) {
     const numberOfLineBreaks = (value.match(/\n/g) || []).length;
-    if (numberOfLineBreaks > 5) return 20 + 5 * 20 + 0 + 0;
+    if (numberOfLineBreaks > 5) return 25 + 5 * 20 + 0 + 0;
     // min-height + lines x line-height + padding + border
-    const newHeight = 40 + numberOfLineBreaks * 20 + 0 + 0;
+    const newHeight = 25 + numberOfLineBreaks * 20 + 0 + 0;
     setHeight(newHeight);
     return newHeight;
   }
 
-  const [height, setHeight] = useState(40);
+  const [height, setHeight] = useState(25);
 
   return (
     <div className='messageInput-container'>
+      {!isEmpty(chatState.messageReceiver) && (
+        <div className='messageInput-infobox'
+        >
+          <p>This message will be sent to</p>
+            <IoAdd className='messageInput-infobox-logo' size='20' onClick={()=>dispatch(setMessageReceiver(''))}/>
+        </div>
+      )}
       <div className='left-logo-container'>
         <label htmlFor='file-input'>
-          <GrAttachment
+          <FiPaperclip
             className='logo'
             size='30'
             color='#4F6D7A'
@@ -26,6 +40,15 @@ const MessageInput = () => {
               margin: height / 2 - 7 + 'px 0px ' + (height / 2 - 7) + 'px 0px',
             }}
           />
+          {/*
+          {/*<TiDeleteOutline
+            size='30'
+            color='#4F6D7A'
+            className='logo'
+            style={{
+              margin: height / 2 - 7 + 'px 0px ' + (height / 2 - 7) + 'px 0px'
+            }}
+          />*/}
         </label>
         <input id='file-input' type='file' style={{ display: 'none' }} />
       </div>
