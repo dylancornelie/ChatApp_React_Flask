@@ -26,10 +26,23 @@ params = {
 
 class UserDto:
     api = Namespace('user', description='user related operations')
-    user_post = api.model('user_post', {
-        'email': fields.String(required=True, description='user email address'),
-        'username': fields.String(required=True, description='user username'),
-        'password': fields.String(required=True, description='user password'),
+    user_post = api.schema_model('user_post', {
+        'required': ['email', 'username', 'password'],
+        'properties': {
+            'email': {
+                'type': 'string',
+                'format': 'email',
+                "pattern": "^\\S+@\\S+\\.\\S+$",
+                "title": "user email address",
+            },
+            'username': {
+                'type': 'string'
+            },
+            'password': {
+                'type': 'string',
+            },
+        },
+        'type': 'object',
     })
     user_item = api.model('user_item', {
         'email': fields.String(description='user email address'),

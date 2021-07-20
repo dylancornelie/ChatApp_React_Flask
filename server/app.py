@@ -3,6 +3,7 @@ import unittest
 from dotenv import load_dotenv
 from src.chat import create_app
 from src import blueprint_v1
+from src.chat.model import user, blacklist
 
 load_dotenv()  # take environment variables from .env.
 
