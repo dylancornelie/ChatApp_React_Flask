@@ -1,4 +1,3 @@
-import uuid
 from http import HTTPStatus
 from typing import Dict, Tuple
 
@@ -12,7 +11,6 @@ def save_new_user(data: Dict[str, str]) -> Tuple[Dict[str, str], int]:
     user = User.query.filter((User.email == data['email']) | (User.username == data['username'])).first()
     if not user:
         new_user = User(
-            public_id=str(uuid.uuid4()),
             email=data['email'],
             username=data['username'],
             password=data['password']

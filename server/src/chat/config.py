@@ -9,6 +9,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'my_secret_key')
     DEBUG = False
+    ERROR_404_HELP = False
 
 
 class DevelopmentConfig(Config):

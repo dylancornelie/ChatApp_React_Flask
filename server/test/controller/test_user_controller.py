@@ -4,8 +4,9 @@ from http import HTTPStatus
 
 from flask import url_for
 
+from src.chat import db
+from src.chat.model.user import User
 from test.base import BaseTestCase
-from src.chat.model
 
 
 class TestUserControllerModel(BaseTestCase):
@@ -70,14 +71,19 @@ class TestUserControllerModel(BaseTestCase):
 
     def test_get_item_user_receive_OK(self):
         user = User(
-            email='test@test.com',
-            password='test',
-            registered_on=datetime.datetime.utcnow()
+            email='example@gmail.com',
+            username='example',
+            password='123456'
         )
+        db.session.add(user)
+        db.session.commit()
 
-        response = self.client.get(
-            url_for('api-v1.user_list'))
+        response = self.client.get(url_for('api-v1.user_item', public_id=user.public_id))
         self.assert200(response)
+
+    def test_get_item_user_receive_NOT_FOUND(self):
+        response = self.client.get(url_for('api-v1.user_item', public_id='user.public_id'))
+        self.assert404(response)
 
 
 if __name__ == '__main__':

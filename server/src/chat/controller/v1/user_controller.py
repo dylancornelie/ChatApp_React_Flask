@@ -30,7 +30,7 @@ class List(Resource):
         return save_new_user(data=data)
 
 
-@api.route('/<string:public_id>')
+@api.route('/<public_id>')
 @api.param('public_id', 'The User identifier')
 @api.response(HTTPStatus.NOT_FOUND.numerator, 'User not found.')
 class Item(Resource):
@@ -40,6 +40,6 @@ class Item(Resource):
         """get a user given its identifier"""
         user = get_a_user(public_id)
         if not user:
-            api.abort(HTTPStatus.NOT_FOUND)
+            api.abort(HTTPStatus.NOT_FOUND, 'user not found')
         else:
             return user
