@@ -17,8 +17,3 @@ class BlacklistToken(db.Model):
 
     def __repr__(self):
         return '<id: token: {}'.format(self.token)
-
-    @staticmethod
-    def check_blacklist(auth_token):
-        # check whether auth token has been blacklisted
-        return BlacklistToken.query.filter_by(token=str(auth_token)).first() is not None

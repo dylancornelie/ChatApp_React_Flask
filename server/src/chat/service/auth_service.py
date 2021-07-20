@@ -7,8 +7,7 @@ import jwt
 
 from src.chat.config import key
 from src.chat.model.user import User
-from src.chat.service.blacklist_service import save_token
-from src.chat.model.blacklist import BlacklistToken
+from src.chat.service.blacklist_service import save_token, check_blacklist
 
 
 def encode_auth_token(user_id: int) -> str:
@@ -39,7 +38,7 @@ def decode_auth_token(auth_token: str) -> Union[str, int]:
     """
     try:
         payload = jwt.decode(auth_token, key, algorithms=['HS256'])
-        is_blacklisted_token = BlacklistToken.check_blacklist(auth_token)
+        is_blacklisted_token = check_blacklist(auth_token)
         if is_blacklisted_token:
             return 'Token blacklisted. Please log in again.'
         else:

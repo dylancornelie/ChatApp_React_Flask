@@ -22,3 +22,8 @@ def save_token(token: str) -> Tuple[Dict[str, str], int]:
             'message': e
         }
         return response_object, HTTPStatus.INTERNAL_SERVER_ERROR
+
+
+def check_blacklist(auth_token) -> bool:
+    # check whether auth token has been blacklisted
+    return BlacklistToken.query.filter_by(token=str(auth_token)).first() is not None
