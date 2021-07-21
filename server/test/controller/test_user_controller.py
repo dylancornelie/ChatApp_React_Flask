@@ -4,8 +4,6 @@ from http import HTTPStatus
 
 from flask import url_for
 
-from src.chat import db
-from src.chat.model.user import User
 from test.base import BaseTestCase
 from test.controller.test_auth_controller import login_user, register_user
 
@@ -105,6 +103,7 @@ class TestUserControllerModel(BaseTestCase):
                     )['Authorization']
                 ))
             self.assert404(response)
+
 
 if __name__ == '__main__':
     unittest.main()
