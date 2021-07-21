@@ -21,8 +21,7 @@ class Login(Resource):
     @api.response(http.HTTPStatus.UNAUTHORIZED.numerator, 'Email or password does not match.')
     def post(self):
         # get the post data
-        post_data = request.json
-        return login_user(data=post_data)
+        return login_user(data=request.json)
 
 
 @api.route('/logout')
@@ -36,6 +35,4 @@ class Logout(Resource):
     @api.response(http.HTTPStatus.UNAUTHORIZED.numerator, 'Unauthorized.')
     @api.response(http.HTTPStatus.FORBIDDEN.numerator, 'Provide a valid auth token.')
     def get(self):
-        # get auth token
-        auth_header = request.headers.get('Authorization')
-        return logout_user(data=auth_header)
+        return logout_user(request)

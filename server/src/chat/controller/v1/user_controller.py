@@ -5,6 +5,7 @@ from flask_restx import Resource
 
 from src.chat.service.user_service import save_new_user, get_all_users, get_a_user
 from src.chat.util.dto import UserDto, params
+from src.chat.util.decorator import token_required
 
 api = UserDto.api
 _user_list = UserDto.user_list
@@ -14,9 +15,10 @@ _user_post = UserDto.user_post
 
 @api.route('/')
 class List(Resource):
+    @token_required
     @api.doc('list_of_registered_users', params=params)
     @api.marshal_list_with(_user_list)
-    def get(self):
+    def get(self, current_user_id):
         """List all registered users"""
         return get_all_users()
 

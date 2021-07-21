@@ -13,7 +13,8 @@ from src.chat.service.blacklist_service import save_token_into_blacklist, check_
 def encode_auth_token(user_id: int) -> str:
     """
     Generates the Auth Token ex
-    :return: string
+    :param user_id: integer
+    :return: string: JWT
     """
     try:
         payload = {
@@ -33,8 +34,8 @@ def encode_auth_token(user_id: int) -> str:
 def decode_auth_token(auth_token: str) -> Union[str, int]:
     """
     Decodes the auth token
-    :param auth_token:
-    :return: integer|string
+    :param auth_token: string : JWT
+    :return: integer|string: User's ID or Error message
     """
     try:
         payload = jwt.decode(auth_token, key, algorithms=['HS256'])
@@ -50,6 +51,11 @@ def decode_auth_token(auth_token: str) -> Union[str, int]:
 
 
 def login_user(data: Dict[str, str]) -> Tuple[Dict[str, str], int]:
+    """
+        Decodes the auth token
+        :param data:
+        :return: integer|string
+    """
     try:
         # fetch the user data
         user = User.query.filter_by(email=data.get('email')).first()
@@ -77,11 +83,20 @@ def login_user(data: Dict[str, str]) -> Tuple[Dict[str, str], int]:
         return response_object, HTTPStatus.INTERNAL_SERVER_ERROR
 
 
-def logout_user(data: str) -> Tuple[Dict[str, str], int]:
-    if data:
-        auth_token = data.split(" ")[1]
+def logout_user(new_request) -> Tuple[Dict[str, str], int]:
+    auth_header = new_request.headers.get('Authorization')
+    if auth_header:
+        try:
+            auth_token = auth_header.split(" ")[1]
+        except IndexError:
+            responseObject = {
+                'status': 'fail',
+                'message': 'Bearer token malformed.'
+            }
+            return responseObject, HTTPStatus.UNAUTHORIZED
     else:
         auth_token = ''
+
     if auth_token:
         resp = decode_auth_token(auth_token)
         if not isinstance(resp, str):
@@ -103,11 +118,22 @@ def logout_user(data: str) -> Tuple[Dict[str, str], int]:
 
 def get_logged_in_user(new_request):
     # get the auth token
-    auth_token = new_request.headers.get('Authorization')
+    auth_header = new_request.headers.get('Authorization')
+    if auth_header:
+        try:
+            auth_token = auth_header.split(" ")[1]
+        except IndexError:
+            responseObject = {
+                'status': 'fail',
+                'message': 'Bearer token malformed.'
+            }
+            return responseObject, HTTPStatus.UNAUTHORIZED
+    else:
+        auth_token = ''
+
     if auth_token:
-        resp = User.decode_auth_token(auth_token)
+        resp = decode_auth_token(auth_token)
         if not isinstance(resp, str):
-            user = User.query.filter_by(id=resp).first()
             response_object = {
                 'status': 'success',
                 'data': {
