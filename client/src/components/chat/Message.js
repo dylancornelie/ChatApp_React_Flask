@@ -14,16 +14,9 @@ const Message = ({ data, position }) => {
     >
       {position === 'left' && (
         <img
+        className='message-sender-pic'
           src='./img/avatar.svg'
           alt='profil pic'
-          style={{
-            alignSelf: 'flex-end',
-            backgroundColor: '#DBE9EE',
-            height: '50px',
-            borderRadius: '50%',
-            border: '2px solid #DBE9EE',
-            marginRight: '5px',
-          }}
         />
       )}
       <div

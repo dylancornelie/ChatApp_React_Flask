@@ -1,23 +1,38 @@
+$breakpoint-tablet: 768px;
+$primary-color: #4f6d7a;
+$secondary-color: #dbe9ee;
+$accentuation-color: #166088;
+$background-color: #f8f9fa;
+
 * {
   margin: 0;
   padding: 0;
   font-size: 10px;
+  @media (min-width: $breakpoint-tablet) {
+    font-size: 16px;
+  }
 }
 
-body {
-  background-color: #f8f9fa;
+body,
+#root {
+  background-color: $background-color;
   font-family: lato;
-  color: #dbe9ee;
-  max-height: 100vh;
+  color: $secondary-color;
+  height: 100vh;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
 }
 
 header {
-  background-color: #4f6d7a;
-  height: 40px;
+  background-color: $primary-color;
+  height: 5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0px 10px 0px 10px;
+  padding: 10px 10px 10px 20px;
 
   p {
     font-size: 2rem;
@@ -38,13 +53,14 @@ header {
 }
 
 .chat-participant-list {
-  height: 90px;
-  background-color: #4f6d7a;
+  height: 40rem;
+  background-color: $primary-color;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
-  overflow: scroll;
+  overflow-x: scroll;
+  overflow-y: hidden;
   -ms-overflow-style: none;
   scrollbar-width: none;
 
@@ -68,6 +84,12 @@ header {
       font-size: 1rem;
       text-align: center;
     }
+
+    .chat-participant-item-add-logo {
+      background-color: $secondary-color;
+      border-radius: 50%;
+      padding: 3px;
+    }
   }
 }
 
@@ -82,15 +104,15 @@ header {
   .messageInput-infobox {
     position: absolute;
     top: -32px;
-    border-bottom: 2px solid #4f6d7a;
+    border-bottom: 2px solid $primary-color;
     height: 30px;
     width: 70%;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 10px 10px 0px 0px;
-    background-color: #dbe9ee;
-    color: #4f6d7a;
+    background-color: $secondary-color;
+    color: $primary-color;
 
     .messageInput-infobox-logo {
       position: absolute;
@@ -106,19 +128,21 @@ header {
   }
 
   .left-logo-container {
-    background-color: #dbe9ee;
+    background-color: $secondary-color;
     border-radius: 50px 0px 0px 50px;
     padding-left: 10px;
+    height: 43.5px;
   }
   .right-logo-container {
-    background-color: #dbe9ee;
+    background-color: $secondary-color;
     border-radius: 0px 50px 50px 0px;
     padding-right: 10px;
+    height: 43.5px;
   }
 
   .logo {
     cursor: pointer;
-    background-color: #dbe9ee;
+    background-color: $secondary-color;
 
     &:hover {
       transform: scale(1.1);
@@ -131,11 +155,10 @@ header {
     resize: none;
     line-height: 20px;
     padding: 11px 10px 7.5px 10px;
-    background-color: #dbe9ee;
-    color: #4f6d7a;
+    background-color: $secondary-color;
+    color: $primary-color;
     border: none;
     text-align: left;
-    vertical-align: center;
     -ms-overflow-style: none;
     scrollbar-width: none;
 
@@ -156,6 +179,7 @@ header {
   padding-top: 5px;
   margin-left: 10px;
   margin-right: 10px;
+  flex-grow: 1;
 
   &::-webkit-scrollbar {
     display: none;
@@ -163,45 +187,57 @@ header {
 
   .message-item {
     display: flex;
-    margin-bottom: 20px;
-  }
+    margin-bottom: 2rem;
 
-  .message-bubble {
-    max-width: 70vw;
-    word-break: break-all;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .message-sender {
-    font-size: 1.2rem;
-    margin: 10px 15px 0px 15px;
-    font-weight: bold;
-  }
-
-  .message-receiver {
-    font-size: 0.8rem;
-    font-style: italic;
-    margin: 0px 15px 10px 15px;
-  }
-
-  .message-content {
-    font-size: 1.2rem;
-    margin: 10px 15px 10px 15px;
-
-    & a {
-      color: #dbe9ee;
-      font-style: oblique;
+    .message-sender-pic {
+      align-self: flex-end;
+      background-color: $secondary-color;
+      height: 50px;
+      border-radius: 50%;
+      border: 2px solid $secondary-color;
+      margin-right: 5px;
     }
-  }
 
-  .message-image-container {
-    align-self: center;
+    .message-bubble {
+      max-width: 70vw;
+      word-break: break-all;
+      display: flex;
+      flex-direction: column;
+    }
 
-    .message-image {
-      max-width: 90%;
-      max-height: 200px;
+    .message-sender {
+      font-size: 1.2rem;
+      margin: 10px 15px 0px 15px;
+      font-weight: bold;
+    }
+
+    .message-receiver {
+      font-size: 0.8rem;
+      font-style: italic;
+      margin: 0px 15px 10px 15px;
+    }
+
+    .message-content {
+      font-size: 1.2rem;
       margin: 10px 15px 10px 15px;
+
+      & a {
+        color: $secondary-color;
+        font-size: 1.2rem;
+      }
+    }
+
+    .message-image-container {
+      align-self: center;
+
+      .message-image {
+        width: 200px;
+        @media (min-width: $breakpoint-tablet) {
+          width: 500px;
+        }
+        max-width: 70vw;
+        margin: 10px 15px 10px 15px;
+      }
     }
   }
 }
@@ -224,7 +260,7 @@ header {
     justify-content: center;
     align-items: stretch;
     width: 300px;
-    background-color: #4f6d7a;
+    background-color: $primary-color;
     border-radius: 17px;
     box-shadow: 0px 24px 48px 0 hsla(0, 0, 0, 0.15);
     overflow: hidden;
@@ -233,13 +269,13 @@ header {
       font-size: 1.2rem;
       background-color: transparent;
       border: none;
-      color: #dbe9ee;
+      color: $secondary-color;
       height: 50px;
       cursor: pointer;
 
       &:hover {
-        background-color: #dbe9ee;
-        color: #4f6d7a;
+        background-color: $secondary-color;
+        color: $primary-color;
       }
     }
   }
@@ -252,8 +288,8 @@ header {
   justify-content: center;
 
   input {
-    background-color: #dbe9ee;
-    color: #4f6d7a;
+    background-color: $secondary-color;
+    color: $primary-color;
     height: 25px;
     border-radius: 50px;
     border: none;
@@ -276,18 +312,18 @@ header {
     button {
       font-size: 1.2rem;
       font-weight: 600;
-      background-color: #166088;
+      background-color: $accentuation-color;
       width: 25%;
       height: 25px;
       border-radius: 5000px;
       border: none;
-      color: #dbe9ee;
+      color: $secondary-color;
       cursor: pointer;
       margin: 10px 0px 20px 0px;
 
       &:hover {
-        background-color: #dbe9ee;
-        color: #4f6d7a;
+        background-color: $secondary-color;
+        color: $primary-color;
       }
 
       &:focus {

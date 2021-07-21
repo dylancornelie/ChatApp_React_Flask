@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { showAddParticipant } from '../../actions/chat.action';
-import QRCode from 'qrcode.react';
+import QRCode from 'react-qr-code';
 
 const AddParticipantPopUp = () => {
   const dispatch = useDispatch();
