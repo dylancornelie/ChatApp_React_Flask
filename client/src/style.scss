@@ -26,7 +26,7 @@ header {
 
   svg {
     cursor: pointer;
-    
+
     &:hover {
       transform: scale(1.1);
     }
@@ -58,7 +58,7 @@ header {
     align-items: center;
     justify-content: flex-start;
     margin: 0px 20px 0px 20px;
-    cursor:pointer;
+    cursor: pointer;
 
     &:hover {
       transform: scale(1.1);
@@ -72,38 +72,37 @@ header {
 }
 
 .messageInput-container {
-  position:relative;
+  position: relative;
   margin: 7.5px auto 7.5px auto;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
 
-  .messageInput-infobox{
-    position:absolute;
-    top:-32px;
+  .messageInput-infobox {
+    position: absolute;
+    top: -32px;
     border-bottom: 2px solid #4f6d7a;
-    height:30px;
-    width:70%;
-    display:flex;
+    height: 30px;
+    width: 70%;
+    display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 10px 10px 0px 0px;
     background-color: #dbe9ee;
-    color:#4f6d7a;
+    color: #4f6d7a;
 
     .messageInput-infobox-logo {
-      position:absolute;
-      top:5px;
-      right:5px;
-      transform:rotate(45deg);
-      cursor:pointer;
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      transform: rotate(45deg);
+      cursor: pointer;
 
       &:hover {
-        transform:scale(1.1) rotate(45deg);
+        transform: scale(1.1) rotate(45deg);
       }
     }
-
   }
 
   .left-logo-container {
@@ -120,13 +119,11 @@ header {
   .logo {
     cursor: pointer;
     background-color: #dbe9ee;
-  
+
     &:hover {
-      transform:scale(1.1);
+      transform: scale(1.1);
     }
   }
-
-
 
   textarea {
     font-size: 1.2rem;
@@ -210,6 +207,7 @@ header {
 }
 
 .context-menu-backdrop {
+  z-index: 10;
   position: absolute;
   background-color: hsla(0, 0%, 0%, 0.7);
   top: 0;
@@ -242,6 +240,58 @@ header {
       &:hover {
         background-color: #dbe9ee;
         color: #4f6d7a;
+      }
+    }
+  }
+}
+
+.addbylogin-modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  input {
+    background-color: #dbe9ee;
+    color: #4f6d7a;
+    height: 25px;
+    border-radius: 50px;
+    border: none;
+    width: 80%;
+    font-size: 1.4rem;
+    font-weight: 600;
+    padding-left: 10px;
+    margin: 20px 0px 10px 0px;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .addbylogin-button-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    button {
+      font-size: 1.2rem;
+      font-weight: 600;
+      background-color: #166088;
+      width: 25%;
+      height: 25px;
+      border-radius: 5000px;
+      border: none;
+      color: #dbe9ee;
+      cursor: pointer;
+      margin: 10px 0px 20px 0px;
+
+      &:hover {
+        background-color: #dbe9ee;
+        color: #4f6d7a;
+      }
+
+      &:focus {
+        outline: none;
       }
     }
   }
