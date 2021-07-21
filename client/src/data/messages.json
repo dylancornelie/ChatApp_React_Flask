@@ -32,7 +32,7 @@
     "receiver":"George",
     "content": "Check l'image que je vais t'envoyer elle est trop cool !!",
     "date":"09-10-2003",
-    "file":"./img/test_image.jpg",
+    "file":"./img_temp/test_image.jpg",
     "fileType":"img"
   }
 ]
