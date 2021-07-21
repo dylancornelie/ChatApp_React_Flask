@@ -11,14 +11,15 @@ def register_user(self):
         data=json.dumps(dict(
             email='example@gmail.com',
             username='username',
-            password='123456'
+            password='123456',
+            first_name='first name',
+            last_name='last name',
         )),
         content_type='application/json'
     )
 
 
 def login_user(self):
-    print(url_for('api.auth_login'))
     return self.client.post(
         url_for('api.auth_login'),
         data=json.dumps(dict(

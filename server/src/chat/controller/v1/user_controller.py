@@ -32,15 +32,16 @@ class List(Resource):
         return save_new_user(data=data)
 
 
-@api.route('/<public_id>')
-@api.param('public_id', 'The User identifier')
+@api.route('/<int:id>')
+@api.param('id', 'The User identifier')
 @api.response(HTTPStatus.NOT_FOUND.numerator, 'User not found.')
 class Item(Resource):
+    @token_required
     @api.doc('get a user')
     @api.marshal_with(_user_item)
-    def get(self, public_id):
+    def get(self, current_user_id, id):
         """get a user given its identifier"""
-        user = get_a_user(public_id)
+        user = get_a_user(id)
         if not user:
             api.abort(HTTPStatus.NOT_FOUND, 'user not found')
         else:

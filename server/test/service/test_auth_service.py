@@ -17,6 +17,9 @@ class TestAuthService(BaseTestCase):
         self.user = User(
             email='test@test.com',
             password='test',
+            username='username',
+            first_name='first name',
+            last_name='last name',
         )
         db.session.add(self.user)
         db.session.commit()

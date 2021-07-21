@@ -88,7 +88,7 @@ def logout_user(new_request) -> Tuple[Dict[str, str], int]:
        Logout account
        :param new_request
        :return: object, integer: Object message and http's status
-   """
+    """
     auth_header = new_request.headers.get('Authorization')
     if auth_header:
         try:
@@ -126,7 +126,7 @@ def get_logged_in_user(new_request) -> Tuple[Dict[str, str], int]:
        Login by user's email
        :param new_request:
        :return: object, integer: Object message and http's status
-   """
+    """
     # get the auth token
     auth_header = new_request.headers.get('Authorization')
     if auth_header:

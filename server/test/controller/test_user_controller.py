@@ -7,6 +7,7 @@ from flask import url_for
 from src.chat import db
 from src.chat.model.user import User
 from test.base import BaseTestCase
+from test.controller.test_auth_controller import login_user, register_user
 
 
 class TestUserControllerModel(BaseTestCase):
@@ -63,28 +64,47 @@ class TestUserControllerModel(BaseTestCase):
             data=json.dumps(dict(
                 email='example@gmail.com',
                 username='example',
-                password='123456'
+                password='123456',
+                first_name='first name',
+                last_name='last name',
             )),
             content_type='application/json'
         )
         self.assertStatus(response, HTTPStatus.CREATED)
 
     def test_get_item_user_receive_OK(self):
-        user = User(
-            email='example@gmail.com',
-            username='example',
-            password='123456'
-        )
-        db.session.add(user)
-        db.session.commit()
+        with self.client:
+            # user registration
+            register_user(self)
 
-        response = self.client.get(url_for('api.user_v1_item', public_id=user.public_id))
-        self.assert200(response)
+            # registered user login
+            login_response = login_user(self)
+
+            response = self.client.get(
+                url_for('api.user_v1_item', id=1),
+                headers=dict(
+                    Authorization='Bearer ' + json.loads(
+                        login_response.data
+                    )['Authorization']
+                ))
+            self.assert200(response)
 
     def test_get_item_user_receive_NOT_FOUND(self):
-        response = self.client.get(url_for('api.user_v1_item', public_id='user.public_id'))
-        self.assert404(response)
+        with self.client:
+            # user registration
+            register_user(self)
 
+            # registered user login
+            login_response = login_user(self)
+
+            response = self.client.get(
+                url_for('api.user_v1_item', id=123),
+                headers=dict(
+                    Authorization='Bearer ' + json.loads(
+                        login_response.data
+                    )['Authorization']
+                ))
+            self.assert404(response)
 
 if __name__ == '__main__':
     unittest.main()

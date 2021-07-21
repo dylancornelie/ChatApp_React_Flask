@@ -1,4 +1,3 @@
-import http
 from http import HTTPStatus
 from typing import Dict, Tuple
 
@@ -15,7 +14,9 @@ def save_new_user(data: Dict[str, str]) -> Tuple[Dict[str, str], int]:
         new_user = User(
             email=data['email'],
             username=data['username'],
-            password=data['password']
+            password=data['password'],
+            first_name=data['first_name'],
+            last_name=data['last_name']
         )
         save_changes(new_user)
         return generate_token(new_user)
@@ -32,8 +33,8 @@ def get_all_users() -> Pagination:
     return paginate(User.query)
 
 
-def get_a_user(public_id) -> User:
-    return User.query.filter_by(public_id=public_id).first()
+def get_a_user(id) -> User:
+    return User.query.filter_by(id=id).first()
 
 
 def save_changes(data: User) -> None:
