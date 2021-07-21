@@ -46,3 +46,12 @@ class Item(Resource):
             api.abort(HTTPStatus.NOT_FOUND, 'user not found')
         else:
             return user
+
+
+@api.route('/me')
+class Me(Resource):
+    @token_required
+    @api.doc('get me')
+    @api.marshal_with(_user_item)
+    def get(self, current_user_id):
+        return get_a_user(current_user_id)

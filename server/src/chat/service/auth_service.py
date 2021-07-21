@@ -1,7 +1,6 @@
 import datetime
 from http import HTTPStatus
-from typing import Dict, Tuple
-from typing import Union
+from typing import Dict, Tuple, Union
 
 import jwt
 
@@ -121,7 +120,7 @@ def logout_user(new_request) -> Tuple[Dict[str, str], int]:
         return response_object, HTTPStatus.FORBIDDEN
 
 
-def get_logged_in_user(new_request) -> Tuple[Dict[str, str], int]:
+def get_logged_in_user(new_request) -> Tuple[Dict[str, Union[str,int]], int]:
     """
        Login by user's email
        :param new_request:
@@ -146,9 +145,7 @@ def get_logged_in_user(new_request) -> Tuple[Dict[str, str], int]:
         if not isinstance(resp, str):
             response_object = {
                 'status': 'success',
-                'data': {
-                    'user_id': resp,
-                }
+                'user_id': resp
             }
             return response_object, HTTPStatus.OK
         response_object = {
