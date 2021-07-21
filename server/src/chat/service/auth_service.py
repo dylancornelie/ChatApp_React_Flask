@@ -52,9 +52,9 @@ def decode_auth_token(auth_token: str) -> Union[str, int]:
 
 def login_user(data: Dict[str, str]) -> Tuple[Dict[str, str], int]:
     """
-        Decodes the auth token
+        Login by user's email
         :param data:
-        :return: integer|string
+        :return: object, integer: Object message and http's status
     """
     try:
         # fetch the user data
@@ -84,6 +84,11 @@ def login_user(data: Dict[str, str]) -> Tuple[Dict[str, str], int]:
 
 
 def logout_user(new_request) -> Tuple[Dict[str, str], int]:
+    """
+       Logout account
+       :param new_request
+       :return: object, integer: Object message and http's status
+   """
     auth_header = new_request.headers.get('Authorization')
     if auth_header:
         try:
@@ -116,7 +121,12 @@ def logout_user(new_request) -> Tuple[Dict[str, str], int]:
         return response_object, HTTPStatus.FORBIDDEN
 
 
-def get_logged_in_user(new_request):
+def get_logged_in_user(new_request) -> Tuple[Dict[str, str], int]:
+    """
+       Login by user's email
+       :param new_request:
+       :return: object, integer: Object message and http's status
+   """
     # get the auth token
     auth_header = new_request.headers.get('Authorization')
     if auth_header:
