@@ -14,7 +14,7 @@ class TestUserControllerModel(BaseTestCase):
 
     def test_post_new_user_miss_username_receive_BAD_REQUEST(self):
         response = self.client.post(
-            url_for('api-v1.user_list'),
+            url_for('api.user_v1_list'),
             data=json.dumps(dict(
                 email='example@gmail.com',
                 password='123456'
@@ -25,7 +25,7 @@ class TestUserControllerModel(BaseTestCase):
 
     def test_post_new_user_miss_email_receive_BAD_REQUEST(self):
         response = self.client.post(
-            url_for('api-v1.user_list'),
+            url_for('api.user_v1_list'),
             data=json.dumps(dict(
                 username='example',
                 password='123456'
@@ -36,7 +36,7 @@ class TestUserControllerModel(BaseTestCase):
 
     def test_post_new_user_miss_password_receive_BAD_REQUEST(self):
         response = self.client.post(
-            url_for('api-v1.user_list'),
+            url_for('api.user_v1_list'),
             data=json.dumps(dict(
                 email='example@gmail.com',
                 username='example',
@@ -47,7 +47,7 @@ class TestUserControllerModel(BaseTestCase):
 
     def test_post_new_user_not_email_receive_BAD_REQUEST(self):
         response = self.client.post(
-            url_for('api-v1.user_list'),
+            url_for('api.user_v1_list'),
             data=json.dumps(dict(
                 email='example',
                 username='example',
@@ -59,7 +59,7 @@ class TestUserControllerModel(BaseTestCase):
 
     def test_post_new_user_receive_OK(self):
         response = self.client.post(
-            url_for('api-v1.user_list'),
+            url_for('api.user_v1_list'),
             data=json.dumps(dict(
                 email='example@gmail.com',
                 username='example',
@@ -78,11 +78,11 @@ class TestUserControllerModel(BaseTestCase):
         db.session.add(user)
         db.session.commit()
 
-        response = self.client.get(url_for('api-v1.user_item', public_id=user.public_id))
+        response = self.client.get(url_for('api.user_v1_item', public_id=user.public_id))
         self.assert200(response)
 
     def test_get_item_user_receive_NOT_FOUND(self):
-        response = self.client.get(url_for('api-v1.user_item', public_id='user.public_id'))
+        response = self.client.get(url_for('api.user_v1_item', public_id='user.public_id'))
         self.assert404(response)
 
 

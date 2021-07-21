@@ -3,7 +3,7 @@ import unittest
 
 from src.chat import db
 from src.chat.model.user import User
-from src.chat.service.blacklist_service import save_token, check_blacklist
+from src.chat.service.blacklist_service import save_token_into_blacklist, check_blacklist
 from src.chat.service.auth_service import encode_auth_token
 from test.base import BaseTestCase
 
@@ -23,14 +23,14 @@ class TestAuthService(BaseTestCase):
 
     def test_save_black_token(self):
         auth_token = encode_auth_token(self.user.id)
-        response_object, response_status = save_token(auth_token)
+        response_object, response_status = save_token_into_blacklist(auth_token)
 
         self.assertEqual('success', response_object['status'])
         self.assertEqual(http.HTTPStatus.OK, response_status)
 
     def test_check_token_in_black_list(self):
         auth_token = encode_auth_token(self.user.id)
-        save_token(auth_token)
+        save_token_into_blacklist(auth_token)
         self.assertTrue(check_blacklist(auth_token))
 
 

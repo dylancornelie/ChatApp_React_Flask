@@ -25,7 +25,7 @@ params = {
 
 
 class UserDto:
-    api = Namespace('user', description='user related operations')
+    api = Namespace('user_v1', description='user related operations')
     user_post = api.schema_model('user_post', {
         'required': ['email', 'username', 'password'],
         'properties': {

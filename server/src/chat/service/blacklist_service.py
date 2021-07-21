@@ -5,7 +5,7 @@ from src.chat import db
 from src.chat.model.blacklist import BlacklistToken
 
 
-def save_token(token: str) -> Tuple[Dict[str, str], int]:
+def save_token_into_blacklist(token: str) -> Tuple[Dict[str, str], int]:
     blacklist_token = BlacklistToken(token=token)
     try:
         # insert the token

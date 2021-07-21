@@ -2,13 +2,13 @@ import os
 import unittest
 from dotenv import load_dotenv
 from src.chat import create_app
-from src import blueprint_v1
+from src import blueprint
 from src.chat.model import user, blacklist
 
 load_dotenv()  # take environment variables from .env.
 
 app = create_app(os.getenv('APP_ENV') or 'development')
-app.register_blueprint(blueprint_v1)
+app.register_blueprint(blueprint)
 
 app.app_context().push()
 

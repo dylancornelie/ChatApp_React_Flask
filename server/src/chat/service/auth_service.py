@@ -7,7 +7,7 @@ import jwt
 
 from src.chat.config import key
 from src.chat.model.user import User
-from src.chat.service.blacklist_service import save_token, check_blacklist
+from src.chat.service.blacklist_service import save_token_into_blacklist, check_blacklist
 
 
 def encode_auth_token(user_id: int) -> str:
@@ -54,7 +54,7 @@ def login_user(data: Dict[str, str]) -> Tuple[Dict[str, str], int]:
         # fetch the user data
         user = User.query.filter_by(email=data.get('email')).first()
         if user and user.check_password(data.get('password')):
-            auth_token = User.encode_auth_token(user.id)
+            auth_token = encode_auth_token(user.id)
             if auth_token:
                 response_object = {
                     'status': 'success',
@@ -83,10 +83,10 @@ def logout_user(data: str) -> Tuple[Dict[str, str], int]:
     else:
         auth_token = ''
     if auth_token:
-        resp = User.decode_auth_token(auth_token)
+        resp = decode_auth_token(auth_token)
         if not isinstance(resp, str):
             # mark the token as blacklisted
-            return save_token(token=auth_token)
+            return save_token_into_blacklist(token=auth_token)
         else:
             response_object = {
                 'status': 'fail',
@@ -111,8 +111,7 @@ def get_logged_in_user(new_request):
             response_object = {
                 'status': 'success',
                 'data': {
-                    'user_id': user.id,
-                    'email': user.email,
+                    'user_id': resp,
                 }
             }
             return response_object, HTTPStatus.OK

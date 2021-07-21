@@ -1,3 +1,4 @@
+import http
 from http import HTTPStatus
 from typing import Dict, Tuple
 
@@ -5,6 +6,7 @@ from src.chat import db
 from src.chat.model.pagination import Pagination
 from src.chat.model.user import User
 from src.chat.util.pagination import paginate
+from src.chat.service.auth_service import encode_auth_token
 
 
 def save_new_user(data: Dict[str, str]) -> Tuple[Dict[str, str], int]:
@@ -16,11 +18,7 @@ def save_new_user(data: Dict[str, str]) -> Tuple[Dict[str, str], int]:
             password=data['password']
         )
         save_changes(new_user)
-        response_object = {
-            'status': 'success',
-            'message': 'Successfully registered.'
-        }
-        return response_object, HTTPStatus.CREATED
+        return generate_token(new_user)
 
     else:
         response_object = {
@@ -41,3 +39,21 @@ def get_a_user(public_id) -> User:
 def save_changes(data: User) -> None:
     db.session.add(data)
     db.session.commit()
+
+
+def generate_token(user: User):
+    try:
+        # generate the auth token
+        auth_token = encode_auth_token(user.id)
+        response_object = {
+            'status': 'success',
+            'message': 'Successfully registered.',
+            'Authorization': auth_token
+        }
+        return response_object, HTTPStatus.CREATED
+    except Exception:
+        response_object = {
+            'status': 'fail',
+            'message': 'Some error occurred. Please try again.'
+        }
+        return response_object, HTTPStatus.UNAUTHORIZED
