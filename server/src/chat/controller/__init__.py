@@ -18,7 +18,7 @@ authorizations = {
 api_v1 = Api(api_bp,
              title='FLASK RESTPLUS API CHAT',
              version='1.0',
-             description='a chat systems for flask restplus web service',
+             description='A chat systems for flask restx web service',
              authorizations=authorizations,
              security='Bearer',
              )

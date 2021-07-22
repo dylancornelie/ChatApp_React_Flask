@@ -1,29 +1,14 @@
 """Service logic for black token """
 
-from http import HTTPStatus
-from typing import Dict, Tuple
-
-from src.chat import db
 from src.chat.model.token_blacklist import BlacklistedToken
+from src.chat.service import save_data
 
 
-def save_token_into_blacklist(token: str) -> Tuple[Dict[str, str], int]:
+def save_token_into_blacklist(token: str) -> str:
     blacklist_token = BlacklistedToken(token=token)
-    try:
-        # insert the token
-        db.session.add(blacklist_token)
-        db.session.commit()
-        response_object = {
-            'status': 'success',
-            'message': 'Successfully logged out.'
-        }
-        return response_object, HTTPStatus.OK
-    except Exception as e:
-        response_object = {
-            'status': 'fail',
-            'message': e
-        }
-        return response_object, HTTPStatus.INTERNAL_SERVER_ERROR
+    # insert the token
+    save_data(blacklist_token)
+    return 'Successfully logged out.'
 
 
 def check_blacklist(auth_token) -> bool:

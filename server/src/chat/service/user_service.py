@@ -3,11 +3,13 @@
 from http import HTTPStatus
 from typing import Dict, Tuple
 
-from src.chat import db
+from werkzeug.exceptions import Conflict
+
 from src.chat.model.pagination import Pagination
 from src.chat.model.user import User
-from src.chat.util.pagination import paginate
+from src.chat.service import save_data
 from src.chat.service.auth_service import encode_auth_token
+from src.chat.util.pagination import paginate
 
 
 def save_new_user(data: Dict[str, str]) -> Tuple[Dict[str, str], int]:
@@ -20,15 +22,9 @@ def save_new_user(data: Dict[str, str]) -> Tuple[Dict[str, str], int]:
             first_name=data['first_name'],
             last_name=data['last_name']
         )
-        save_changes(new_user)
-        return generate_token(new_user)
-
-    else:
-        response_object = {
-            'status': 'fail',
-            'message': 'User already exists. Please Log in.',
-        }
-        return response_object, HTTPStatus.CONFLICT
+        save_data(new_user)
+        return _generate_token(new_user)
+    raise Conflict('User already exists. Please Log in.')
 
 
 def get_all_users() -> Pagination:
@@ -39,24 +35,13 @@ def get_a_user(id) -> User:
     return User.query.filter_by(id=id).first()
 
 
-def save_changes(data: User) -> None:
-    db.session.add(data)
-    db.session.commit()
-
-
-def generate_token(user: User):
-    try:
-        # generate the auth token
-        auth_token = encode_auth_token(user.id)
-        response_object = {
-            'status': 'success',
-            'message': 'Successfully registered.',
-            'Authorization': auth_token
-        }
-        return response_object, HTTPStatus.CREATED
-    except Exception:
-        response_object = {
-            'status': 'fail',
-            'message': 'Some error occurred. Please try again.'
-        }
-        return response_object, HTTPStatus.UNAUTHORIZED
+def _generate_token(user: User):
+    # generate the auth token
+    auth_token, expire = encode_auth_token(user.id)
+    response_object = dict(
+        message='Successfully registered.',
+        authorization=auth_token,
+        token_type='Bearer',
+        token_expires_in=expire
+    )
+    return response_object, HTTPStatus.CREATED

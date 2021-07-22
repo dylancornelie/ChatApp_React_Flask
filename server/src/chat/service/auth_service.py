@@ -1,17 +1,17 @@
 """Service logic for auth """
 
 from datetime import datetime, timezone, timedelta
-import jwt
+from typing import Dict, Tuple
 
-from flask import current_app
-from http import HTTPStatus
-from typing import Dict, Tuple, Union
+import jwt
+from flask import current_app, request
+from werkzeug.exceptions import Unauthorized, Forbidden
 
 from src.chat.model.user import User
 from src.chat.service.blacklist_service import save_token_into_blacklist, check_blacklist
 
 
-def encode_auth_token(user_id: int) -> str:
+def encode_auth_token(user_id: int) -> Tuple[str, int]:
     """
     Generates the Auth Token ex
     :param user_id: integer
@@ -21,17 +21,20 @@ def encode_auth_token(user_id: int) -> str:
 
     if current_app.config["TESTING"]:
         expire = now + timedelta(seconds=5)
+        expire_in = 5
     else:
         token_age_h = current_app.config.get("TOKEN_EXPIRE_HOURS")
         token_age_m = current_app.config.get("TOKEN_EXPIRE_MINUTES")
         expire = now + timedelta(hours=token_age_h, minutes=token_age_m)
+        expire_in = token_age_h * 3600 + token_age_m * 60
 
     payload = dict(exp=expire, iat=now, sub=user_id)
     key = current_app.config.get("SECRET_KEY")
-    return jwt.encode(payload, key, algorithm="HS256")
+
+    return jwt.encode(payload, key, algorithm="HS256"), expire_in
 
 
-def decode_auth_token(auth_token: str) -> Union[str, int]:
+def decode_auth_token(auth_token: str) -> int:
     """
     Decodes the auth token
     :param auth_token: string : JWT
@@ -39,124 +42,64 @@ def decode_auth_token(auth_token: str) -> Union[str, int]:
     """
     try:
         payload = jwt.decode(auth_token, key=current_app.config.get("SECRET_KEY"), algorithms=['HS256'])
-        is_blacklisted_token = check_blacklist(auth_token)
-        if is_blacklisted_token:
-            return 'Token blacklisted. Please log in again.'
-        else:
+        if not check_blacklist(auth_token):
             return payload['sub']
+        raise Unauthorized('Token blacklisted. Please log in again.')
     except jwt.ExpiredSignatureError:
-        return 'Signature expired. Please log in again.'
+        raise Unauthorized('Signature expired. Please log in again.')
     except jwt.InvalidTokenError:
-        return 'Invalid token. Please log in again.'
+        raise Unauthorized('Invalid token. Please log in again.')
 
 
-def login_user(data: Dict[str, str]) -> Tuple[Dict[str, str], int]:
+def login_user(email: str, password: str) -> Dict[str, str]:
     """
         Login by user's email
-        :param data:
+        :param email: str
+        :param password: str
         :return: object, integer: Object message and http's status
     """
-    try:
-        # fetch the user data
-        user = User.query.filter_by(email=data.get('email')).first()
-        if user and user.check_password(data.get('password')):
-            auth_token = encode_auth_token(user.id)
-            if auth_token:
-                response_object = {
-                    'status': 'success',
-                    'message': 'Successfully logged in.',
-                    'Authorization': auth_token
-                }
-                return response_object, HTTPStatus.OK
-        else:
-            response_object = {
-                'status': 'fail',
-                'message': 'email or password does not match.'
-            }
-            return response_object, HTTPStatus.UNAUTHORIZED
-
-    except Exception as e:
-        response_object = {
-            'status': 'fail',
-            'message': 'Try again'
-        }
-        return response_object, HTTPStatus.INTERNAL_SERVER_ERROR
+    # fetch the user data
+    user = User.query.filter_by(email=email).first()
+    if user and user.check_password(password):
+        auth_token, expire = encode_auth_token(user.id)
+        response_object = dict(
+            message='Successfully logged in.',
+            authorization=auth_token,
+            token_type='Bearer',
+            token_expires_in=expire
+        )
+        return response_object
+    raise Unauthorized('email or password does not match.')
 
 
-def logout_user(new_request) -> Tuple[Dict[str, str], int]:
+def logout_user() -> str:
     """
        Logout account
-       :param new_request
-       :return: object, integer: Object message and http's status
+       :return: object: Object message
     """
-    auth_header = new_request.headers.get('Authorization')
-    if auth_header:
-        try:
-            auth_token = auth_header.split(" ")[1]
-        except IndexError:
-            responseObject = {
-                'status': 'fail',
-                'message': 'Bearer token malformed.'
-            }
-            return responseObject, HTTPStatus.UNAUTHORIZED
-    else:
-        auth_token = ''
+    auth_token = _get_auth_token()
 
-    if auth_token:
-        resp = decode_auth_token(auth_token)
-        if not isinstance(resp, str):
-            # mark the token as blacklisted
-            return save_token_into_blacklist(token=auth_token)
-        else:
-            response_object = {
-                'status': 'fail',
-                'message': resp
-            }
-            return response_object, HTTPStatus.UNAUTHORIZED
-    else:
-        response_object = {
-            'status': 'fail',
-            'message': 'Provide a valid auth token.'
-        }
-        return response_object, HTTPStatus.FORBIDDEN
+    # mark the token as blacklisted
+    return save_token_into_blacklist(token=auth_token)
 
 
-def get_logged_in_user(new_request) -> Tuple[Dict[str, Union[str, int]], int]:
+def get_logged_in_user() -> int:
     """
        Login by user's email
-       :param new_request:
-       :return: object, integer: Object message and http's status
+       :return: object: Object message
     """
     # get the auth token
-    auth_header = new_request.headers.get('Authorization')
-    if auth_header:
-        try:
-            auth_token = auth_header.split(" ")[1]
-        except IndexError:
-            responseObject = {
-                'status': 'fail',
-                'message': 'Bearer token malformed.'
-            }
-            return responseObject, HTTPStatus.UNAUTHORIZED
-    else:
-        auth_token = ''
+    auth_token = _get_auth_token()
+    return decode_auth_token(auth_token)
 
-    if auth_token:
-        resp = decode_auth_token(auth_token)
-        if not isinstance(resp, str):
-            response_object = {
-                'status': 'success',
-                'user_id': resp
-            }
-            return response_object, HTTPStatus.OK
-        response_object = {
-            'status': 'fail',
-            'message': resp
-        }
-        return response_object, HTTPStatus.UNAUTHORIZED
-    else:
-        response_object = {
-            'status': 'fail',
-            'message': 'Provide a valid auth token.'
-        }
-        return response_object, HTTPStatus.UNAUTHORIZED
+
+def _get_auth_token() -> str:
+    auth_header = request.headers.get('Authorization')
+    if not auth_header:
+        raise Forbidden('Provide a valid auth token.')
+    if not auth_header.startswith('Bearer '):
+        raise Unauthorized('Bearer token malformed.')
+    auth_token = auth_header.split(" ")[1]
+    if not auth_token:
+        raise Forbidden('Provide a valid auth token.')
+    return auth_token
