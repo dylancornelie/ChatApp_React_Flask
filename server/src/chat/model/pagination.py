@@ -1,3 +1,5 @@
+"""Class definition for Pagination."""
+
 from typing import List
 
 

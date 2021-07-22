@@ -12,6 +12,7 @@ class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'my_secret_key')
     DEBUG = False
     ERROR_404_HELP = False
+    RESTX_MASK_SWAGGER=False
     TOKEN_EXPIRE_HOURS = int (os.getenv('TOKEN_EXPIRE_HOURS', '0'))
     TOKEN_EXPIRE_MINUTES = int (os.getenv('TOKEN_EXPIRE_MINUTES', '0'))
 

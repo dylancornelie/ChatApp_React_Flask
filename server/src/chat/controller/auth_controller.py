@@ -1,3 +1,5 @@
+"""API endpoint definitions for /auth namespace."""
+
 import http
 
 from flask import request

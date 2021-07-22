@@ -1,3 +1,5 @@
+"""Service logic for user """
+
 from http import HTTPStatus
 from typing import Dict, Tuple
 

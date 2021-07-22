@@ -1,3 +1,5 @@
+"""API endpoint definitions for /user namespace."""
+
 from http import HTTPStatus
 
 from flask import request
