@@ -1,3 +1,5 @@
+"""Class definition for User model."""
+
 from src.chat import db, flask_bcrypt
 
 

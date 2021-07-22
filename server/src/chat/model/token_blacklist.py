@@ -1,3 +1,5 @@
+"""Class definition for BlacklistedToken."""
+
 from src.chat import db
 
 

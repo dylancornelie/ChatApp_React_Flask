@@ -1,3 +1,5 @@
+"""Config settings for for development, testing and production environments."""
+
 import os
 
 # uncomment the line below for postgres database url from environment variable
@@ -10,6 +12,8 @@ class Config:
     SECRET_KEY = os.getenv('SECRET_KEY', 'my_secret_key')
     DEBUG = False
     ERROR_404_HELP = False
+    TOKEN_EXPIRE_HOURS = int (os.getenv('TOKEN_EXPIRE_HOURS', '0'))
+    TOKEN_EXPIRE_MINUTES = int (os.getenv('TOKEN_EXPIRE_MINUTES', '0'))
 
 
 class DevelopmentConfig(Config):
@@ -18,6 +22,7 @@ class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, '../../flask_chat_main.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    TOKEN_EXPIRE_MINUTES = int (os.getenv('TOKEN_EXPIRE_MINUTES', '10'))
 
 
 class TestingConfig(Config):
@@ -32,6 +37,7 @@ class ProductionConfig(Config):
     DEBUG = False
     # uncomment the line below to use postgres
     # SQLALCHEMY_DATABASE_URI = postgres_local_base
+    TOKEN_EXPIRE_HOURS = int(os.getenv('TOKEN_EXPIRE_HOURS', '24'))
 
 
 config_by_name = dict(
@@ -39,5 +45,3 @@ config_by_name = dict(
     production=ProductionConfig,
     test=TestingConfig,
 )
-
-key = Config.SECRET_KEY

@@ -2,7 +2,7 @@ from http import HTTPStatus
 from typing import Dict, Tuple
 
 from src.chat import db
-from src.chat.model.blacklist import BlacklistedToken
+from src.chat.model.token_blacklist import BlacklistedToken
 
 
 def save_token_into_blacklist(token: str) -> Tuple[Dict[str, str], int]:

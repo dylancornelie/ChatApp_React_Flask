@@ -1,10 +1,12 @@
-import datetime
+"""Service logic for auth """
+
+from datetime import datetime, timezone, timedelta
+import jwt
+
+from flask import current_app
 from http import HTTPStatus
 from typing import Dict, Tuple, Union
 
-import jwt
-
-from src.chat.config import key
 from src.chat.model.user import User
 from src.chat.service.blacklist_service import save_token_into_blacklist, check_blacklist
 
@@ -15,19 +17,18 @@ def encode_auth_token(user_id: int) -> str:
     :param user_id: integer
     :return: string: JWT
     """
-    try:
-        payload = {
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1, seconds=5),
-            'iat': datetime.datetime.utcnow(),
-            'sub': user_id
-        }
-        return jwt.encode(
-            payload,
-            key,
-            algorithm='HS256'
-        )
-    except Exception as e:
-        raise e
+    now = datetime.now(timezone.utc)
+
+    if current_app.config["TESTING"]:
+        expire = now + timedelta(seconds=5)
+    else:
+        token_age_h = current_app.config.get("TOKEN_EXPIRE_HOURS")
+        token_age_m = current_app.config.get("TOKEN_EXPIRE_MINUTES")
+        expire = now + timedelta(hours=token_age_h, minutes=token_age_m)
+
+    payload = dict(exp=expire, iat=now, sub=user_id)
+    key = current_app.config.get("SECRET_KEY")
+    return jwt.encode(payload, key, algorithm="HS256")
 
 
 def decode_auth_token(auth_token: str) -> Union[str, int]:
@@ -37,7 +38,7 @@ def decode_auth_token(auth_token: str) -> Union[str, int]:
     :return: integer|string: User's ID or Error message
     """
     try:
-        payload = jwt.decode(auth_token, key, algorithms=['HS256'])
+        payload = jwt.decode(auth_token, key=current_app.config.get("SECRET_KEY"), algorithms=['HS256'])
         is_blacklisted_token = check_blacklist(auth_token)
         if is_blacklisted_token:
             return 'Token blacklisted. Please log in again.'
@@ -120,7 +121,7 @@ def logout_user(new_request) -> Tuple[Dict[str, str], int]:
         return response_object, HTTPStatus.FORBIDDEN
 
 
-def get_logged_in_user(new_request) -> Tuple[Dict[str, Union[str,int]], int]:
+def get_logged_in_user(new_request) -> Tuple[Dict[str, Union[str, int]], int]:
     """
        Login by user's email
        :param new_request:

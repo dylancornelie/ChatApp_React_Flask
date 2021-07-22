@@ -15,10 +15,10 @@ _user_post = UserDto.user_post
 
 @api.route('/')
 class List(Resource):
-    # @token_required
+    @token_required
     @api.doc('list_of_registered_users', params=params)
     @api.marshal_list_with(_user_list)
-    def get(self):
+    def get(self, current_user_id):
         """List all registered users"""
         return get_all_users()
 

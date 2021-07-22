@@ -6,7 +6,7 @@ import click
 
 from dotenv import load_dotenv
 from src.chat import create_app, db
-from src.chat.model import user, blacklist
+from src.chat.model import user, token_blacklist
 
 load_dotenv()  # take environment variables from .env.
 
@@ -18,7 +18,7 @@ def shell():
     return {
         "db": db,
         "User": user.User,
-        "BlacklistToken": blacklist.BlacklistedToken,
+        "BlacklistedToken": token_blacklist.BlacklistedToken,
     }
 
 
