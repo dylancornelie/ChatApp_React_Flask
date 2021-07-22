@@ -1,0 +1,21 @@
+.chat-header {
+    background-color: $primary-color;
+    height: 8rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 10px 10px 20px;
+  
+    p {
+      font-size: 2rem;
+      font-weight: bolder;
+    }
+  
+    svg {
+      cursor: pointer;
+  
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+  }

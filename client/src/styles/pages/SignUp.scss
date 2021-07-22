@@ -1,0 +1,14 @@
+.signup-grid-form {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  max-width: 525px;
+
+  @media(min-width: $breakpoint-tablet) {
+    justify-content: space-between;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+}

@@ -14,6 +14,7 @@ const ParticipantList = () => {
     let scrollLeft = null;
 
     const setIsDown = (statut) => (isDown = statut);
+
     const mouseDownHandler = (e) => {
       startX = e.pageX - participantList.offsetLeft;
       scrollLeft = participantList.scrollLeft;
@@ -44,15 +45,14 @@ const ParticipantList = () => {
 
   return (
     <div className='chat-participant-list'>
-      <div style={{marginBottom:'2rem'}}>
-      <div className='chat-participant-item'>
+      <div className='chat-participant-item 'id='add-logo'>
         <IoAdd
-          size='45'
+        style={{height:'100%', width:'auto', maxHeight:'7rem'}}
+
           color='#4f6d7a'
           className='chat-participant-item-add-logo'
           onClick={() => dispatch(showAddParticipant())}
         />
-      </div>
       </div>
       <ParticipantItem />
       <ParticipantItem />

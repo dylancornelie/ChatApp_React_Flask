@@ -7,7 +7,7 @@ const MessageList = () => {
 
   const scrollToBottom = () => {
     messageEnd.current.scrollIntoView({
-      behavior: 'smooth',
+      behavior: 'instant',
       block: 'end',
       inline: 'nearest',
     });
@@ -20,7 +20,7 @@ const MessageList = () => {
       setTimeout(function () {
         scrollToBottom();
         setToBottom(true);
-      }, 100);
+      }, 10);
     }
 
     

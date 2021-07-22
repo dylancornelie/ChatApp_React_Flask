@@ -1,6 +1,6 @@
 {
-  "name": "Chat App PWA",
-  "short_name": "ChApp",
+  "name": "Chat App",
+  "short_name": "Chat App",
   "description":"A chat app to enhance your meeting",
   "start_url": "/index.html",
   "display": "standalone",

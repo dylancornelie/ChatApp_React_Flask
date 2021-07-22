@@ -1,5 +1,7 @@
+/*
+
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
+window.addEventListener('load', () => {
     navigator.serviceWorker
       .register('./serviceWorker.js')
 
@@ -7,3 +9,5 @@ if ('serviceWorker' in navigator) {
       .catch((err) => console.log(`Failure ${err}`));
   });
 }
+
+*/

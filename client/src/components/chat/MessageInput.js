@@ -10,7 +10,6 @@ const MessageInput = () => {
   const chatState = useSelector((state) => state.chatReducer);
   const dispatch = useDispatch();
 
-
   function calcHeight(value) {
     const numberOfLineBreaks = (value.match(/\n/g) || []).length;
     if (numberOfLineBreaks > 5) return 25 + 5 * 20 + 0 + 0;
@@ -20,15 +19,19 @@ const MessageInput = () => {
     return newHeight;
   }
 
+  const handleSendMessage = () => {};
+
   const [height, setHeight] = useState(25);
   const [message, setMessage] = useState('');
   const [file, setFile] = useState(null);
 
   return (
     <div className='messageInput-container'>
-      {!isEmpty(chatState.messageReceiver) && (
+      {!isEmpty(chatState.messageReceiver) && isEmpty(file) && (
         <div className='messageInput-infobox'>
-          <p>This message will be sent to</p>
+          <p className='messageInput-infobox-message'>
+            This message will be sent to
+          </p>
           <IoAdd
             className='messageInput-infobox-logo'
             size='20'
@@ -36,19 +39,47 @@ const MessageInput = () => {
           />
         </div>
       )}
+      {!isEmpty(file) && isEmpty(chatState.messageReceiver) && (
+        <div className='messageInput-infobox'>
+          <p className='messageInput-infobox-message'>
+            Attached file : {file[0].name}
+          </p>
+          <IoAdd
+            className='messageInput-infobox-logo'
+            size='20'
+            onClick={() => setFile(null)}
+          />
+        </div>
+      )}
+      {!isEmpty(file) && !isEmpty(chatState.messageReceiver) && (
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div className='messageInput-infobox' style={{ borderRadius: '0' }}>
+            <p className='messageInput-infobox-message'>
+              Attached file : {file[0].name}
+            </p>
+            <IoAdd
+              className='messageInput-infobox-logo'
+              size='20'
+              onClick={() => setFile(null)}
+            />
+          </div>
+          <div className='messageInput-infobox' style={{ top: '-62px' }}>
+            <p className='messageInput-infobox-message'>
+              This message will be sent to {chatState.messageReceiver}
+            </p>
+            <IoAdd
+              className='messageInput-infobox-logo'
+              size='20'
+              onClick={() => dispatch(setMessageReceiver(''))}
+            />
+          </div>
+        </div>
+      )}
       <div className='left-logo-container'>
         {isEmpty(file) ? (
           <>
             <label htmlFor='file-input'>
-              <FiPaperclip
-                className='logo'
-                size='30'
-                color='#4F6D7A'
-                style={{
-                  margin:
-                    height / 2 - 7 + 'px 0px ' + (height / 2 - 7) + 'px 0px',
-                }}
-              />
+              <FiPaperclip className='logo' size='30' color='#4F6D7A' />
             </label>
 
             <input
@@ -63,9 +94,6 @@ const MessageInput = () => {
             size='30'
             color='#4F6D7A'
             className='logo'
-            style={{
-              margin: height / 2 - 7 + 'px 0px ' + (height / 2 - 7) + 'px 0px',
-            }}
             onClick={() => setFile(undefined)}
           />
         )}
@@ -77,32 +105,18 @@ const MessageInput = () => {
         }}
         className='messageInput'
         onKeyUp={(event) => {
-          //event.target.style.height = calcHeight(event.target.value) + 'px';
           calcHeight(event.target.value);
         }}
         onKeyPress={(event) => {
-          if (event.key === 'Enter' && !event.shiftKey) {
-            //event.preventDefault();
-            console.log('sending message...');
-          }
+          event.key === 'Enter' && !event.shiftKey && handleSendMessage();
         }}
         onChange={(e) => {
           setMessage(e.target.value);
         }}
         value={message}
       ></textarea>
-      <div
-        className='right-logo-container'
-        onClick={() => console.log('sending message...')}
-      >
-        <IoSend
-          size='30'
-          color='#4F6D7A'
-          className='logo'
-          style={{
-            margin: height / 2 - 7 + 'px 0px ' + (height / 2 - 7) + 'px 0px',
-          }}
-        />
+      <div className='right-logo-container' onClick={() => handleSendMessage()}>
+        <IoSend size='30' color='#4F6D7A' className='logo' />
       </div>
     </div>
   );

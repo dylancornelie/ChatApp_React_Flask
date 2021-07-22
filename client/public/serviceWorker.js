@@ -1,5 +1,6 @@
 const CACHE_NAME = 'cache-v1';
-const urlsToCache = ['/', '/index.html', 'offline.html'];
+const urlsToCache = ['/', '/index.html'];
+//Ajouter les fichiers dans static pour le déploiement
 
 // self = service worker
 const self = this;

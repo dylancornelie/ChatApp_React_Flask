@@ -22,7 +22,7 @@ export const checkUrl = (message) => {
 
 export const extractUrl = (message) => {
   if (isEmpty(message)) return undefined;
-  
+
   return message.match(
     new RegExp(
       /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/,
@@ -32,7 +32,6 @@ export const extractUrl = (message) => {
 };
 
 export const addAnchorTag = (message) => {
-  
   if (!checkUrl(message)) return message;
 
   const links = extractUrl(message);
@@ -41,7 +40,7 @@ export const addAnchorTag = (message) => {
     const position = message.search(link);
     message =
       message.slice(0, position) +
-      `<a href='${link}' target='_blank'>` +
+      `<a href='${link}' target='_blank' rel='nofollow, noreferrer, noopener'>` +
       message.slice(position, position + link.length) +
       `</a>` +
       message.slice(position + link.length);

@@ -8,10 +8,15 @@ const AddParticipantPopUp = () => {
   const [showQrCode, setShowQrCode] = useState(false);
   const [addByLogin, setAddByLogin] = useState(false);
 
+  const handleAddByLogin = () => {
+    console.log('adding the guy...')
+  }
+  
   const viewWidth = Math.max(
     document.documentElement.clientWidth || 0,
     window.innerWidth || 0
   );
+  
   const viewHeight = Math.max(
     document.documentElement.clientHeight || 0,
     window.innerHeight || 0
@@ -25,7 +30,7 @@ const AddParticipantPopUp = () => {
       {showQrCode ? (
         <QRCode
           className='qrcode'
-          value='heek yeaah'
+          value='youhou ça fonctionne ! :)'
           size={
             viewWidth * 0.8 > viewHeight * 0.7
               ? viewHeight * 0.7
@@ -33,24 +38,29 @@ const AddParticipantPopUp = () => {
           }
         />
       ) : (
-        <div
-          className='context-menu-button-container'
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        >
+        <>
           {addByLogin ? (
-            <div className='addbylogin-modal'>
+            <div
+              className='addbylogin-modal'
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
               <input type='text' placeholder='login' />
               <div className='addbylogin-button-container'>
                 <button onClick={() => setAddByLogin(!addByLogin)}>
                   Cancel
                 </button>
-                <button>Add</button>
+                <button onClick={()=>handleAddByLogin()}>Add</button>
               </div>
             </div>
           ) : (
-            <>
+            <div
+              className='context-menu-button-container'
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
               <button
                 className='context-menu-button'
                 onClick={() => setShowQrCode(!showQrCode)}
@@ -63,9 +73,9 @@ const AddParticipantPopUp = () => {
               >
                 Add by login
               </button>
-            </>
+            </div>
           )}
-        </div>
+        </>
       )}
     </div>
   );
