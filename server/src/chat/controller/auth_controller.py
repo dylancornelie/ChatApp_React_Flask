@@ -1,15 +1,13 @@
 """API endpoint definitions for /auth namespace."""
 
-import http
+from http import HTTPStatus
 
 from flask import request
 from flask_restx import Resource
 
+from src.chat.dto.auth_dto import api, auth_login, auth_resp
 from src.chat.service.auth_service import login_user, logout_user
-from src.chat.util.dto import AuthDto
-
-api = AuthDto.api
-user_auth = AuthDto.user_auth
+from src.chat.util.decorator import token_required
 
 
 @api.route('/login')
@@ -17,13 +15,17 @@ class Login(Resource):
     """
         User Login Resource
     """
-    @api.doc('user login')
-    @api.expect(user_auth, validate=True)
-    @api.response(http.HTTPStatus.OK.numerator, 'Successfully logged in.')
-    @api.response(http.HTTPStatus.UNAUTHORIZED.numerator, 'Email or password does not match.')
+
+    @api.doc('Login')
+    @api.expect(auth_login, validate=True)
+    @api.response(int(HTTPStatus.OK), 'Successfully logged in.', auth_resp)
+    @api.response(int(HTTPStatus.UNAUTHORIZED), "Email or password does not match")
+    @api.response(int(HTTPStatus.BAD_REQUEST), "Validation error.")
+    @api.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), "Internal server error.")
     def post(self):
         # get the post data
-        return login_user(data=request.json)
+        data = request.json
+        return login_user(email=data['email'], password=data['password'])
 
 
 @api.route('/logout')
@@ -31,10 +33,12 @@ class Logout(Resource):
     """
     Logout Resource
     """
-    @api.doc('logout a user')
-    @api.response(http.HTTPStatus.OK.numerator, 'Successfully logged out.')
-    @api.response(http.HTTPStatus.INTERNAL_SERVER_ERROR.numerator, 'Error internal server.')
-    @api.response(http.HTTPStatus.UNAUTHORIZED.numerator, 'Unauthorized.')
-    @api.response(http.HTTPStatus.FORBIDDEN.numerator, 'Provide a valid auth token.')
+
+    @token_required
+    @api.doc('Logout a user', security='Bearer')
+    @api.response(int(HTTPStatus.OK), 'Successfully logged out.')
+    @api.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), 'Error internal server.')
+    @api.response(int(HTTPStatus.UNAUTHORIZED), 'Unauthorized.')
+    @api.response(int(HTTPStatus.FORBIDDEN), 'Provide a valid auth token.')
     def get(self):
-        return logout_user(request)
+        return logout_user()

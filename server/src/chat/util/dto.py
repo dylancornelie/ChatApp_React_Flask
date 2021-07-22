@@ -58,11 +58,3 @@ class UserDto:
         'last_name': fields.String(description="user's last name"),
     })
     user_list = api.model('user_list', model=_list_model(user_item))
-
-
-class AuthDto:
-    api = Namespace('auth', description='authentication related operations')
-    user_auth = api.model('auth_details', {
-        'email': fields.String(required=True, description='the email address'),
-        'password': fields.String(required=True, description='the user password '),
-    })

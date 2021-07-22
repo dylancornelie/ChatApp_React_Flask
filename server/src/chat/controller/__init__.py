@@ -20,7 +20,6 @@ api_v1 = Api(api_bp,
              version='1.0',
              description='A chat systems for flask restx web service',
              authorizations=authorizations,
-             security='Bearer',
              )
 
 api_v1.add_namespace(auth_ns)
