@@ -1,5 +1,3 @@
-import uuid
-
 from src.chat import db, flask_bcrypt
 
 

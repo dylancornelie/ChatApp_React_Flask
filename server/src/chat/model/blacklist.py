@@ -1,13 +1,11 @@
-import datetime
-
 from src.chat import db
 
 
-class BlacklistToken(db.Model):
+class BlacklistedToken(db.Model):
     """
     Token Model for storing JWT tokens
     """
-    __tablename__ = 'blacklist_tokens'
+    __tablename__ = 'blacklisted_tokens'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     token = db.Column(db.String(500), unique=True, nullable=False)

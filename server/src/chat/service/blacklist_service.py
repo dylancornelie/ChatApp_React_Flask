@@ -2,11 +2,11 @@ from http import HTTPStatus
 from typing import Dict, Tuple
 
 from src.chat import db
-from src.chat.model.blacklist import BlacklistToken
+from src.chat.model.blacklist import BlacklistedToken
 
 
 def save_token_into_blacklist(token: str) -> Tuple[Dict[str, str], int]:
-    blacklist_token = BlacklistToken(token=token)
+    blacklist_token = BlacklistedToken(token=token)
     try:
         # insert the token
         db.session.add(blacklist_token)
@@ -26,4 +26,4 @@ def save_token_into_blacklist(token: str) -> Tuple[Dict[str, str], int]:
 
 def check_blacklist(auth_token) -> bool:
     # check whether auth token has been blacklisted
-    return BlacklistToken.query.filter_by(token=str(auth_token)).first() is not None
+    return BlacklistedToken.query.filter_by(token=str(auth_token)).first() is not None

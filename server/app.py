@@ -1,18 +1,25 @@
+"""Flask CLI/Application entry point."""
+
 import os
 import unittest
 import click
 
 from dotenv import load_dotenv
-from src.chat import create_app
-from src import blueprint
+from src.chat import create_app, db
 from src.chat.model import user, blacklist
 
 load_dotenv()  # take environment variables from .env.
 
 app = create_app(os.getenv('APP_ENV') or 'development')
-app.register_blueprint(blueprint)
 
-app.app_context().push()
+
+@app.shell_context_processor
+def shell():
+    return {
+        "db": db,
+        "User": user.User,
+        "BlacklistToken": blacklist.BlacklistedToken,
+    }
 
 
 @app.cli.command('test')
@@ -40,7 +47,7 @@ def seed(n):
     db.session.commit()
 
     # Fake data
-    Faker.seed(n+10)
+    Faker.seed(n + 10)
     for _ in range(n):
         fake_user = user.User(
             email=fake.unique.email(),
