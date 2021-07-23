@@ -4,8 +4,8 @@ from datetime import datetime, timezone, timedelta
 from typing import Dict, Tuple
 
 import jwt
-from flask import current_app, request
-from werkzeug.exceptions import Unauthorized, Forbidden
+from flask import current_app
+from werkzeug.exceptions import Unauthorized
 
 from src.chat.model.user import User
 from src.chat.service.blacklist_service import save_token_into_blacklist, check_blacklist
@@ -15,7 +15,7 @@ def encode_auth_token(user_id: int) -> Tuple[str, int]:
     """
     Generates the Auth Token ex
     :param user_id: integer
-    :return: string: JWT
+    :return: string, int: JWT and expire_in
     """
     now = datetime.now(timezone.utc)
 
@@ -44,19 +44,19 @@ def decode_auth_token(auth_token: str) -> int:
         payload = jwt.decode(auth_token, key=current_app.config.get("SECRET_KEY"), algorithms=['HS256'])
         if not check_blacklist(auth_token):
             return payload['sub']
-        raise Unauthorized('Token blacklisted. Please log in again.')
+        raise Unauthorized('Token was removed. Please log in again.')
     except jwt.ExpiredSignatureError:
         raise Unauthorized('Signature expired. Please log in again.')
     except jwt.InvalidTokenError:
         raise Unauthorized('Invalid token. Please log in again.')
 
 
-def login_user(email: str, password: str) -> Dict[str, str]:
+def login_user(email: str, password: str) -> Dict:
     """
         Login by user's email
         :param email: str
         :param password: str
-        :return: object, integer: Object message and http's status
+        :return: object: Object message JWT
     """
     # fetch the user data
     user = User.query.filter_by(email=email).first()
@@ -72,34 +72,33 @@ def login_user(email: str, password: str) -> Dict[str, str]:
     raise Unauthorized('email or password does not match.')
 
 
-def logout_user() -> str:
+def logout_user(auth_token: str) -> Dict:
     """
        Logout account
+       :param auth_token: str
        :return: object: Object message
     """
-    auth_token = _get_auth_token()
 
     # mark the token as blacklisted
-    return save_token_into_blacklist(token=auth_token)
+    message = save_token_into_blacklist(token=auth_token)
+    response_object = dict(
+        message=message,
+    )
+    return response_object
 
 
-def get_logged_in_user() -> int:
+def refresh_token(current_user_id: int) -> Dict:
     """
-       Login by user's email
-       :return: object: Object message
+        Refresh token
+        :param current_user_id: str
+        :return: Dict: Object message JWT
     """
-    # get the auth token
-    auth_token = _get_auth_token()
-    return decode_auth_token(auth_token)
 
-
-def _get_auth_token() -> str:
-    auth_header = request.headers.get('Authorization')
-    if not auth_header:
-        raise Forbidden('Provide a valid auth token.')
-    if not auth_header.startswith('Bearer '):
-        raise Unauthorized('Bearer token malformed.')
-    auth_token = auth_header.split(" ")[1]
-    if not auth_token:
-        raise Forbidden('Provide a valid auth token.')
-    return auth_token
+    auth_token, expire = encode_auth_token(current_user_id)
+    response_object = dict(
+        message='Successfully refresh token.',
+        authorization=auth_token,
+        token_type='Bearer',
+        token_expires_in=expire
+    )
+    return response_object

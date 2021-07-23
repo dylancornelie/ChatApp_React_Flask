@@ -6,7 +6,7 @@ from flask import request
 from flask_restx import Resource
 
 from src.chat.dto.auth_dto import api, auth_login, auth_resp
-from src.chat.service.auth_service import login_user, logout_user
+from src.chat.service.auth_service import login_user, logout_user, refresh_token
 from src.chat.util.decorator import token_required
 
 
@@ -41,4 +41,21 @@ class Logout(Resource):
     @api.response(int(HTTPStatus.UNAUTHORIZED), 'Unauthorized.')
     @api.response(int(HTTPStatus.FORBIDDEN), 'Provide a valid auth token.')
     def get(self):
-        return logout_user()
+        return logout_user(self.get.auth_token)
+
+
+@api.route('/refresh-token')
+class RefreshToken(Resource):
+    """
+    Refresh Resource
+    """
+
+    @token_required
+    @api.doc('Refresh token', security='Bearer')
+    @api.response(int(HTTPStatus.OK), 'Successfully refresh.', auth_resp)
+    @api.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), 'Error internal server.')
+    @api.response(int(HTTPStatus.UNAUTHORIZED), 'Unauthorized.')
+    @api.response(int(HTTPStatus.FORBIDDEN), 'Provide a valid auth token.')
+    def get(self):
+        logout_user(self.get.auth_token)
+        return refresh_token(self.get.current_user_id)
