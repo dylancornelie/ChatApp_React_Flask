@@ -6,8 +6,8 @@ from flask import request
 from flask_restx import Resource
 
 from src.chat.dto.auth_dto import auth_resp
-from src.chat.dto.user_dto import api, user_item, user_list, user_post, user_params
-from src.chat.service.user_service import save_new_user, get_all_users, get_a_user
+from src.chat.dto.user_dto import api, user_item, user_list, user_post, user_params, user_put
+from src.chat.service.user_service import save_new_user, get_all_users, get_a_user, update_a_user
 from src.chat.util.decorator import token_required
 
 
@@ -45,7 +45,16 @@ class Me(Resource):
     """
 
     @token_required
-    @api.doc('Get me', security='Bearer')
+    @api.doc('Get my profile', security='Bearer')
     @api.marshal_with(user_item)
     def get(self):
         return get_a_user(self.get.current_user_id)
+
+    @token_required
+    @api.doc('Edit my profile', security='Bearer')
+    @api.expect(user_put, validate=True)
+    @api.marshal_with(user_item)
+    def put(self):
+        """Get d ata from json"""
+        data = request.json
+        return update_a_user(self.get.current_user_id, data)

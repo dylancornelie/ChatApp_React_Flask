@@ -29,6 +29,26 @@ user_post = api.schema_model('User_Post', {
     'type': 'object',
 })
 
+user_put = api.schema_model('User_Put', {
+    'required': ['email', 'username', 'first_name', 'last_name'],
+    'properties': {
+        'email': {
+            'type': 'string',
+            'format': 'email',
+        },
+        'username': {
+            'type': 'string',
+        },
+        'first_name': {
+            'type': 'string',
+        },
+        'last_name': {
+            'type': 'string',
+        },
+    },
+    'type': 'object',
+})
+
 user_item = api.model('User_Item', {
     'id': fields.Integer(description="user's identifier"),
     'email': fields.String(description='user email address'),

@@ -3,8 +3,10 @@
 from http import HTTPStatus
 from typing import Dict, Tuple
 
-from werkzeug.exceptions import Conflict
+from flask import current_app
+from werkzeug.exceptions import Conflict, InternalServerError
 
+from src.chat import db
 from src.chat.model.pagination import Pagination
 from src.chat.model.user import User
 from src.chat.service import save_data
@@ -32,15 +34,30 @@ def get_all_users(filter_by) -> Pagination:
 
     if filter_by:
         query = query.filter((User.username.like(f'%{filter_by}%'))
-                                  | (User.first_name.like(f'%{filter_by}%'))
-                                  | (User.last_name.like(f'%{filter_by}%'))
-                                  )
+                             | (User.first_name.like(f'%{filter_by}%'))
+                             | (User.last_name.like(f'%{filter_by}%'))
+                             )
 
     return paginate(query)
 
 
-def get_a_user(id) -> User:
+def get_a_user(id: int) -> User:
     return User.query.filter_by(id=id).first()
+
+
+def update_a_user(id: int, new_data) -> User:
+    user = User.query.filter_by(id=id).first_or_404()
+
+    try:
+        for k, v in new_data.items():
+            setattr(user, k, v)
+        db.session.commit()
+        return user
+
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(str(e), exc_info=True)
+        raise InternalServerError("The server encountered an internal error and was unable to save your data.")
 
 
 def _generate_token(user: User):
