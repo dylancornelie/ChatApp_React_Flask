@@ -12,3 +12,6 @@
 - Initial database: `flask db init`
 - Generate an initial migration: `flask db migrate -m "Initial migration."`
 - Migration: `flask db upgrade`
+
+# Server email
+- Flask-Mailman [here](https://www.waynerv.com/flask-mailman/)

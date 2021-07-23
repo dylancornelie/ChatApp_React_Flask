@@ -6,9 +6,9 @@ from flask import request
 from flask_restx import Resource
 
 from src.chat.dto.auth_dto import auth_resp
-from src.chat.dto.user_dto import api, user_item, user_list, user_post, user_params, user_put, user_password
-from src.chat.service.user_service import save_new_user, get_all_users, get_a_user, update_a_user, \
-    update_a_user_password
+from src.chat.dto.user_dto import (api, user_item, user_list, user_post, user_params, user_put, user_password)
+from src.chat.service.user_service import (save_new_user, get_all_users, get_a_user, update_a_user,
+                                           update_a_user_password, update_forget_password)
 from src.chat.util.decorator import token_required
 
 
@@ -80,6 +80,20 @@ class Me_Reset_Password(Resource):
     @api.response(int(HTTPStatus.BAD_REQUEST), 'Error edit my password.')
     @api.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), 'Error saving data.')
     def put(self):
-        """Get d ata from json"""
+        """Get data from json"""
         data = request.json
         return update_a_user_password(self.put.current_user_id, data)
+
+
+@api.route('/me/forget-password')
+class Me_Forget_Password(Resource):
+    """
+        Reset my password
+    """
+
+    @token_required
+    @api.doc('Forgot my password', security='Bearer')
+    @api.response(int(HTTPStatus.OK), 'Successfully send new password.')
+    @api.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), 'Error saving data.')
+    def get(self):
+        return update_forget_password(self.get.current_user_id)
