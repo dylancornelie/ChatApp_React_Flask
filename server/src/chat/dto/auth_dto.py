@@ -32,7 +32,7 @@ auth_resp = api.schema_model('Auth_Resp', {
             'type': 'string',
             'title': 'An type-token'
         },
-        'expires_in': {
+        'token_expires_in': {
             'type': 'integer',
             'title': 'An lifetime in seconds of the Access Token'
         }
