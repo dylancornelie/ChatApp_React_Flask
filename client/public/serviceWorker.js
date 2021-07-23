@@ -1,3 +1,4 @@
+/*
 const CACHE_NAME = 'cache-v1';
 const urlsToCache = ['/', '/index.html'];
 //Ajouter les fichiers dans static pour le déploiement
@@ -55,3 +56,4 @@ self.addEventListener('activate', (event) => {
     })
   );
 });
+*/

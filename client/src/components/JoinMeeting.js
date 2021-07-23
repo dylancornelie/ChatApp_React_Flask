@@ -1,23 +1,25 @@
 import React, { useState } from 'react';
-//import QrReader from 'react-qr-reader';
+import { useHistory } from 'react-router';
 import BarcodeScannerComponent from 'react-qr-barcode-scanner';
 import Banner from './utils/Banner';
-import Header from './utils/HeaderWithArrow';
+import HeaderWithArrow from './utils/HeaderWithArrow';
 
-const JoinChat = () => {
+const JoinMeeting = () => {
+  const history = useHistory();
   const [stopStream, setStopStream] = useState(false);
+
   const handleHeaderArrowClick = () => {
-   
+   history.push('/home')
   }
 
   return (
     <>
-      <Header
-        title={'Join a new chat'}
+      <HeaderWithArrow
+        title={'Join a new meeting'}
         leftIconAction={handleHeaderArrowClick}
       />
-      <main className='joinChat-container'>
-        <Banner title='Scan a QR code to join a chat' />
+      <div className='joinMeeting-container'>
+        <Banner title='Scan a QR code to join a meeting' />
         <BarcodeScannerComponent
           width='70%'
           stopStream={stopStream}
@@ -28,9 +30,9 @@ const JoinChat = () => {
             }
           }}
         />
-      </main>
+      </div>
     </>
   );
 };
 
-export default JoinChat;
+export default JoinMeeting;

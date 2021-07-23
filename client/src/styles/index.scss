@@ -2,6 +2,7 @@ $breakpoint-tablet: 768px;
 $primary-color: #4f6d7a;
 $secondary-color: #dbe9ee;
 $accentuation-color: #166088;
+$fourth-color: #c82c17;
 $background-color: #f8f9fa;
 $box-shadow: 0px 24px 48px 0 hsla(0, 0, 0, 0.15);
 
@@ -32,4 +33,8 @@ body,
 @import './components/chat/ParticipantList.scss';
 @import './pages/SignIn.scss';
 @import './pages/SignUp.scss';
-@import './pages/JoinChat.scss';
+@import './pages/JoinMeeting.scss';
+@import './pages/Home.scss';
+@import './components/home/HomeHeader.scss';
+@import './components/home/MeetingElement.scss';
+@import './components/home/MeetingInfo.scss';

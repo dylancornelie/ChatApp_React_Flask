@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Banner from './utils/Banner';
 
 const SignUp = () => {
@@ -15,9 +16,9 @@ const SignUp = () => {
   const [lastName, setLastName] = useState('');
 
   return (
-    <main className='signin-page'>
+    <div className='signin-page'>
       <Banner title='Create your account' />
-      <form className='signin-form-container' onSubmit={(e) => handleSignUp(e)}>
+      <form className='signin-form-container' onSubmit={handleSignUp}>
         <div className='signup-grid-form'>
           <input
             type='text'
@@ -66,9 +67,10 @@ const SignUp = () => {
       </form>
       <p className='signin-form-infobox'>Error in password</p>
       <p className='signin-form-bottom-link'>
-        <a href='https://google.fr'>Account already exists ?</a>
+      <Link to="/">Account already exists ?</Link>
+
       </p>
-    </main>
+    </div>
   );
 };
 

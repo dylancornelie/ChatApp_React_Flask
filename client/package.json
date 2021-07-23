@@ -16,6 +16,7 @@
     "react-qr-barcode-scanner": "^1.0.6",
     "react-qr-code": "^2.0.0",
     "react-redux": "^7.2.4",
+    "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "redux": "^4.1.0",
     "redux-thunk": "^2.3.0",
