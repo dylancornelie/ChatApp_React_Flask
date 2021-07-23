@@ -27,8 +27,16 @@ def save_new_user(data: Dict[str, str]) -> Tuple[Dict[str, str], int]:
     raise Conflict('User already exists. Please Log in.')
 
 
-def get_all_users() -> Pagination:
-    return paginate(User.query)
+def get_all_users(filter_by) -> Pagination:
+    query = User.query
+
+    if filter_by:
+        query = query.filter((User.username.like(f'%{filter_by}%'))
+                                  | (User.first_name.like(f'%{filter_by}%'))
+                                  | (User.last_name.like(f'%{filter_by}%'))
+                                  )
+
+    return paginate(query)
 
 
 def get_a_user(id) -> User:

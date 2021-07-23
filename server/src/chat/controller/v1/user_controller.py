@@ -5,55 +5,47 @@ from http import HTTPStatus
 from flask import request
 from flask_restx import Resource
 
+from src.chat.dto.auth_dto import auth_resp
+from src.chat.dto.user_dto import api, user_item, user_list, user_post, user_params
 from src.chat.service.user_service import save_new_user, get_all_users, get_a_user
-from src.chat.util.dto import UserDto, params
 from src.chat.util.decorator import token_required
-
-api = UserDto.api
-_user_list = UserDto.user_list
-_user_item = UserDto.user_item
-_user_post = UserDto.user_post
 
 
 @api.route('/')
 class List(Resource):
-    @token_required
-    @api.doc('list_of_registered_users', params=params)
-    @api.marshal_list_with(_user_list)
-    def get(self, current_user_id):
-        """List all registered users"""
-        return get_all_users()
+    """
+       Collection for Users
+    """
 
-    @api.response(HTTPStatus.CREATED.numerator, 'User successfully created.')
-    @api.response(HTTPStatus.CONFLICT.numerator, 'User already exists.')
-    @api.doc('create a new user')
-    @api.expect(_user_post, validate=True)
+    @token_required
+    @api.doc('List_of_registered_users', params=user_params, security='Bearer')
+    @api.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), 'Error internal server.')
+    @api.response(int(HTTPStatus.UNAUTHORIZED), 'Unauthorized.')
+    @api.response(int(HTTPStatus.FORBIDDEN), 'Provide a valid auth token.')
+    @api.marshal_list_with(user_list)
+    def get(self):
+        """List all registered users"""
+        filter_by = request.args.get('filter_by')
+        return get_all_users(filter_by)
+
+    @api.response(int(HTTPStatus.CREATED), 'User successfully created.', auth_resp)
+    @api.response(int(HTTPStatus.CONFLICT), 'User already exists.')
+    @api.doc('Create a new user')
+    @api.expect(user_post, validate=True)
     def post(self):
         """Creates a new User """
         data = request.json
         return save_new_user(data=data)
 
 
-@api.route('/<int:id>')
-@api.param('id', 'The User identifier')
-@api.response(HTTPStatus.NOT_FOUND.numerator, 'User not found.')
-class Item(Resource):
-    @token_required
-    @api.doc('get a user')
-    @api.marshal_with(_user_item)
-    def get(self, current_user_id, id):
-        """get a user given its identifier"""
-        user = get_a_user(id)
-        if not user:
-            api.abort(HTTPStatus.NOT_FOUND, 'user not found')
-        else:
-            return user
-
-
 @api.route('/me')
 class Me(Resource):
+    """
+        My Profile
+    """
+
     @token_required
-    @api.doc('get me')
-    @api.marshal_with(_user_item)
-    def get(self, current_user_id):
-        return get_a_user(current_user_id)
+    @api.doc('Get me', security='Bearer')
+    @api.marshal_with(user_item)
+    def get(self):
+        return get_a_user(self.get.current_user_id)

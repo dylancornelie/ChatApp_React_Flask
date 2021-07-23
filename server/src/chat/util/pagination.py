@@ -3,6 +3,7 @@
 
 from flask import url_for, request
 from flask_sqlalchemy import BaseQuery
+from flask_restx import fields
 
 from src.chat.model.pagination import Pagination
 
@@ -40,3 +41,24 @@ def paginate(query: BaseQuery) -> Pagination:
         prev=prev,
         data=page_obj.items
     )
+
+
+def list_model(data):
+    return {
+        'total': fields.Integer(description='The total number of items'),
+        'pages': fields.Integer(description='The total number of pages'),
+        'has_next': fields.Boolean(description='True if a next page exists'),
+        'has_prev': fields.Boolean(description='True if a previous page exists'),
+        'next': fields.String(description='A pagination for the next page'),
+        'prev': fields.String(description='A pagination object for the previous page'),
+        'data': fields.List(fields.Nested(data), description='The items for the current page'),
+    }
+
+
+params = {
+    'page': {'in': 'query', 'description': 'The current page number', 'default': Pagination.DEFAULT_PAGE_NUMBER,
+             'type': 'integer'},
+    'per_page': {'in': 'query', 'description': 'The number of items to be displayed on a page',
+                 'default': Pagination.DEFAULT_PAGE_SIZE,
+                 'type': 'integer'}
+}
