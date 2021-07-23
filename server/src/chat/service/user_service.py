@@ -4,7 +4,7 @@ from http import HTTPStatus
 from typing import Dict, Tuple
 
 from flask import current_app
-from werkzeug.exceptions import Conflict, InternalServerError
+from werkzeug.exceptions import Conflict, InternalServerError, BadRequest
 
 from src.chat import db
 from src.chat.model.pagination import Pagination
@@ -53,6 +53,32 @@ def update_a_user(id: int, new_data) -> User:
             setattr(user, k, v)
         db.session.commit()
         return user
+
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(str(e), exc_info=True)
+        raise InternalServerError("The server encountered an internal error and was unable to save your data.")
+
+
+def update_a_user_password(id: int, data) -> Dict:
+    user = User.query.filter_by(id=id).first_or_404()
+    errors = dict()
+    if not user.check_password(data['older_password']):
+        errors['older_password'] = "'older_password' is not correct"
+    if user.check_password(data['new_password']):
+        errors['new_password'] = "'new_password' must be different from old"
+    if len(errors) != 0:
+        e = BadRequest()
+        e.data = dict(
+            errors=errors,
+            message='Input payload validation failed'
+        )
+        raise e
+
+    try:
+        user.password = data['new_password']
+        db.session.commit()
+        return dict(message='Your password was successfully changed')
 
     except Exception as e:
         db.session.rollback()

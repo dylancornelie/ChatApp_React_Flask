@@ -49,6 +49,20 @@ user_put = api.schema_model('User_Put', {
     'type': 'object',
 })
 
+user_password = api.schema_model('User_Password', {
+    'required': ['older_password', 'new_password'],
+    'properties': {
+        'older_password': {
+            'type': 'string',
+        },
+        'new_password': {
+            'type': 'string',
+        },
+    },
+    'type': 'object',
+})
+
+
 user_item = api.model('User_Item', {
     'id': fields.Integer(description="user's identifier"),
     'email': fields.String(description='user email address'),
