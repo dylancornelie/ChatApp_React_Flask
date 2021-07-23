@@ -30,8 +30,10 @@ def encode_auth_token(user_id: int) -> Tuple[str, int]:
 
     payload = dict(exp=expire, iat=now, sub=user_id)
     key = current_app.config.get("SECRET_KEY")
-
-    return jwt.encode(payload, key, algorithm="HS256"), expire_in
+    token = jwt.encode(payload, key, algorithm="HS256")
+    if isinstance(token, bytes):
+        token = token.decode('UTF-8')
+    return token, expire_in
 
 
 def decode_auth_token(auth_token: str) -> int:
