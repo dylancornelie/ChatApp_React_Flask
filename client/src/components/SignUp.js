@@ -5,6 +5,7 @@ import Banner from './utils/Banner';
 import { signUpUser } from '../actions/user.action';
 
 const SignUp = () => {
+
   const [email, setEmail] = useState('');
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
@@ -31,42 +32,42 @@ const SignUp = () => {
             type='text'
             placeholder='email'
             value={email}
-            onChange={() => setEmail()}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <input
             type='text'
             placeholder='login'
             value={login}
-            onChange={() => setLogin()}
+            onChange={(e) => setLogin(e.target.value)}
           />
           <input
             type='password'
             placeholder='password'
             value={password}
-            onChange={() => setPassword()}
+            onChange={(e) => setPassword(e.target.value)}
           />
           <input
             type='password'
             placeholder='repeat-password'
             value={repeatPassword}
-            onChange={() => setRepeatPassword()}
+            onChange={(e) => setRepeatPassword(e.target.value)}
           />
           <input
             type='text'
             placeholder='first name'
             value={firstName}
-            onChange={() => setFirstName()}
+            onChange={(e) => setFirstName(e.target.value)}
           />
           <input
             type='text'
             placeholder='last name'
             value={lastName}
-            onChange={() => setLastName()}
+            onChange={(e) => setLastName(e.target.value)}
           />
         </div>
         <button>Create account</button>
-      </form>
       <p className='signin-form-infobox'>{userStates.signUpError}</p>
+      </form>
       <p className='signin-form-bottom-link'>
         <Link to='/'>Account already exists ?</Link>
       </p>

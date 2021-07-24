@@ -33,8 +33,8 @@ const SignIn = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
         <button>Log In</button>
-      </form>
       <p className='signin-form-infobox'>{userStates.signInError}</p>
+      </form>
       <p className='signin-form-bottom-link'>
         <Link to='/signup'>Create an account</Link>
       </p>
