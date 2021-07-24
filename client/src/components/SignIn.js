@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import Banner from './utils/Banner';
 
 const SignIn = () => {
+  const userStates = useSelector((state) => state.userReducer);
   const history = useHistory();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSignIn = (e) => {
     e.preventDefault();
-    console.log(
-      'je me login avec email : ' + email + 'et password : ' + password
-    );
-
     history.push('/home');
   };
 
@@ -35,11 +33,10 @@ const SignIn = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
         <button>Log In</button>
-        <p className='signin-form-infobox'>Bad login or password</p>
       </form>
+      <p className='signin-form-infobox'>{userStates.signInError}</p>
       <p className='signin-form-bottom-link'>
-      <Link to="/signup">Create an account</Link>
-
+        <Link to='/signup'>Create an account</Link>
       </p>
     </div>
   );

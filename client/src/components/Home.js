@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import data from '../data/meetings.json';
 import HomeHeader from './home/HomeHeader';
@@ -7,8 +7,7 @@ import MeetingInfo from './home/MeetingInfo';
 
 const Home = () => {
   const history = useHistory();
-  useEffect(() => console.log(data));
-  const [moreInfo, setMoreInfo] = useState(undefined);
+  const [moreInfo, setMoreInfo] = useState(null);
 
   return (
     <div className='home-container'>
@@ -20,7 +19,8 @@ const Home = () => {
             style={
               meeting.id === moreInfo
                 ? {
-                    width: '90%',
+                    maxWidth: '90%',
+                    width: '37.5rem',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
@@ -36,7 +36,7 @@ const Home = () => {
               }
             }}
           >
-            <MeetingElement data={meeting} active={meeting.id === moreInfo}/>
+            <MeetingElement data={meeting} active={meeting.id === moreInfo} />
             {meeting.id === moreInfo && <MeetingInfo data={meeting} />}
           </div>
         ))}

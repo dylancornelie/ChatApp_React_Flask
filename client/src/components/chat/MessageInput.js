@@ -7,7 +7,7 @@ import { isEmpty } from '../../utils/utils';
 import { setMessageReceiver } from '../../actions/chat.action';
 
 const MessageInput = () => {
-  const chatState = useSelector((state) => state.chatReducer);
+  const chatStates = useSelector((state) => state.chatReducer);
   const dispatch = useDispatch();
 
   function calcHeight(value) {
@@ -27,7 +27,7 @@ const MessageInput = () => {
 
   return (
     <div className='messageInput-container'>
-      {!isEmpty(chatState.messageReceiver) && isEmpty(file) && (
+      {!isEmpty(chatStates.messageReceiver) && isEmpty(file) && (
         <div className='messageInput-infobox'>
           <p className='messageInput-infobox-message'>
             This message will be sent to
@@ -39,7 +39,7 @@ const MessageInput = () => {
           />
         </div>
       )}
-      {!isEmpty(file) && isEmpty(chatState.messageReceiver) && (
+      {!isEmpty(file) && isEmpty(chatStates.messageReceiver) && (
         <div className='messageInput-infobox'>
           <p className='messageInput-infobox-message'>
             Attached file : {file[0].name}
@@ -51,7 +51,7 @@ const MessageInput = () => {
           />
         </div>
       )}
-      {!isEmpty(file) && !isEmpty(chatState.messageReceiver) && (
+      {!isEmpty(file) && !isEmpty(chatStates.messageReceiver) && (
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <div className='messageInput-infobox' style={{ borderRadius: '0' }}>
             <p className='messageInput-infobox-message'>
@@ -65,7 +65,7 @@ const MessageInput = () => {
           </div>
           <div className='messageInput-infobox' style={{ top: '-62px' }}>
             <p className='messageInput-infobox-message'>
-              This message will be sent to {chatState.messageReceiver}
+              This message will be sent to {chatStates.messageReceiver}
             </p>
             <IoAdd
               className='messageInput-infobox-logo'
@@ -94,7 +94,7 @@ const MessageInput = () => {
             size='30'
             color='#4F6D7A'
             className='logo'
-            onClick={() => setFile(undefined)}
+            onClick={() => setFile(null)}
           />
         )}
       </div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
 const MeetingInfo = ({ data }) => {
-  const [active, setActive] = useState(undefined);
+  const [active, setActive] = useState(false);
 
   useEffect(() => console.log(data, 'meeting info'));
 

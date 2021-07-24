@@ -1,7 +1,7 @@
 .HomeHeader-container {
   position: relative;
   background-color: $primary-color;
-  height: 5rem;
+  height: 4rem;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -16,6 +16,9 @@
   right: 1.5rem;
   height: 80%;
   cursor: pointer;
+  &:hover {
+    transform:scale(1.1);
+  }
 }
 
 .HomeHeader-left-logo {

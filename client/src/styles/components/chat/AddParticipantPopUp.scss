@@ -3,7 +3,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 300px;
+    width: 30rem;
     background-color: $primary-color;
     border-radius: 17px;
     box-shadow: $box-shadow;
@@ -37,7 +37,7 @@
         text-align: center;
         font-size: 1.2rem;
         background-color: $accentuation-color;
-        width: 100px;
+        width: 10rem;
         height: 50px;
         border-radius: 5000px;
         border: none;
@@ -47,8 +47,7 @@
         margin: 10px 0px 20px 0px;
   
         &:hover {
-          background-color: $secondary-color;
-          color: $primary-color;
+          transform:scale(1.1);
         }
   
         &:focus {

@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
+import { useHistory } from 'react-router';
+import { useSelector } from 'react-redux';
 import Banner from './utils/Banner';
 import HeaderWithArrow from './utils/HeaderWithArrow';
-import { useHistory } from 'react-router';
 
 const ChangePassword = () => {
   const history = useHistory();
+  const userStates = useSelector((state) => state.userReducer);
+  const [password, setPassword] = useState('');
+  const [repeatNewPassword, setRepeatNewPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
 
   const handleChangePassword = (e) => {
     e.preventDefault();
@@ -14,10 +19,6 @@ const ChangePassword = () => {
   const leftIconAction = () => {
     history.push('/account');
   };
-
-  const [password, setPassword] = useState('');
-  const [repeatNewPassword, setRepeatNewPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
 
   return (
     <>
@@ -47,6 +48,9 @@ const ChangePassword = () => {
             onChange={(e) => setRepeatNewPassword(e.target.value)}
           />
           <button>Apply changes</button>
+          <p className='signin-form-infobox'>
+            {userStates.changePasswordError}
+          </p>
         </form>
       </div>
     </>

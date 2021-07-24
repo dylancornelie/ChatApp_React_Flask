@@ -51,7 +51,7 @@ const MyAccount = () => {
           </button>
           <button
             onClick={handleDisconnect}
-            style={{ marginTop: '3rem', backgroundColor: '#C82C17' }}
+            className='red-button'
           >
             Discconnect
           </button>

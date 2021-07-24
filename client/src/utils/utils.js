@@ -21,7 +21,7 @@ export const checkUrl = (message) => {
 };
 
 export const extractUrl = (message) => {
-  if (isEmpty(message)) return undefined;
+  if (isEmpty(message)) return null;
 
   return message.match(
     new RegExp(

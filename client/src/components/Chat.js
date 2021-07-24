@@ -8,14 +8,14 @@ import ChatContextMenu from './chat/ChatContextMenu';
 import AddParticipantPopUp from './chat/AddParticipantPopUp';
 
 const Chat = () => {
-  const chatState = useSelector((state) => state.chatReducer);
+  const chatStates = useSelector((state) => state.chatReducer);
 
   return (
     <div className='chat-component-container'>
       <ChatHeader title='Chat TX' />
-      {chatState.showParticipants && <ParticipantList />}
-      {chatState.showContextMenu && <ChatContextMenu />}
-      {chatState.showAddParticipant && <AddParticipantPopUp />}
+      {chatStates.showParticipants && <ParticipantList />}
+      {chatStates.showContextMenu && <ChatContextMenu />}
+      {chatStates.showAddParticipant && <AddParticipantPopUp />}
       <MessageList />
       <MessageInput />
     </div>

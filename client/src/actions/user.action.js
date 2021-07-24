@@ -1,11 +1,32 @@
-// import axios from 'axios
+import axios from 'axios';
 
-export const GET_USER = 'GET_USER';
+export const SIGN_UP_USER = 'SIGN_UP_USER';
 
-/*export const getUser = (login, password) => {
+export const signUpUser = (
+  email,
+  login,
+  password,
+  repeatPassword,
+  firstName,
+  lastName
+) => {
   return (dispatch) => {
-    return 
-  }
-}
-Faire la requête etc etc avec axios
-*/
+    axios({
+      method: 'post',
+      url: `${process.env.REACT_APP_API_URL}/api/v1/users`,
+      data: {
+        email,
+        username: login,
+        password,
+        first_name: firstName,
+        last_name: lastName,
+      },
+    })
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+};
