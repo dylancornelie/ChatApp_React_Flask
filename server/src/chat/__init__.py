@@ -11,7 +11,7 @@ from src.chat.config import config_by_name
 db = SQLAlchemy()
 migrate = Migrate()
 flask_bcrypt = Bcrypt()
-cors = CORS(resources={r"/api/*": {"origins": "*"}})
+cors = CORS()
 mail = Mail()
 
 
