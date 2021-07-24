@@ -1,9 +1,10 @@
 """The definition for Auth schema."""
 
-from flask_restx import Namespace, cors
+from flask_restx import Namespace
+from flask_cors import cross_origin
 
 api = Namespace('auth', description='authentication related operations',
-                decorators=[cors.crossdomain(origin="*")])
+                decorators=[cross_origin()])
 
 auth_login = api.schema_model('Auth_Login', {
     'type': 'object',

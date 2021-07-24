@@ -1,11 +1,12 @@
 """The definition for User schema."""
 
-from flask_restx import Namespace, fields, cors
+from flask_restx import Namespace, fields
+from flask_cors import cross_origin
 
 from src.chat.util.pagination import list_model, params
 
 api = Namespace('user_v1', description='user related operations',
-                decorators=[cors.crossdomain(origin="*")])
+                decorators=[cross_origin()])
 
 user_post = api.schema_model('User_Post', {
     'required': ['email', 'username', 'password', 'first_name', 'last_name'],
