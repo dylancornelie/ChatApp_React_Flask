@@ -1,17 +1,26 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Banner from './utils/Banner';
+import { signInUser } from '../actions/user.action';
+import { tokenIsSet } from '../utils/utils';
 
 const SignIn = () => {
-  const userStates = useSelector((state) => state.userReducer);
   const history = useHistory();
+  const userStates = useSelector((state) => state.userReducer);
+  const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSignIn = (e) => {
+  useEffect(() => {
+    if (tokenIsSet()) history.push('/home');
+  });
+
+  const handleSignIn = async (e) => {
     e.preventDefault();
-    history.push('/home');
+    console.log('signing in...');
+    dispatch(signInUser(email, password));
+    if (tokenIsSet()) history.push('/home');
   };
 
   return (
@@ -20,24 +29,25 @@ const SignIn = () => {
       <form className='signin-form-container' onSubmit={handleSignIn}>
         <input
           type='text'
-          required
+          autoComplete='email'
           placeholder='email'
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
         <input
           type='password'
-          required
+          autoComplete='current-password'
           placeholder='password'
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
         <button>Log In</button>
-      <p className='signin-form-infobox'>{userStates.signInError}</p>
+        <p className='signin-form-infobox'>{userStates.signInError}</p>
       </form>
-      <p className='signin-form-bottom-link'>
+      <div className='signin-form-bottom-link'>
+        <p>Forgot password</p>
         <Link to='/signup'>Create an account</Link>
-      </p>
+      </div>
     </div>
   );
 };

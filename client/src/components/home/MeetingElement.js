@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 const MeetingElement = ({ data, active }) => {
-  useEffect(() => console.log(data, 'meeting element'));
 
   return (
     <div

@@ -14,7 +14,8 @@ import ChangePassword from '../ChangePassword';
 import CreateMeeting from '../CreateMeeting';
 import JoinMeeting from '../JoinMeeting';
 
-const index = () => {
+const Routes = () => {
+
   return (
     <Router>
       <Switch>
@@ -26,10 +27,10 @@ const index = () => {
         <Route path='/meeting/create' exact component={CreateMeeting} />
         <Route path='/meeting/join' exact component={JoinMeeting} />
         <Route path='/account/password' exact component={ChangePassword} />
-        <Redirect to='/' />
+        <Redirect to='/home' />
       </Switch>
     </Router>
   );
 };
 
-export default index;
+export default Routes;

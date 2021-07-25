@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 const MeetingInfo = ({ data }) => {
   const [active, setActive] = useState(false);
-
-  useEffect(() => console.log(data, 'meeting info'));
 
   return (
     <div className='meetingInfo-container' onClick={(e) => e.stopPropagation()}>

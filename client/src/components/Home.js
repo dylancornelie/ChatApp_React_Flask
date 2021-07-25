@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
+import { getUser } from '../actions/user.action';
 import data from '../data/meetings.json';
+import { isEmpty, tokenIsSet } from '../utils/utils';
 import HomeHeader from './home/HomeHeader';
 import MeetingElement from './home/MeetingElement';
 import MeetingInfo from './home/MeetingInfo';
@@ -8,6 +11,12 @@ import MeetingInfo from './home/MeetingInfo';
 const Home = () => {
   const history = useHistory();
   const [moreInfo, setMoreInfo] = useState(null);
+  const dispatch = useDispatch();
+  const userStates = useSelector((state) => state.userReducer);
+  useEffect(() => {
+    if (isEmpty(userStates.user) && tokenIsSet()) dispatch(getUser());
+    else if (!tokenIsSet()) history.push('/');
+  });
 
   return (
     <div className='home-container'>

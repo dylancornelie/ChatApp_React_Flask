@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
-import { useSelector } from 'react-redux';
+import {  useSelector } from 'react-redux';
 import Banner from './utils/Banner';
 import HeaderWithArrow from './utils/HeaderWithArrow';
+import axios from 'axios';
+import { refreshToken, tokenIsValid } from '../utils/utils';
 
 const ChangePassword = () => {
   const history = useHistory();
@@ -13,7 +15,25 @@ const ChangePassword = () => {
 
   const handleChangePassword = (e) => {
     e.preventDefault();
-    console.log('saviing...');
+    console.log('saviing new password...');
+    if (!tokenIsValid) refreshToken();
+    axios({
+      method: 'PUT',
+      url: `${process.env.REACT_APP_API_URL}/api/v1/users/me/reset-password`,
+
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+      data: {
+        older_password: password,
+        new_password: newPassword,
+      },
+    })
+      .then((response) => {
+        console.log('password successfully changed');
+        history.push('/home');
+      })
+      .catch((err) => console.error(err));
   };
 
   const leftIconAction = () => {

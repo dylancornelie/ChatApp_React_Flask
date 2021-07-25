@@ -62,7 +62,7 @@
   }
 
   .signin-form-infobox {
-    color: #c82c17;
+    color: $accentuation-color;
     font-size: 1rem;
     font-weight: bold;
     margin-top: 1rem;
@@ -76,6 +76,15 @@
 
     & > :visited {
       color: $accentuation-color;
+    }
+
+    p {
+      text-align: center;
+      text-decoration: underline;
+      margin-bottom: 1rem;
+      &:hover {
+        cursor: pointer;
+      }
     }
   }
 }

@@ -25,7 +25,7 @@
   "scripts": {
     "start": "react-scripts start",
     "start_https": "HTTPS=true react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && workbox generateSW ./workbox-config.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -48,6 +48,7 @@
     ]
   },
   "devDependencies": {
-    "redux-devtools-extension": "^2.13.9"
+    "redux-devtools-extension": "^2.13.9",
+    "workbox-cli": "^6.1.5"
   }
 }
