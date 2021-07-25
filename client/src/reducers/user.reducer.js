@@ -33,7 +33,7 @@ export default function userReducer(state = initialState, action) {
           email: action.payload.user.email,
           login: action.payload.user.username,
           firstName: action.payload.user.first_name,
-          lastName: action.payload.user.last_name,
+          lastName: action.payload.user.last_name,          
         },
       };
     case ACCOUNT_DATA_CHANGE:

@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 export const isEmpty = (value) => {
   return (
     value === undefined ||
@@ -51,43 +49,6 @@ export const addAnchorTag = (message) => {
   return message;
 };
 
-export const refreshToken = () => {
-  console.log('refreshing token...');
-  axios({
-    method: 'GET',
-    url: `${process.env.REACT_APP_API_URL}/auth/refresh-token`,
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`,
-    },
-  })
-    .then((response) => {
-      localStorage.setItem('token', response.data.authorization);
-      localStorage.setItem(
-        'tokenExpiration',
-        Math.floor(Date.now() / 1000) + response.data.token_expires_in
-      );
-      console.log('token refresh successfull');
-    })
-    .catch((err) => console.log('error during refreshing token : ', err));
-};
-
-export const tokenIsValid = () => {
-  if (
-    !isEmpty(localStorage.getItem('token')) &&
-    !isEmpty(localStorage.getItem('tokenExpiration')) &&
-    localStorage.getItem('tokenExpiration') > Math.floor(Date.now() / 1000)
-  )
-    return true;
-  else return false;
-};
-
-export const tokenIsSet = () => {
-  if (
-    !isEmpty(
-      localStorage.getItem('token') &&
-        !isEmpty(localStorage.getItem('tokenExpiration'))
-    )
-  )
-    return true;
-  else return false;
-};
+export const tokenIsEmpty = () =>
+  isEmpty(localStorage.getItem('token')) ||
+  isEmpty(localStorage.getItem('tokenExpiration'));

@@ -12,6 +12,12 @@
     align-items: center;
     justify-content: center;
 
+    label {
+      font-size: 1.4rem;
+      color: $primary-color;
+      margin-bottom: 0.5rem;
+    }
+
     input {
       text-align: center;
       margin-bottom: 3rem;

@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import {  useSelector } from 'react-redux';
-import Banner from './utils/Banner';
-import HeaderWithArrow from './utils/HeaderWithArrow';
+import Banner from '../utils/Banner';
+import HeaderWithArrow from '../utils/HeaderWithArrow';
 import axios from 'axios';
-import { refreshToken, tokenIsValid } from '../utils/utils';
+import { tokenIsEmpty } from '../../utils/utils';
 
 const ChangePassword = () => {
   const history = useHistory();
@@ -13,10 +13,13 @@ const ChangePassword = () => {
   const [repeatNewPassword, setRepeatNewPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
 
+  useEffect(()=> {
+    if (tokenIsEmpty()) history.push('/');
+  })
+
   const handleChangePassword = (e) => {
     e.preventDefault();
     console.log('saviing new password...');
-    if (!tokenIsValid) refreshToken();
     axios({
       method: 'PUT',
       url: `${process.env.REACT_APP_API_URL}/api/v1/users/me/reset-password`,

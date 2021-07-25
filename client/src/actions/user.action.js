@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { isEmpty, refreshToken, tokenIsValid } from '../utils/utils';
+import { isEmpty } from '../utils/utils';
 
 export const SIGN_UP_USER = 'SIGN_UP_USER';
 export const SIGN_IN_USER = 'SIGN_IN_USER';
@@ -111,7 +111,6 @@ export const signInUser = (email, password) => {
 };
 
 export const getUser = () => {
-  if (!tokenIsValid()) refreshToken();
   return (dispatch) => {
     axios({
       method: 'GET',
@@ -133,7 +132,6 @@ export const getUser = () => {
 };
 
 export const disconnectUser = () => {
-  if (!tokenIsValid()) refreshToken();
   return (dispatch) => {
     axios({
       method: 'GET',

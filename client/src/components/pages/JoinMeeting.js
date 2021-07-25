@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import BarcodeScannerComponent from 'react-qr-barcode-scanner';
-import Banner from './utils/Banner';
-import HeaderWithArrow from './utils/HeaderWithArrow';
+import Banner from '../utils/Banner';
+import HeaderWithArrow from '../utils/HeaderWithArrow';
+import { tokenIsEmpty } from '../../utils/utils';
 
 const JoinMeeting = () => {
   const history = useHistory();
   const [stopStream, setStopStream] = useState(false);
+
+  useEffect(()=> {
+    if (tokenIsEmpty()) history.push('/');
+  })
 
   const handleHeaderArrowClick = () => {
    history.push('/home')

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import Banner from './utils/Banner';
-import { signUpUser } from '../actions/user.action';
-import { tokenIsSet } from '../utils/utils';
+import Banner from '../utils/Banner';
+import { signUpUser } from '../../actions/user.action';
+import { tokenIsEmpty } from '../../utils/utils';
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
@@ -15,10 +15,9 @@ const SignUp = () => {
   const userStates = useSelector((state) => state.userReducer);
   const dispatch = useDispatch();
   const history = useHistory();
-  
-  
+
   useEffect(() => {
-    if (tokenIsSet()) history.push('/home');
+    if (!tokenIsEmpty()) history.push('/home');
   });
 
   const handleSignUp = (e) => {
@@ -27,8 +26,6 @@ const SignUp = () => {
     dispatch(
       signUpUser(email, login, password, repeatPassword, firstName, lastName)
     );
-    if (tokenIsSet())
-      history.push('/home');
   };
 
   return (

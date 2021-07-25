@@ -5,14 +5,14 @@ import {
   Route,
   Redirect,
 } from 'react-router-dom';
-import Home from '../Home';
-import Chat from '../Chat';
-import SignIn from '../SignIn';
-import SignUp from '../SignUp';
-import MyAccount from '../MyAccount';
-import ChangePassword from '../ChangePassword';
-import CreateMeeting from '../CreateMeeting';
-import JoinMeeting from '../JoinMeeting';
+import Home from '../pages/Home';
+import Chat from '../pages/Chat';
+import SignIn from '../pages/SignIn';
+import SignUp from '../pages/SignUp';
+import MyAccount from '../pages/MyAccount';
+import ChangePassword from '../pages/ChangePassword';
+import CreateMeeting from '../pages/CreateMeeting';
+import JoinMeeting from '../pages/JoinMeeting';
 
 const Routes = () => {
 

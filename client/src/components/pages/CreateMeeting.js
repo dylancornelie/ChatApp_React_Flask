@@ -1,10 +1,16 @@
-import React, { useState } from 'react';
-import Banner from './utils/Banner';
-import HeaderWithArrow from './utils/HeaderWithArrow';
+import React, { useEffect, useState } from 'react';
+import Banner from '../utils/Banner';
+import HeaderWithArrow from '../utils/HeaderWithArrow';
 import { useHistory } from 'react-router';
+import { tokenIsEmpty } from '../../utils/utils';
 
 const CreateMeeting = () => {
   const history = useHistory();
+  const [chatName, setChatName] = useState('');
+
+  useEffect(()=> {
+    if (tokenIsEmpty()) history.push('/');
+  })
 
   const handleCreateChat = (e) => {
     e.preventDefault();
@@ -14,7 +20,6 @@ const CreateMeeting = () => {
     history.push('/home');
   };
 
-  const [chatName, setChatName] = useState('');
 
   return (
     <>

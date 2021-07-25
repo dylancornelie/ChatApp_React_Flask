@@ -5,21 +5,23 @@ import {
   accountDataChange,
   disconnectUser,
   getUser,
-} from '../actions/user.action';
-import { isEmpty, tokenIsSet, tokenIsValid } from '../utils/utils';
-import Banner from './utils/Banner';
-import HeaderWithArrow from './utils/HeaderWithArrow';
+} from '../../actions/user.action';
+import { isEmpty, tokenIsEmpty } from '../../utils/utils';
+import Banner from '../utils/Banner';
+import HeaderWithArrow from '../utils/HeaderWithArrow';
 
 const MyAccount = () => {
   const history = useHistory();
   const dispatch = useDispatch();
   const userStates = useSelector((state) => state.userReducer);
   const user = userStates.user;
+  const [firstName, setFirstName] = useState(userStates.user.firstName);
+  const [lastName, setLastName] = useState(userStates.user.lastName);
 
   useEffect(() => {
-    if (isEmpty(userStates.user) && tokenIsSet()) dispatch(getUser());
-    else if (!tokenIsSet()) history.push('/');
-  });
+    if (tokenIsEmpty()) history.push('/');
+    if (isEmpty(userStates.user)) dispatch(getUser());
+  }, [userStates.user, dispatch, history]);
 
   const handleChanges = () => {
     console.log('saviing account changes...');
@@ -37,30 +39,24 @@ const MyAccount = () => {
     history.push('/home');
   };
 
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-
-  useState(() => {
-    if (!tokenIsValid()) history.push('/');
-    else if (isEmpty(userStates.user)) {
-      dispatch(getUser());
-    }
-  });
-
   return (
     <>
       <HeaderWithArrow title={'My account'} leftIconAction={leftIconAction} />
       <div className='signin-page'>
         <Banner title='Manage your account' />
         <div className='signin-form-container'>
+          <label htmlFor='firstName'>First Name</label>
           <input
+            id='firstName'
             type='text'
             required
             placeholder='first name'
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
           />
+          <label htmlFor='lastName'>Last name</label>
           <input
+            id='lastName'
             type='text'
             required
             placeholder='last name'
