@@ -13,7 +13,7 @@ auth_login = api.schema_model('Auth_Login', {
         'email': {
             'type': 'string',
             'format': 'email',
-            'pattern': '\S+@\S+.\S+'
+            'pattern': r'\S+@\S+.\S+'
         },
         'password': {
             'type': 'string',

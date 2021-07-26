@@ -66,11 +66,11 @@ user_forget_password = api.schema_model('User_Password', {
         'email': {
             'type': 'string',
             'format': 'email',
+            'pattern': r'\S+@\S+.\S+',
         },
     },
     'type': 'object',
 })
-
 
 user_item = api.model('User_Item', {
     'id': fields.Integer(description="user's identifier"),
