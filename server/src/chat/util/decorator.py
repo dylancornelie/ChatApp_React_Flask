@@ -24,9 +24,9 @@ def _get_auth_token() -> str:
     auth_header = request.headers.get('Authorization')
     if not auth_header:
         raise Forbidden('Provide a valid auth token.')
-    if not auth_header.startswith('Bearer '):
-        raise Unauthorized('Bearer token malformed.')
-    auth_token = auth_header.split(" ")[1]
-    if not auth_token:
+    if not auth_header.startswith('Bearer'):
+        raise Forbidden('Bearer token malformed.')
+    auth_token = auth_header.split(" ")
+    if len(auth_token) == 1:
         raise Forbidden('Provide a valid auth token.')
-    return auth_token
+    return auth_token[1]
