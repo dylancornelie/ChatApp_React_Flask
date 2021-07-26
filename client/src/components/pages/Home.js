@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import { getUser } from '../../actions/user.action';
 import data from '../../data/meetings.json';
-import { isEmpty, tokenIsEmpty } from '../../utils/utils';
+import { isEmpty, tokenIsEmpty, tokenIsValid } from '../../utils/utils';
 import HomeHeader from '../home/HomeHeader';
 import MeetingElement from '../home/MeetingElement';
 import MeetingInfo from '../home/MeetingInfo';
@@ -14,7 +14,7 @@ const Home = () => {
   const dispatch = useDispatch();
   const userStates = useSelector((state) => state.userReducer);
   useEffect(() => {
-    if (tokenIsEmpty()) history.push('/');
+    if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
     if (isEmpty(userStates.user)) dispatch(getUser());
   },[userStates.user,dispatch,history]);
 

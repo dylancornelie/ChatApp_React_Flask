@@ -2,6 +2,7 @@ import {
   ACCOUNT_DATA_CHANGE,
   DISCONNECT_USER,
   GET_USER,
+  REFRESH_TOKEN,
   SIGN_IN_USER,
   SIGN_UP_USER,
 } from '../actions/user.action';
@@ -11,6 +12,7 @@ const initialState = {
   signUpError: '',
   changePasswordError: '',
   user: {},
+  token: '',
 };
 
 export default function userReducer(state = initialState, action) {
@@ -19,11 +21,18 @@ export default function userReducer(state = initialState, action) {
       return {
         ...state,
         signUpError: action.payload.signUpError,
+        token: action.payload.token,
       };
     case SIGN_IN_USER:
       return {
         ...state,
         signInError: action.payload.signInError,
+        token: action.payload.token,
+      };
+    case REFRESH_TOKEN:
+      return {
+        ...state,
+        token: action.payload.token,
       };
     case GET_USER:
       return {
@@ -33,7 +42,7 @@ export default function userReducer(state = initialState, action) {
           email: action.payload.user.email,
           login: action.payload.user.username,
           firstName: action.payload.user.first_name,
-          lastName: action.payload.user.last_name,          
+          lastName: action.payload.user.last_name,
         },
       };
     case ACCOUNT_DATA_CHANGE:
@@ -46,7 +55,7 @@ export default function userReducer(state = initialState, action) {
           firstName: action.payload.first_name,
           lastName: action.payload.last_name,
         },
-      }
+      };
     case DISCONNECT_USER:
       return { initialState };
     default:

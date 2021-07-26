@@ -3,6 +3,7 @@ import { isEmpty } from '../utils/utils';
 
 export const SIGN_UP_USER = 'SIGN_UP_USER';
 export const SIGN_IN_USER = 'SIGN_IN_USER';
+export const REFRESH_TOKEN = 'REFRESH_TOKEN';
 export const DISCONNECT_USER = 'DISCONNECT_USER';
 export const GET_USER = 'GET_USER';
 export const ACCOUNT_DATA_CHANGE = 'ACCOUNT_DATA_CHANGE';
@@ -39,6 +40,7 @@ export const signUpUser = (
             type: SIGN_UP_USER,
             payload: {
               signUpError: 'Account created successfully',
+              token: response.data.authorization,
             },
           });
         }
@@ -86,6 +88,7 @@ export const signInUser = (email, password) => {
             type: SIGN_IN_USER,
             payload: {
               signInError: 'Logged in successfully',
+              token: response.data.authorization,
             },
           });
         }
@@ -108,6 +111,36 @@ export const signInUser = (email, password) => {
             });
         }
       });
+};
+
+export const refreshToken = () => {
+  return (dispatch) => {
+    axios({
+      method: 'GET',
+      url: `${process.env.REACT_APP_API_URL}/auth/refresh-token`,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    })
+      .then((response) => {
+        if (response.status === 200) {
+          localStorage.clear();
+          localStorage.setItem('token', response.data.authorization);
+          localStorage.setItem(
+            'tokenExpiration',
+            Math.floor(Date.now() / 1000) + response.data.token_expires_in
+          );
+          console.log('refreshing token...');
+          return dispatch({
+            type: REFRESH_TOKEN,
+            payload: { token: response.data.authorization },
+          });
+        }
+      })
+      .catch(() => {
+        localStorage.clear();
+      });
+  };
 };
 
 export const getUser = () => {
@@ -175,5 +208,5 @@ export const accountDataChange = (email, login, firstName, lastName) => {
           payload: response.data,
         });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
 };

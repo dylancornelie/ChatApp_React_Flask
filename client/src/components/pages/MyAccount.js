@@ -6,7 +6,7 @@ import {
   disconnectUser,
   getUser,
 } from '../../actions/user.action';
-import { isEmpty, tokenIsEmpty } from '../../utils/utils';
+import { isEmpty, tokenIsEmpty, tokenIsValid } from '../../utils/utils';
 import Banner from '../utils/Banner';
 import HeaderWithArrow from '../utils/HeaderWithArrow';
 
@@ -19,18 +19,16 @@ const MyAccount = () => {
   const [lastName, setLastName] = useState(userStates.user.lastName);
 
   useEffect(() => {
-    if (tokenIsEmpty()) history.push('/');
+    if (tokenIsEmpty()|| !tokenIsValid()) history.push('/');
     if (isEmpty(userStates.user)) dispatch(getUser());
   }, [userStates.user, dispatch, history]);
 
   const handleChanges = () => {
-    console.log('saviing account changes...');
     dispatch(accountDataChange(user.email, user.login, firstName, lastName));
     history.push('/home');
   };
 
   const handleDisconnect = () => {
-    console.log('disconnection...');
     dispatch(disconnectUser());
     history.push('/');
   };

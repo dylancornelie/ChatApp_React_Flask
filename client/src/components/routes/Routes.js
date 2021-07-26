@@ -15,7 +15,7 @@ import CreateMeeting from '../pages/CreateMeeting';
 import JoinMeeting from '../pages/JoinMeeting';
 
 const Routes = () => {
-
+  
   return (
     <Router>
       <Switch>

@@ -3,7 +3,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Banner from '../utils/Banner';
 import { signUpUser } from '../../actions/user.action';
-import { tokenIsEmpty } from '../../utils/utils';
+import { tokenIsEmpty, tokenIsValid } from '../../utils/utils';
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
@@ -17,12 +17,11 @@ const SignUp = () => {
   const history = useHistory();
 
   useEffect(() => {
-    if (!tokenIsEmpty()) history.push('/home');
+    if (!tokenIsEmpty()|| !tokenIsValid()) history.push('/home');
   });
 
   const handleSignUp = (e) => {
     e.preventDefault();
-    console.log('SignUp !');
     dispatch(
       signUpUser(email, login, password, repeatPassword, firstName, lastName)
     );

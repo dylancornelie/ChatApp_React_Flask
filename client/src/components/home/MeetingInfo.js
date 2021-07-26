@@ -12,7 +12,6 @@ const MeetingInfo = ({ data }) => {
             key={participant.id}
             onClick={() => {
               setActive(participant.id);
-              console.log(participant);
             }}
             style={
               active === participant.id

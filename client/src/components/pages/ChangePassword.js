@@ -4,7 +4,7 @@ import {  useSelector } from 'react-redux';
 import Banner from '../utils/Banner';
 import HeaderWithArrow from '../utils/HeaderWithArrow';
 import axios from 'axios';
-import { tokenIsEmpty } from '../../utils/utils';
+import { tokenIsEmpty, tokenIsValid } from '../../utils/utils';
 
 const ChangePassword = () => {
   const history = useHistory();
@@ -14,7 +14,7 @@ const ChangePassword = () => {
   const [newPassword, setNewPassword] = useState('');
 
   useEffect(()=> {
-    if (tokenIsEmpty()) history.push('/');
+    if (tokenIsEmpty()|| !tokenIsValid()) history.push('/');
   })
 
   const handleChangePassword = (e) => {
@@ -32,8 +32,8 @@ const ChangePassword = () => {
         new_password: newPassword,
       },
     })
-      .then((response) => {
-        console.log('password successfully changed');
+      .then(() => {
+
         history.push('/home');
       })
       .catch((err) => console.error(err));

@@ -6,7 +6,7 @@ import ParticipantList from '../chat/ParticipantList';
 import { useSelector } from 'react-redux';
 import ChatContextMenu from '../chat/ChatContextMenu';
 import AddParticipantPopUp from '../chat/AddParticipantPopUp';
-import { tokenIsEmpty } from '../../utils/utils';
+import { tokenIsEmpty, tokenIsValid } from '../../utils/utils';
 import { useHistory } from 'react-router-dom';
 
 const Chat = () => {
@@ -14,7 +14,7 @@ const Chat = () => {
   const history = useHistory();
 
   useEffect(()=> {
-    if (tokenIsEmpty()) history.push('/');
+    if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
   })
 
   return (

@@ -1,34 +1,35 @@
-import axios from 'axios';
 import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { refreshToken } from './actions/user.action';
 import Routes from './components/routes/Routes';
 import { tokenIsEmpty, tokenIsValid } from './utils/utils';
 
 const App = () => {
-  useEffect(() => {
-    const refreshToken = async () => {
-      axios({
-        method: 'GET',
-        url: `${process.env.REACT_APP_API_URL}/auth/refresh-token`,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      })
-        .then((response) => {
-          if (response.status === 200) {
-            localStorage.clear();
-            localStorage.setItem('token', response.data.authorization);
-            localStorage.setItem(
-              'tokenExpiration',
-              Math.floor(Date.now() / 1000) + response.data.token_expires_in
-            );
-          }
-        })
-        .catch((err) => console.error(err));
-    };
+  const userStates = useSelector((state) => state.userReducer);
+  const dispatch = useDispatch();
 
-    if (!tokenIsEmpty() && tokenIsValid()) refreshToken();
-    else if (!tokenIsValid()) localStorage.clear();
-  });
+  useEffect(() => {
+    console.log(
+      'Next token in : ',
+      Math.floor(
+        Math.max(
+          0,
+          (localStorage.getItem('tokenExpiration') - (Date.now() / 1000 + 60)) *
+            1000
+        ) / 60000
+      ),
+      ' minute(s)'
+    );
+
+    if (!tokenIsEmpty() && tokenIsValid()) {
+      setTimeout(() => {
+        dispatch(refreshToken());
+      }, Math.floor(Math.max(0, (localStorage.getItem('tokenExpiration') - (Date.now() / 1000 + 60)) * 1000)));
+    } else if (!tokenIsValid()) {
+      localStorage.clear();
+      console.log('token invalid...');
+    }
+  }, [userStates.token, dispatch]);
 
   return (
     <>
