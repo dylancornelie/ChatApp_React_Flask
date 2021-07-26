@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { isEmpty } from '../utils/utils';
 
 export const SIGN_UP_USER = 'SIGN_UP_USER';
 export const SIGN_IN_USER = 'SIGN_IN_USER';
@@ -45,23 +44,13 @@ export const signUpUser = (
           });
         }
       })
-      .catch((error) => {
-        if (!isEmpty(error.reponse)) {
-          if (error.response.status === 409)
-            return dispatch({
-              type: SIGN_UP_USER,
-              payload: {
-                signUpError: 'Login or email already used',
-              },
-            });
-          else
-            return dispatch({
-              type: SIGN_UP_USER,
-              payload: {
-                signUpError: 'Server not responding, please try again later',
-              },
-            });
-        }
+      .catch(() => {
+        return dispatch({
+          type: SIGN_UP_USER,
+          payload: {
+            signUpError: 'Login or email already used',
+          },
+        });
       });
   };
 };
@@ -93,24 +82,13 @@ export const signInUser = (email, password) => {
           });
         }
       })
-      .catch((error) => {
-        console.log('erreur log in : ',error)
-        if (!isEmpty(error.reponse)) {
-          if (error.response.status === 401)
-            return dispatch({
-              type: SIGN_IN_USER,
-              payload: {
-                signInError: 'Email or password incorrect',
-              },
-            });
-          else
-            return dispatch({
-              type: SIGN_IN_USER,
-              payload: {
-                signInError: 'Server not responding, please try again later',
-              },
-            });
-        }
+      .catch(() => {
+        return dispatch({
+          type: SIGN_IN_USER,
+          payload: {
+            signInError: 'Email or password incorrect',
+          },
+        });
       });
 };
 
@@ -158,9 +136,7 @@ export const getUser = () => {
           return dispatch({ type: GET_USER, payload: { user: response.data } });
       })
       .catch((err) => {
-        if (!isEmpty(err.response)) {
-          console.error('Erreur getUser action');
-        }
+        console.error(err);
       });
   };
 };
@@ -181,9 +157,9 @@ export const disconnectUser = () => {
         }
       })
       .catch((err) => {
-        if (!isEmpty(err.response)) {
-          console.error('Erreur logout action');
-        }
+
+          console.error(err);
+        
       });
   };
 };

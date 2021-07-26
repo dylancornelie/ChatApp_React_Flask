@@ -13,6 +13,7 @@ import MyAccount from '../pages/MyAccount';
 import ChangePassword from '../pages/ChangePassword';
 import CreateMeeting from '../pages/CreateMeeting';
 import JoinMeeting from '../pages/JoinMeeting';
+import ForgotPassword from '../pages/ForgotPassword'
 
 const Routes = () => {
   
@@ -21,6 +22,7 @@ const Routes = () => {
       <Switch>
         <Route path='/' exact component={SignIn} />
         <Route path='/signup' exact component={SignUp} />
+        <Route path='/signin/forgot-password' exact component={ForgotPassword}/>
         <Route path='/home' exact component={Home} />
         <Route path='/chat' exact component={Chat} />
         <Route path='/account' exact component={MyAccount} />

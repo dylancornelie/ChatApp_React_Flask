@@ -1,30 +1,38 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
 import Banner from '../utils/Banner';
-import { signInUser } from '../../actions/user.action';
 import { tokenIsEmpty, tokenIsValid } from '../../utils/utils';
+import axios from 'axios';
 
 const SignIn = () => {
   const history = useHistory();
-  const userStates = useSelector((state) => state.userReducer);
-  const dispatch = useDispatch();
+  const [infoBox, setInfoBox] = useState();
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
 
   useEffect(() => {
     if (!tokenIsEmpty() && tokenIsValid()) history.push('/home');
   });
 
-  const handleSignIn = async (e) => {
+  const forgotPassword = async (e) => {
     e.preventDefault();
-    dispatch(signInUser(email, password));
+    axios({
+      method: 'POST',
+      url: `${process.env.REACT_APP_API_URL}/api/v1/users/me/forget-password`,
+      data: {
+        email,
+      },
+    })
+      .then((response) => {
+        if (response.status === 200)
+          setInfoBox('Password reset, check your mailbox !');
+      })
+      .catch(() => setInfoBox('Email not valid'));
   };
 
   return (
     <div className='signin-page'>
       <Banner title='Sign in into your account' />
-      <form className='signin-form-container' onSubmit={handleSignIn}>
+      <form className='signin-form-container' onSubmit={forgotPassword}>
         <input
           type='text'
           autoComplete='email'
@@ -32,18 +40,11 @@ const SignIn = () => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <input
-          type='password'
-          autoComplete='current-password'
-          placeholder='password'
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button>Log In</button>
-        <p className='signin-form-infobox'>{userStates.signInError}</p>
+        <button>Reset password</button>
+        <p className='signin-form-infobox'>{infoBox}</p>
       </form>
       <div className='signin-form-bottom-link'>
-        <Link to='/signin/forgot-password'>Forgot password?</Link>
+        <Link to='/signin'>Sign in into your account</Link>
         <Link to='/signup'>Create an account</Link>
       </div>
     </div>
