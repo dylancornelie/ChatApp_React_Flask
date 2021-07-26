@@ -91,9 +91,10 @@ class Me_Forget_Password(Resource):
         Reset my password
     """
 
-    @token_required
     @api.doc('Forgot my password', security='Bearer')
+    @api.expect(user_password, validate=True)
     @api.response(int(HTTPStatus.OK), 'Successfully send new password.')
     @api.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), 'Error saving data.')
     def get(self):
-        return update_forget_password(self.get.current_user_id)
+        data = request.json
+        return update_forget_password(data['email'])

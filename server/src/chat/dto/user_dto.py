@@ -60,6 +60,18 @@ user_password = api.schema_model('User_Password', {
     'type': 'object',
 })
 
+user_forget_password = api.schema_model('User_Password', {
+    'required': ['email'],
+    'properties': {
+        'email': {
+            'type': 'string',
+            'format': 'email',
+        },
+    },
+    'type': 'object',
+})
+
+
 user_item = api.model('User_Item', {
     'id': fields.Integer(description="user's identifier"),
     'email': fields.String(description='user email address'),

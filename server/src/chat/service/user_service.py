@@ -88,8 +88,8 @@ def update_a_user_password(id: int, data) -> Dict:
         raise InternalServerError("The server encountered an internal error and was unable to save your data.")
 
 
-def update_forget_password(id: int) -> Dict:
-    user = User.query.filter_by(id=id).first_or_404()
+def update_forget_password(email: str) -> Dict:
+    user = User.query.filter_by(email=email).first_or_404()
 
     letters = string.ascii_lowercase
     new_password = ''.join(random.choice(letters) for _ in range(8))
