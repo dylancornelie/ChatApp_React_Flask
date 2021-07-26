@@ -216,28 +216,6 @@ class TestUserControllerModel(BaseTestCase):
             response = json.loads(response.data)
             self.assertEqual(1, response['id'])
 
-    def test_update_my_profile(self):
-        self.seed()
-        with self.client as client:
-            token, _ = encode_auth_token(self.user.id)
-            response = client.put(
-                url_for('api.user_v1_me'),
-                data=json.dumps(dict(
-                    username='user1',
-                    first_name='first_name1',
-                    last_name='last_name2',
-                )),
-                headers=dict(Authorization='Bearer ' + token),
-                content_type='application/json'
-            )
-
-            self.assert200(response)
-            response = json.loads(response.data)
-            self.assertEqual(1, response['id'])
-            self.assertEqual('user1', response['username'])
-            self.assertEqual('first_name1', response['first_name'])
-            self.assertEqual('last_name2', response['last_name'])
-
     def test_update_my_profile_require_attributes(self):
         with self.client as client:
             # require username
@@ -279,6 +257,109 @@ class TestUserControllerModel(BaseTestCase):
             )
             self.assert400(response)
 
+    def test_update_my_profile_success(self):
+        self.seed()
+        with self.client as client:
+            token, _ = encode_auth_token(self.user.id)
+            response = client.put(
+                url_for('api.user_v1_me'),
+                data=json.dumps(dict(
+                    username='user1',
+                    first_name='first_name1',
+                    last_name='last_name2',
+                )),
+                headers=dict(Authorization='Bearer ' + token),
+                content_type='application/json'
+            )
+
+            self.assert200(response)
+            response = json.loads(response.data)
+            self.assertEqual(1, response['id'])
+            self.assertEqual('user1', response['username'])
+            self.assertEqual('first_name1', response['first_name'])
+            self.assertEqual('last_name2', response['last_name'])
+
+    def test_update_my_password_my_profile_require_attributes(self):
+        with self.client as client:
+            # require older_password
+            token, _ = encode_auth_token(1)
+            response = client.put(
+                url_for('api.user_v1_reset_password'),
+                data=json.dumps(dict(
+                    new_password='last_name2',
+                )),
+                headers=dict(Authorization='Bearer ' + token),
+                content_type='application/json'
+            )
+            self.assert400(response)
+            response = json.loads(response.data)
+            self.assertIsNotNone(response['errors'])
+            self.assertIsNotNone(response['errors']['older_password'])
+
+            # require new_password
+            token, _ = encode_auth_token(1)
+            response = client.put(
+                url_for('api.user_v1_reset_password'),
+                data=json.dumps(dict(
+                    older_password='last_name2',
+                )),
+                headers=dict(Authorization='Bearer ' + token),
+                content_type='application/json'
+            )
+            self.assert400(response)
+            response = json.loads(response.data)
+            self.assertIsNotNone(response['errors'])
+            self.assertIsNotNone(response['errors']['new_password'])
+
+    def test_update_my_password_my_profile_condition_attributes(self):
+        self.seed(password='123456')
+        with self.client as client:
+            # older_password is correct
+            token, _ = encode_auth_token(self.user.id)
+            response = client.put(
+                url_for('api.user_v1_reset_password'),
+                data=json.dumps(dict(
+                    older_password='12345',
+                    new_password='last_name2',
+                )),
+                headers=dict(Authorization='Bearer ' + token),
+                content_type='application/json'
+            )
+            self.assert400(response)
+            response = json.loads(response.data)
+            self.assertIsNotNone(response['errors'])
+            self.assertIsNotNone(response['errors']['older_password'])
+
+            # new_password must be different from older
+            token, _ = encode_auth_token(self.user.id)
+            response = client.put(
+                url_for('api.user_v1_reset_password'),
+                data=json.dumps(dict(
+                    older_password='123456',
+                    new_password='123456'
+                )),
+                headers=dict(Authorization='Bearer ' + token),
+                content_type='application/json'
+            )
+            self.assert400(response)
+            response = json.loads(response.data)
+            self.assertIsNotNone(response['errors'])
+            self.assertIsNotNone(response['errors']['new_password'])
+
+    def test_update_my_password_success(self):
+        self.seed(password='123456')
+        with self.client as client:
+            token, _ = encode_auth_token(self.user.id)
+            response = client.put(
+                url_for('api.user_v1_reset_password'),
+                data=json.dumps(dict(
+                    older_password='123456',
+                    new_password='new password',
+                )),
+                headers=dict(Authorization='Bearer ' + token),
+                content_type='application/json'
+            )
+            self.assert200(response)
 
 
 if __name__ == '__main__':

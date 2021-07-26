@@ -67,7 +67,7 @@ class Me(Resource):
         return update_a_user(self.put.current_user_id, data)
 
 
-@api.route('/me/reset-password')
+@api.route('/me/reset-password', endpoint='user_v1_reset_password')
 class Me_Reset_Password(Resource):
     """
         Reset my password
@@ -85,7 +85,7 @@ class Me_Reset_Password(Resource):
         return update_a_user_password(self.put.current_user_id, data)
 
 
-@api.route('/me/forget-password')
+@api.route('/me/forget-password', endpoint='user_v1_forget_password')
 class Me_Forget_Password(Resource):
     """
         Reset my password
