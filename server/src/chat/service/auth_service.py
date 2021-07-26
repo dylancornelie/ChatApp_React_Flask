@@ -71,7 +71,7 @@ def login_user(email: str, password: str) -> Dict:
             token_expires_in=expire
         )
         return response_object
-    raise Unauthorized('email or password does not match.')
+    raise Unauthorized('Email or Password does not match.')
 
 
 def logout_user(auth_token: str) -> Dict:
@@ -82,9 +82,9 @@ def logout_user(auth_token: str) -> Dict:
     """
 
     # mark the token as blacklisted
-    message = save_token_into_blacklist(token=auth_token)
+    save_token_into_blacklist(token=auth_token)
     response_object = dict(
-        message=message,
+        message='Successfully logged out.',
     )
     return response_object
 

@@ -1,7 +1,7 @@
 """The definition for User schema."""
 
-from flask_restx import Namespace, fields
 from flask_cors import cross_origin
+from flask_restx import Namespace, fields
 
 from src.chat.util.pagination import list_model, params
 
@@ -32,12 +32,8 @@ user_post = api.schema_model('User_Post', {
 })
 
 user_put = api.schema_model('User_Put', {
-    'required': ['email', 'username', 'first_name', 'last_name'],
+    'required': ['username', 'first_name', 'last_name'],
     'properties': {
-        'email': {
-            'type': 'string',
-            'format': 'email',
-        },
         'username': {
             'type': 'string',
         },
@@ -64,7 +60,6 @@ user_password = api.schema_model('User_Password', {
     'type': 'object',
 })
 
-
 user_item = api.model('User_Item', {
     'id': fields.Integer(description="user's identifier"),
     'email': fields.String(description='user email address'),
@@ -76,4 +71,5 @@ user_item = api.model('User_Item', {
 user_list = api.model('User_List', model=list_model(user_item))
 
 user_params = params.copy()
-user_params['filter_by'] = {'in': 'query', 'description': 'The filter for email, first name and last name', 'type': 'string'}
+user_params['filter_by'] = {'in': 'query', 'description': 'The filter for email, first name and last name',
+                            'type': 'string'}

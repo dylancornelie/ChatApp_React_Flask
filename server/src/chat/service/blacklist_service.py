@@ -4,11 +4,10 @@ from src.chat.model.token_blacklist import BlacklistedToken
 from src.chat.service import save_data
 
 
-def save_token_into_blacklist(token: str) -> str:
+def save_token_into_blacklist(token: str) -> None:
     blacklist_token = BlacklistedToken(token=token)
     # insert the token
     save_data(blacklist_token)
-    return 'Successfully logged out.'
 
 
 def check_blacklist(auth_token) -> bool:
