@@ -88,13 +88,14 @@ class Me_Reset_Password(Resource):
 @api.route('/me/forget-password', endpoint='user_v1_forget_password')
 class Me_Forget_Password(Resource):
     """
-        Reset my password
+        Forget my password
+        Send email new random password
     """
 
-    @api.doc('Forgot my password', security='Bearer')
+    @api.doc('Forgot my password')
     @api.expect(user_forget_password, validate=True)
     @api.response(int(HTTPStatus.OK), 'Successfully send new password.')
     @api.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), 'Error saving data.')
-    def get(self):
+    def post(self):
         data = request.json
         return update_forget_password(data['email'])

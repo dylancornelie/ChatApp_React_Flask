@@ -89,7 +89,7 @@ def update_a_user_password(id: int, data) -> Dict:
 
 
 def update_forget_password(email: str) -> Dict:
-    user = User.query.filter_by(email=email).first_or_404()
+    user = User.query.filter_by(email=email).first_or_404(f'{email} is not exist.')
 
     letters = string.ascii_lowercase
     new_password = ''.join(random.choice(letters) for _ in range(8))
@@ -114,7 +114,7 @@ def update_forget_password(email: str) -> Dict:
         current_app.logger.error(str(e), exc_info=True)
         raise InternalServerError("The server encountered an internal error and was unable to send your email.")
 
-    return dict(message='Your new password was successfully sent your email')
+    return dict(message=f'Your new password was successfully sent your email {email}.')
 
 
 def _generate_token(user: User):

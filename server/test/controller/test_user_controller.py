@@ -361,6 +361,51 @@ class TestUserControllerModel(BaseTestCase):
             )
             self.assert200(response)
 
+    def test_forget_my_password_require_email(self):
+        with self.client as client:
+            # require email
+            response = client.post(
+                url_for('api.user_v1_forget_password'),
+                data=json.dumps(dict()),
+                content_type='application/json',
+            )
+            self.assert400(response)
+            response = json.loads(response.data)
+            self.assertIsNotNone(response['errors'])
+            self.assertIsNotNone(response['errors']['email'])
+
+    def test_forget_my_password_not_found_email(self):
+        with self.client as client:
+            # not found email
+            response = client.post(
+                url_for('api.user_v1_forget_password'),
+                data=json.dumps(dict(
+                    email='test@test.com',
+                )),
+                content_type='application/json',
+            )
+            self.assert404(response)
+            response = json.loads(response.data)
+            self.assertIsNotNone(response['message'])
+            self.assertEqual('test@test.com is not exist.', response['message'])
+
+    def test_forget_my_password_success(self):
+        self.seed()
+        with self.client as client:
+            # not found email
+            response = client.post(
+                url_for('api.user_v1_forget_password'),
+                data=json.dumps(dict(
+                    email=self.user.email,
+                )),
+                content_type='application/json',
+            )
+            self.assert200(response)
+            response = json.loads(response.data)
+            self.assertIsNotNone(response['message'])
+            self.assertEqual(f'Your new password was successfully sent your email {self.user.email}.',
+                             response['message'])
+
 
 if __name__ == '__main__':
     unittest.main()
