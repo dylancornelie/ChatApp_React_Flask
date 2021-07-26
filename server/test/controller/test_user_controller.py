@@ -44,15 +44,15 @@ class TestUserControllerModel(BaseTestCase):
 
     def seed(self, email='test@test.com',
              username='username', password='test',
-             first_name='first name', last_name='last name', ):
-        user = User(
+             first_name='first_name', last_name='last_name'):
+        self.user = User(
             email=email,
             password=password,
             username=username,
             first_name=first_name,
             last_name=last_name,
         )
-        db.session.add(user)
+        db.session.add(self.user)
         db.session.commit()
 
     def test_post_new_user_require_username(self):
@@ -128,7 +128,7 @@ class TestUserControllerModel(BaseTestCase):
 
     def test_get_list_user_success_having_full_attributes(self):
         self.seed()
-        token, _ = encode_auth_token(1)
+        token, _ = encode_auth_token(self.user.id)
 
         with self.client as client:
             response = get_user(client, token=token)
@@ -159,7 +159,7 @@ class TestUserControllerModel(BaseTestCase):
             self.seed(email=f'test{i}@test.com', username=f'username{i}')
 
         with self.client as client:
-            token, _ = encode_auth_token(1)
+            token, _ = encode_auth_token(self.user.id)
             response = get_user(client, token=token, per_page=3)
             self.assert200(response)
 
@@ -171,7 +171,7 @@ class TestUserControllerModel(BaseTestCase):
             self.assertEqual(2, response['pages'])
             self.assertEqual(3, len(response['data']))
 
-            token, _ = encode_auth_token(1)
+            token, _ = encode_auth_token(self.user.id)
             response = get_user(client, token=token, page=2, per_page=3)
             self.assert200(response)
 
@@ -188,19 +188,97 @@ class TestUserControllerModel(BaseTestCase):
             self.seed(email=f'test{i}@test.com', username=f'username{i}')
 
         with self.client as client:
-            token, _ = encode_auth_token(1)
+            token, _ = encode_auth_token(self.user.id)
             response = get_user(client, token=token, filter_by='username')
             self.assert200(response)
 
             response = json.loads(response.data)
             self.assertEqual(5, response['total'])
 
-            token, _ = encode_auth_token(1)
+            token, _ = encode_auth_token(self.user.id)
             response = get_user(client, token=token, filter_by='1')
             self.assert200(response)
 
             response = json.loads(response.data)
             self.assertEqual(1, response['total'])
+
+    def test_get_my_profile(self):
+        self.seed()
+        with self.client as client:
+            token, _ = encode_auth_token(self.user.id)
+            response = client.get(
+                url_for('api.user_v1_me'),
+                headers=dict(Authorization='Bearer ' + token),
+                content_type='application/json'
+            )
+
+            self.assert200(response)
+            response = json.loads(response.data)
+            self.assertEqual(1, response['id'])
+
+    def test_update_my_profile(self):
+        self.seed()
+        with self.client as client:
+            token, _ = encode_auth_token(self.user.id)
+            response = client.put(
+                url_for('api.user_v1_me'),
+                data=json.dumps(dict(
+                    username='user1',
+                    first_name='first_name1',
+                    last_name='last_name2',
+                )),
+                headers=dict(Authorization='Bearer ' + token),
+                content_type='application/json'
+            )
+
+            self.assert200(response)
+            response = json.loads(response.data)
+            self.assertEqual(1, response['id'])
+            self.assertEqual('user1', response['username'])
+            self.assertEqual('first_name1', response['first_name'])
+            self.assertEqual('last_name2', response['last_name'])
+
+    def test_update_my_profile_require_attributes(self):
+        with self.client as client:
+            # require username
+            token, _ = encode_auth_token(1)
+            response = client.put(
+                url_for('api.user_v1_me'),
+                data=json.dumps(dict(
+                    first_name='first_name1',
+                    last_name='last_name2',
+                )),
+                headers=dict(Authorization='Bearer ' + token),
+                content_type='application/json'
+            )
+            self.assert400(response)
+
+            # require first_name
+            token, _ = encode_auth_token(1)
+            response = client.put(
+                url_for('api.user_v1_me'),
+                data=json.dumps(dict(
+                    username='user1',
+                    last_name='last_name2',
+                )),
+                headers=dict(Authorization='Bearer ' + token),
+                content_type='application/json'
+            )
+            self.assert400(response)
+
+            # require last_name
+            token, _ = encode_auth_token(1)
+            response = client.put(
+                url_for('api.user_v1_me'),
+                data=json.dumps(dict(
+                    username='user1',
+                    first_name='last_name2',
+                )),
+                headers=dict(Authorization='Bearer ' + token),
+                content_type='application/json'
+            )
+            self.assert400(response)
+
 
 
 if __name__ == '__main__':
