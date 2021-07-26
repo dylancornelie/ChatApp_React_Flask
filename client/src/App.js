@@ -9,25 +9,25 @@ const App = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log(
-      'Next token in : ',
-      Math.floor(
-        Math.max(
-          0,
-          (localStorage.getItem('tokenExpiration') - (Date.now() / 1000 + 60)) *
-            1000
-        ) / 60000
-      ),
-      ' minute(s)'
-    );
-
     if (!tokenIsEmpty() && tokenIsValid()) {
+      console.log(
+        'Next token in : ',
+        Math.ceil(
+          Math.max(
+            0,
+            (localStorage.getItem('tokenExpiration') -
+              (Date.now() / 1000 + 60)) *
+              1000
+          ) / 60000
+        ),
+        ' minute(s)'
+      );
       setTimeout(() => {
-        dispatch(refreshToken());
-      }, Math.floor(Math.max(0, (localStorage.getItem('tokenExpiration') - (Date.now() / 1000 + 60)) * 1000)));
+        if (!tokenIsEmpty() && tokenIsValid()) dispatch(refreshToken());
+      }, Math.floor(Math.max(0, (localStorage.getItem('tokenExpiration') - (Date.now() / 1000 + 30)) * 1000)));
     } else if (!tokenIsValid()) {
       localStorage.clear();
-      console.log('token invalid...');
+      console.log('no valid token');
     }
   }, [userStates.token, dispatch]);
 

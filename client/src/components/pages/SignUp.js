@@ -17,7 +17,7 @@ const SignUp = () => {
   const history = useHistory();
 
   useEffect(() => {
-    if (!tokenIsEmpty()|| !tokenIsValid()) history.push('/home');
+    if (!tokenIsEmpty() && tokenIsValid()) history.push('/home');
   });
 
   const handleSignUp = (e) => {

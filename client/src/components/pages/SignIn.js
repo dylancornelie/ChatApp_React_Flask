@@ -13,7 +13,7 @@ const SignIn = () => {
   const [password, setPassword] = useState('');
 
   useEffect(() => {
-    if (!tokenIsEmpty()|| !tokenIsValid()) history.push('/home');
+    if (!tokenIsEmpty() && tokenIsValid()) history.push('/home');
   });
 
   const handleSignIn = async (e) => {

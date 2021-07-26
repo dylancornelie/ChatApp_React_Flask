@@ -15,7 +15,7 @@ const Home = () => {
   const userStates = useSelector((state) => state.userReducer);
   useEffect(() => {
     if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
-    if (isEmpty(userStates.user)) dispatch(getUser());
+    if (isEmpty(userStates.user) && tokenIsValid()) dispatch(getUser());
   },[userStates.user,dispatch,history]);
 
   return (

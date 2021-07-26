@@ -94,6 +94,7 @@ export const signInUser = (email, password) => {
         }
       })
       .catch((error) => {
+        console.log('erreur log in : ',error)
         if (!isEmpty(error.reponse)) {
           if (error.response.status === 401)
             return dispatch({
