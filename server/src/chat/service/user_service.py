@@ -44,11 +44,11 @@ def get_all_users(filter_by) -> Pagination:
 
 
 def get_a_user(id: int) -> User:
-    return User.query.filter_by(id=id).first()
+    return User.query.filter_by(id=id).first_or_404('User Not Found')
 
 
 def update_a_user(id: int, new_data) -> User:
-    user = User.query.filter_by(id=id).first_or_404()
+    user = get_a_user(id)
 
     try:
         for k, v in new_data.items():
@@ -63,7 +63,7 @@ def update_a_user(id: int, new_data) -> User:
 
 
 def update_a_user_password(id: int, data) -> Dict:
-    user = User.query.filter_by(id=id).first_or_404()
+    user = get_a_user(id)
     errors = dict()
     if not user.check_password(data['older_password']):
         errors['older_password'] = "'older_password' is not correct"
