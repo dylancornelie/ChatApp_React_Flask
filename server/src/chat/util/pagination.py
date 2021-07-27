@@ -51,7 +51,7 @@ def list_model(data):
         'has_prev': fields.Boolean(description='True if a previous page exists'),
         'next': fields.String(description='A pagination for the next page'),
         'prev': fields.String(description='A pagination object for the previous page'),
-        'data': fields.List(fields.Nested(data), description='The items for the current page'),
+        'data': fields.List(fields.Nested(data, allow_null=True, skip_none=True), description='The items for the current page'),
     }
 
 

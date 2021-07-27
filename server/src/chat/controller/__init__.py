@@ -2,6 +2,7 @@ from flask import Blueprint
 from flask_restx import Api
 
 from src.chat.controller.auth_controller import api as auth_ns
+from src.chat.controller.v1.project_controller import api as project_ns_v1
 from src.chat.controller.v1.user_controller import api as user_ns_v1
 
 api_bp = Blueprint('api', __name__)
@@ -24,3 +25,4 @@ api_v1 = Api(api_bp,
 
 api_v1.add_namespace(auth_ns)
 api_v1.add_namespace(user_ns_v1, path=_API_v1 + '/users')
+api_v1.add_namespace(project_ns_v1, path=_API_v1 + '/projects')
