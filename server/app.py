@@ -31,7 +31,7 @@ def test():
 
 
 @app.cli.command('seed')
-@click.option('--n', type=int, default=100)
+@click.option('--n', type=int, default=25)
 def seed(n):
     """Fake data."""
     from faker import Faker
