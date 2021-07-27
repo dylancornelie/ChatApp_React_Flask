@@ -22,7 +22,6 @@ def token_required(f):
 
 def _get_auth_token() -> str:
     auth_header = request.headers.get('Authorization')
-    print(auth_header)
     if not auth_header:
         raise Forbidden('Provide a valid auth token.')
     if not auth_header.startswith('Bearer'):

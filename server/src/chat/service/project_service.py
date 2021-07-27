@@ -6,6 +6,7 @@ from werkzeug.exceptions import Conflict
 
 from src.chat.model.pagination import Pagination
 from src.chat.model.project import Project
+from src.chat.model.user import User
 from src.chat.service import save_data
 from src.chat.util.pagination import paginate
 
@@ -24,7 +25,10 @@ def save_new_project(current_user_id: int, data: Dict) -> Project:
 
 
 def get_all_projects(current_user_id: int, filter_by) -> Pagination:
-    query = Project.query.filter(Project.owner_id == current_user_id)
+    query = Project.query.filter((Project.owner_id == current_user_id)
+                                 | (Project.coaches.any(User.id == current_user_id))
+                                 | (Project.participants.any(User.id == current_user_id))
+                                 )
 
     if filter_by:
         query = query.filter(Project.title.like(f'%{filter_by}%'))

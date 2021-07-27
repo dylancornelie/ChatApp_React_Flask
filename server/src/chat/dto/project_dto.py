@@ -19,8 +19,8 @@ project_item = api.model('Project_Item', {
     'id': fields.Integer(description="Project's identifier"),
     'title': fields.String,
     'owner': fields.Nested(user_item, description="Project's owner"),
-    'coach': fields.List(fields.Nested(user_item), description='List for coach'),
-    'participant': fields.List(fields.Nested(user_item), description='List for participant'),
+    'coaches': fields.List(fields.Nested(user_item), description='List for coach'),
+    'participants': fields.List(fields.Nested(user_item), description='List for participant'),
 })
 
 project_list = api.model('Project_List', model=list_model(project_item))
