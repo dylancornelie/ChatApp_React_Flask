@@ -393,7 +393,7 @@ class TestUserControllerModel(BaseTestCase):
     def test_forget_my_password_success(self):
         self.seed()
         with self.client as client:
-            # not found email
+            # found email
             response = client.post(
                 url_for('api.user_v1_forget_password'),
                 data=json.dumps(dict(
