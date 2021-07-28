@@ -11,7 +11,7 @@ api = Namespace('project_v1', description='Project related operations',
 
 project_post = api.model('Project_Post', {
     'title': fields.String(required=True),
-    'coach ': fields.List(fields.Integer(description="User's identify")),
+    'coach': fields.List(fields.Integer(description="User's identify")),
     'participant': fields.List(fields.Integer(description="User's identify"), required=True)
 })
 

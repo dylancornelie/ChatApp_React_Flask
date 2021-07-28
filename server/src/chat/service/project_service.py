@@ -5,9 +5,9 @@ from typing import Dict
 from werkzeug.exceptions import Conflict
 
 from src.chat.model.pagination import Pagination
-from src.chat.model.project import Project
+from src.chat.model.project import Project, user_coaches_to_project, user_participates_of_project
 from src.chat.model.user import User
-from src.chat.service import save_data
+from src.chat.service import save_data, insert_data
 from src.chat.util.pagination import paginate
 
 
@@ -19,6 +19,13 @@ def save_new_project(current_user_id: int, data: Dict) -> Project:
             owner_id=current_user_id,
         )
         save_data(new_project)
+
+        data_coach = list(dict(user_id=i, project_id=new_project.id) for i in data['coach'])
+        data_participant = list(dict(user_id=i, project_id=new_project.id) for i in data['participant'])
+
+        insert_data(user_coaches_to_project, data_coach)
+        insert_data(user_participates_of_project, data_participant)
+
         return new_project
 
     raise Conflict('Project already exists. Please create new other project.')
