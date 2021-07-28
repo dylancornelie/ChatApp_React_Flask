@@ -46,7 +46,7 @@ def get_all_projects(current_user_id: int, filter_by) -> Pagination:
 
 
 def get_project_item(id_project: int) -> Project:
-    return Project.query.filter_by(id == id_project).first_or_404('Project Not Found')
+        return Project.query.filter_by(id = id_project).first_or_404('Project Not Found')
 
 
 def update_project(current_user_id: int, id_project: int, data: Dict) -> Dict:
@@ -56,12 +56,27 @@ def update_project(current_user_id: int, id_project: int, data: Dict) -> Dict:
     try:
         project.title = data['title']
         db.session.commit()
-        return dict(message='Your project was successfully changed')
+        return dict(message='Your project was successfully changed.')
 
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(str(e), exc_info=True)
         raise InternalServerError("The server encountered an internal error and was unable to save your data.")
+
+
+def delete_project(current_user_id: int, id_project: int) -> Dict:
+    project = get_project_item(id_project)
+    _required_own_project(current_user_id, project)
+
+    try:
+        db.session.delete(project)
+        db.session.commit()
+        return dict(message='Your project was successfully removed.')
+
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(str(e), exc_info=True)
+        raise InternalServerError("The server encountered an internal error and was unable to delete your data.")
 
 
 def _required_own_project(current_user_id: int, project: Project) -> None:
