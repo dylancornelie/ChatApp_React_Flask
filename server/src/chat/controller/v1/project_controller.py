@@ -5,8 +5,14 @@ from http import HTTPStatus
 from flask import request
 from flask_restx import Resource
 
-from src.chat.dto.project_dto import (api, project_list, project_item, project_post, project_put, project_params)
-from src.chat.service.project_service import (save_new_project, get_all_projects, update_project, delete_project)
+from src.chat.dto.project_dto import (
+    api, project_list, project_item, project_post, project_params,
+    project_invite,
+)
+from src.chat.service.project_service import (
+    save_new_project, get_all_projects, update_project, delete_project,
+    invite_participant_into_project,
+)
 from src.chat.util.decorator import token_required
 
 
@@ -41,25 +47,34 @@ class List(Resource):
 
 
 @api.route('/<int:id>')
+@api.doc('Item project', security='Bearer')
+@api.response(int(HTTPStatus.OK), 'Successfully edit the project.')
+@api.response(int(HTTPStatus.FORBIDDEN), 'Error unauthorized.')
+@api.response(int(HTTPStatus.NOT_FOUND), 'Not found project.')
+@api.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), 'Error saving data.')
 class Item(Resource):
     @token_required
-    @api.doc('Edit the project', security='Bearer')
-    @api.expect(project_put, validate=True)
-    @api.response(int(HTTPStatus.OK), 'Successfully edit the project.')
-    @api.response(int(HTTPStatus.FORBIDDEN), 'Error unauthorized.')
-    @api.response(int(HTTPStatus.NOT_FOUND), 'Not found project.')
-    @api.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), 'Error saving data.')
     def put(self, id: int):
         """Edit your registered project"""
         data = request.json
         return update_project(self.put.current_user_id, id, data)
 
     @token_required
-    @api.doc('Delete your project.', security='Bearer')
-    @api.response(int(HTTPStatus.OK), 'Successfully remove the project.')
-    @api.response(int(HTTPStatus.FORBIDDEN), 'Error unauthorized.')
-    @api.response(int(HTTPStatus.NOT_FOUND), 'Not found project.')
-    @api.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), 'Error saving data.')
     def delete(self, id: int):
         """Delete your project"""
         return delete_project(self.delete.current_user_id, id)
+
+
+@api.route('/<int:id>/invite')
+@api.doc('Invite participant into the project', security='Bearer')
+@api.response(int(HTTPStatus.OK), 'Successfully add new participants the project.')
+@api.response(int(HTTPStatus.FORBIDDEN), 'Error unauthorized.')
+@api.response(int(HTTPStatus.NOT_FOUND), 'Not found project.')
+@api.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), 'Error saving data.')
+class Invite(Resource):
+    @token_required
+    @api.expect(project_invite, validate=True)
+    def post(self, id: int):
+        """Invite some participants into the project"""
+        data = request.json
+        return invite_participant_into_project(self.post.current_user_id, id, data)

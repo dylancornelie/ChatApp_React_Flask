@@ -4,14 +4,14 @@ from src.chat import db
 
 user_participates_of_project = db.Table(
     'user_participates_of_project',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('project_id', db.Integer, db.ForeignKey('project.id')),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('project_id', db.Integer, db.ForeignKey('project.id'), primary_key=True),
 )
 
 user_coaches_to_project = db.Table(
     'user_coaches_to_project',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('project_id', db.Integer, db.ForeignKey('project.id')),
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('project_id', db.Integer, db.ForeignKey('project.id'), primary_key=True),
 )
 
 

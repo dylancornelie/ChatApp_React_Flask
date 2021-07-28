@@ -1,6 +1,6 @@
 """Service logic for project """
 
-from typing import Dict
+from typing import Dict, List
 
 from flask import current_app
 from werkzeug.exceptions import Conflict, Forbidden, InternalServerError
@@ -22,11 +22,11 @@ def save_new_project(current_user_id: int, data: Dict) -> Project:
         )
         save_data(new_project)
 
-        data_coach = list(dict(user_id=i, project_id=new_project.id) for i in data['coach'])
-        data_participant = list(dict(user_id=i, project_id=new_project.id) for i in data['participant'])
+        # Remove user duple in participants into coaches
+        participants = [user for user in data['participants'] if user not in data['coaches']]
 
-        insert_data(user_coaches_to_project, data_coach)
-        insert_data(user_participates_of_project, data_participant)
+        insert_coaches(id_project=new_project.id, coaches=data['coaches'])
+        insert_participants(id_project=new_project.id, participants=participants)
 
         return new_project
 
@@ -46,7 +46,7 @@ def get_all_projects(current_user_id: int, filter_by) -> Pagination:
 
 
 def get_project_item(id_project: int) -> Project:
-        return Project.query.filter_by(id = id_project).first_or_404('Project Not Found')
+    return Project.query.filter_by(id=id_project).first_or_404('Project Not Found')
 
 
 def update_project(current_user_id: int, id_project: int, data: Dict) -> Dict:
@@ -79,6 +79,34 @@ def delete_project(current_user_id: int, id_project: int) -> Dict:
         raise InternalServerError("The server encountered an internal error and was unable to delete your data.")
 
 
+def invite_participant_into_project(current_user_id: int, id_project: int, data: Dict) -> Dict:
+    project = get_project_item(id_project)
+    if project.owner_id == current_user_id \
+            or project.coaches.any(User.id == current_user_id) \
+            or project.participants.any(User.id == current_user_id):
+
+        # Find all participants exist in project
+        participants_project = project.participants.filter(User.id.notin_(data['participants'])).all()
+        id_participants_project = [user.id for user in participants_project]
+
+        # Remove participants duple
+        data_insert_participants = [id for id in data['participants'] if id not in id_participants_project]
+        insert_participants(id_project=project.id, participants=data_insert_participants)
+
+        return dict(message='You added these participants')
+    raise Forbidden("You must be an participant of project")
+
+
 def _required_own_project(current_user_id: int, project: Project) -> None:
     if project.owner_id != current_user_id:
         raise Forbidden("You must be the project's owner")
+
+
+def insert_participants(id_project: int, participants: List):
+    data_participant = list(dict(user_id=i, project_id=id_project) for i in participants)
+    insert_data(user_participates_of_project, data_participant)
+
+
+def insert_coaches(id_project: int, coaches: List):
+    data_participant = list(dict(user_id=i, project_id=id_project) for i in coaches)
+    insert_data(user_coaches_to_project, data_participant)

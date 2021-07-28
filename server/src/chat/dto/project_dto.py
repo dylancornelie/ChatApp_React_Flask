@@ -11,12 +11,16 @@ api = Namespace('project_v1', description='Project related operations',
 
 project_post = api.model('Project_Post', {
     'title': fields.String(required=True),
-    'coach': fields.List(fields.Integer(description="User's identify")),
-    'participant': fields.List(fields.Integer(description="User's identify"), required=True)
+    'coaches': fields.List(fields.Integer(description="User's identify")),
+    'participants': fields.List(fields.Integer(description="User's identify"))
 })
 
 project_put = api.model('Project_Put', {
     'title': fields.String(required=True),
+})
+
+project_invite = api.model('Project_Invite', {
+    'participants': fields.List(fields.Integer(description="User's identify"))
 })
 
 project_item = api.model('Project_Item', {
