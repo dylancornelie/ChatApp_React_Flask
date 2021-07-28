@@ -15,6 +15,10 @@ project_post = api.model('Project_Post', {
     'participant': fields.List(fields.Integer(description="User's identify"), required=True)
 })
 
+project_put = api.model('Project_Put', {
+    'title': fields.String(required=True),
+})
+
 project_item = api.model('Project_Item', {
     'id': fields.Integer(description="Project's identifier"),
     'title': fields.String,

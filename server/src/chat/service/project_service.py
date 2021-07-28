@@ -2,8 +2,10 @@
 
 from typing import Dict
 
-from werkzeug.exceptions import Conflict
+from flask import current_app
+from werkzeug.exceptions import Conflict, Forbidden, InternalServerError
 
+from src.chat import db
 from src.chat.model.pagination import Pagination
 from src.chat.model.project import Project, user_coaches_to_project, user_participates_of_project
 from src.chat.model.user import User
@@ -41,3 +43,27 @@ def get_all_projects(current_user_id: int, filter_by) -> Pagination:
         query = query.filter(Project.title.like(f'%{filter_by}%'))
 
     return paginate(query)
+
+
+def get_project_item(id_project: int) -> Project:
+    return Project.query.filter_by(id == id_project).first_or_404('Project Not Found')
+
+
+def update_project(current_user_id: int, id_project: int, data: Dict) -> Dict:
+    project = get_project_item(id_project)
+    _required_own_project(current_user_id, project)
+
+    try:
+        project.title = data['title']
+        db.session.commit()
+        return dict(message='Your project was successfully changed')
+
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(str(e), exc_info=True)
+        raise InternalServerError("The server encountered an internal error and was unable to save your data.")
+
+
+def _required_own_project(current_user_id: int, project: Project) -> None:
+    if project.owner_id != current_user_id:
+        raise Forbidden("You must be the project's owner")

@@ -5,8 +5,8 @@ from http import HTTPStatus
 from flask import request
 from flask_restx import Resource
 
-from src.chat.dto.project_dto import (api, project_list, project_item, project_post, project_params)
-from src.chat.service.project_service import (save_new_project, get_all_projects)
+from src.chat.dto.project_dto import (api, project_list, project_item, project_post, project_put, project_params)
+from src.chat.service.project_service import (save_new_project, get_all_projects, update_project)
 from src.chat.util.decorator import token_required
 
 
@@ -18,7 +18,7 @@ class List(Resource):
 
     @token_required
     @api.doc('List_of_project', params=project_params, security='Bearer')
-    @api.response(int(HTTPStatus.OK), 'Collection for users.')
+    @api.response(int(HTTPStatus.OK), 'Collection for projects.')
     @api.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), 'Error internal server.')
     @api.response(int(HTTPStatus.UNAUTHORIZED), 'Unauthorized.')
     @api.response(int(HTTPStatus.FORBIDDEN), 'Provide a valid auth token.')
@@ -38,3 +38,18 @@ class List(Resource):
         """Creates a new User """
         data = request.json
         return save_new_project(current_user_id=self.post.current_user_id, data=data)
+
+
+@api.route('/<int:id>')
+class Item(Resource):
+    @token_required
+    @api.doc('Edit the project', security='Bearer')
+    @api.expect(project_put, validate=True)
+    @api.response(int(HTTPStatus.OK), 'Successfully edit the project.')
+    @api.response(int(HTTPStatus.FORBIDDEN), 'Error unauthorized.')
+    @api.response(int(HTTPStatus.NOT_FOUND), 'Not found project.')
+    @api.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), 'Error saving data.')
+    def put(self, id: int):
+        """Get data from json"""
+        data = request.json
+        return update_project(self.put.current_user_id, id, data)
