@@ -60,7 +60,6 @@ class Me(Resource):
     @api.response(int(HTTPStatus.BAD_REQUEST), 'Error.')
     @api.response(int(HTTPStatus.NOT_FOUND), 'Error not me.')
     @api.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), 'Error saving data.')
-    @api.marshal_with(user_item)
     def put(self):
         """Get data from json"""
         data = request.json

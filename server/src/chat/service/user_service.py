@@ -12,7 +12,7 @@ from src.chat import db
 from src.chat.model.pagination import Pagination
 from src.chat.model.user import User
 from src.chat.service import save_data
-from src.chat.service.auth_service import encode_auth_token
+from src.chat.service.auth_service import generate_token
 from src.chat.util.pagination import paginate
 
 
@@ -27,7 +27,7 @@ def save_new_user(data: Dict[str, str]) -> Tuple[Dict[str, str], int]:
             last_name=data['last_name']
         )
         save_data(new_user)
-        return _generate_token(new_user)
+        return generate_token(user_id=new_user.id, message='Successfully registered.'), HTTPStatus.CREATED
     raise Conflict('User already exists. Please Log in.')
 
 
@@ -47,14 +47,14 @@ def get_a_user(id: int) -> User:
     return User.query.filter_by(id=id).first_or_404('User Not Found')
 
 
-def update_a_user(id: int, new_data) -> User:
+def update_a_user(id: int, new_data) -> Dict:
     user = get_a_user(id)
 
     try:
         for k, v in new_data.items():
             setattr(user, k, v)
         db.session.commit()
-        return user
+        return dict(message='Your profile was successfully changed')
 
     except Exception as e:
         db.session.rollback()
@@ -115,15 +115,3 @@ def update_forget_password(email: str) -> Dict:
         raise InternalServerError("The server encountered an internal error and was unable to send your email.")
 
     return dict(message=f'Your new password was successfully sent your email {email}.')
-
-
-def _generate_token(user: User):
-    # generate the auth token
-    auth_token, expire = encode_auth_token(user.id)
-    response_object = dict(
-        message='Successfully registered.',
-        authorization=auth_token,
-        token_type='Bearer',
-        token_expires_in=expire
-    )
-    return response_object, HTTPStatus.CREATED

@@ -63,14 +63,7 @@ def login_user(email: str, password: str) -> Dict:
     # fetch the user data
     user = User.query.filter_by(email=email).first()
     if user and user.check_password(password):
-        auth_token, expire = encode_auth_token(user.id)
-        response_object = dict(
-            message='Successfully logged in.',
-            authorization=auth_token,
-            token_type='Bearer',
-            token_expires_in=expire
-        )
-        return response_object
+        return generate_token(user_id=user.id, message='Successfully logged in.')
     raise Unauthorized('Email or Password does not match.')
 
 
@@ -96,9 +89,14 @@ def refresh_token(current_user_id: int) -> Dict:
         :return: Dict: Object message JWT
     """
 
-    auth_token, expire = encode_auth_token(current_user_id)
+    return generate_token(user_id=current_user_id, message='Successfully refresh token.')
+
+
+def generate_token(user_id: int, message: str) -> Dict:
+    # generate the auth token
+    auth_token, expire = encode_auth_token(user_id)
     response_object = dict(
-        message='Successfully refresh token.',
+        message=message,
         authorization=auth_token,
         token_type='Bearer',
         token_expires_in=expire
