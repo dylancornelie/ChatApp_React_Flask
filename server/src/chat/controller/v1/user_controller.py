@@ -51,6 +51,7 @@ class Me(Resource):
     @api.response(int(HTTPStatus.OK), 'Successfully get my profile.')
     @api.marshal_with(user_item)
     def get(self):
+        """Your profile"""
         return get_a_user(self.get.current_user_id)
 
     @token_required
@@ -61,7 +62,7 @@ class Me(Resource):
     @api.response(int(HTTPStatus.NOT_FOUND), 'Error not me.')
     @api.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), 'Error saving data.')
     def put(self):
-        """Get data from json"""
+        """Edit your profile"""
         data = request.json
         return update_a_user(self.put.current_user_id, data)
 
@@ -79,7 +80,7 @@ class Me_Reset_Password(Resource):
     @api.response(int(HTTPStatus.BAD_REQUEST), 'Error edit my password.')
     @api.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), 'Error saving data.')
     def put(self):
-        """Get data from json"""
+        """Edit your password"""
         data = request.json
         return update_a_user_password(self.put.current_user_id, data)
 
@@ -96,5 +97,6 @@ class Me_Forget_Password(Resource):
     @api.response(int(HTTPStatus.OK), 'Successfully send new password.')
     @api.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), 'Error saving data.')
     def post(self):
+        """Send email new random password"""
         data = request.json
         return update_forget_password(data['email'])
