@@ -10,6 +10,7 @@ from src.chat.model.pagination import Pagination
 from src.chat.model.project import Project, user_coaches_to_project, user_participates_of_project
 from src.chat.model.user import User
 from src.chat.service import save_data, insert_data
+from src.chat.service.user_service import get_a_user
 from src.chat.util.pagination import paginate
 
 
@@ -84,7 +85,6 @@ def invite_participant_into_project(current_user_id: int, id_project: int, data:
     if project.owner_id == current_user_id \
             or project.coaches.any(User.id == current_user_id) \
             or project.participants.any(User.id == current_user_id):
-
         # Find all participants exist in project
         participants_project = project.participants.filter(User.id.notin_(data['participants'])).all()
         id_participants_project = [user.id for user in participants_project]
@@ -95,6 +95,27 @@ def invite_participant_into_project(current_user_id: int, id_project: int, data:
 
         return dict(message='You added these participants')
     raise Forbidden("You must be an participant of project")
+
+
+def leave_from_project(current_user_id: int, id_project: int) -> Dict:
+    project = get_project_item(id_project)
+    if project.owner_id == current_user_id:
+        raise Forbidden("The owner can't leave the project")
+    current_user = get_a_user(current_user_id)
+    try:
+        if project.coaches.any(User.id == current_user_id):
+            project.coaches.remove(current_user)
+        if project.participants.any(User.id == current_user_id):
+            project.participants.remove(current_user)
+
+        db.session.commit()
+
+        return dict(message='You leave the project')
+
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(str(e), exc_info=True)
+        raise InternalServerError("The server encountered an internal error and was unable to remove your data.")
 
 
 def _required_own_project(current_user_id: int, project: Project) -> None:
