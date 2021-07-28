@@ -23,6 +23,10 @@ project_invite = api.model('Project_Invite', {
     'participants': fields.List(fields.Integer(description="User's identify"))
 })
 
+project_designate_coach = api.model('Project_Designate_New_Coaches', {
+    'coaches': fields.List(fields.Integer(description="User's identify"))
+})
+
 project_item = api.model('Project_Item', {
     'id': fields.Integer(description="Project's identifier"),
     'title': fields.String,

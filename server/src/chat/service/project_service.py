@@ -93,14 +93,14 @@ def invite_participant_into_project(current_user_id: int, id_project: int, data:
         data_insert_participants = [id for id in data['participants'] if id not in id_participants_project]
         insert_participants(id_project=project.id, participants=data_insert_participants)
 
-        return dict(message='You added these participants')
-    raise Forbidden("You must be an participant of project")
+        return dict(message='You added these participants.')
+    raise Forbidden("You must be an participant of project.")
 
 
 def leave_from_project(current_user_id: int, id_project: int) -> Dict:
     project = get_project_item(id_project)
     if project.owner_id == current_user_id:
-        raise Forbidden("The owner can't leave the project")
+        raise Forbidden("The owner can't leave the project.")
     current_user = get_a_user(current_user_id)
     try:
         if project.coaches.any(User.id == current_user_id):
@@ -110,7 +110,57 @@ def leave_from_project(current_user_id: int, id_project: int) -> Dict:
 
         db.session.commit()
 
-        return dict(message='You leave the project')
+        return dict(message='You leave the project.')
+
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(str(e), exc_info=True)
+        raise InternalServerError("The server encountered an internal error and was unable to remove your data.")
+
+
+def designate_coach_into_project(current_user_id: int, id_project: int, data: Dict) -> Dict:
+    project = get_project_item(id_project)
+    _required_own_or_coach_in_project(current_user_id=current_user_id, project=project)
+
+    try:
+        # Find new coaches in participants
+        participants = project.participants.filter(User.id.in_(data['coaches'])).all()
+
+        for user in participants:
+            # Remove them from list participants
+            project.participants.remove(user)
+
+            # Add them into list coaches
+            project.coaches.append(user)
+
+        db.session.commit()
+
+        return dict(message='You designate some new coaches into project.')
+
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(str(e), exc_info=True)
+        raise InternalServerError("The server encountered an internal error and was unable to remove your data.")
+
+
+def withdraw_coach_in_project(current_user_id: int, id_project: int, data: Dict) -> Dict:
+    project = get_project_item(id_project)
+    _required_own_or_coach_in_project(current_user_id=current_user_id, project=project)
+
+    try:
+        # Find new coaches in participants
+        coaches = project.coaches.filter(User.id.in_(data['coaches'])).all()
+
+        for user in coaches:
+            # Remove them from list coaches
+            project.coaches.remove(user)
+
+            # Add them into list participant
+            project.participants.append(user)
+
+        db.session.commit()
+
+        return dict(message='You withdraw some coaches. They will be a participant')
 
     except Exception as e:
         db.session.rollback()
@@ -120,7 +170,12 @@ def leave_from_project(current_user_id: int, id_project: int) -> Dict:
 
 def _required_own_project(current_user_id: int, project: Project) -> None:
     if project.owner_id != current_user_id:
-        raise Forbidden("You must be the project's owner")
+        raise Forbidden("You must be the project's owner.")
+
+
+def _required_own_or_coach_in_project(current_user_id: int, project: Project) -> None:
+    if project.owner_id != current_user_id or project.coaches.all(User.id != current_user_id):
+        raise Forbidden("Only owner or coach can add new coach.")
 
 
 def insert_participants(id_project: int, participants: List):
