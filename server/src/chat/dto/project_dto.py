@@ -19,7 +19,7 @@ project_put = api.model('Project_Put', {
     'title': fields.String(required=True),
 })
 
-project_invite = api.model('Project_Invite', {
+project_participant = api.model('Project_Participant', {
     'participants': fields.List(fields.Integer(description="User's identify"))
 })
 

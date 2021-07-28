@@ -110,7 +110,7 @@ def leave_from_project(current_user_id: int, id_project: int) -> Dict:
 
         db.session.commit()
 
-        return dict(message='You leave the project.')
+        return dict(message='You left the project.')
 
     except Exception as e:
         db.session.rollback()
@@ -135,7 +135,7 @@ def designate_coach_into_project(current_user_id: int, id_project: int, data: Di
 
         db.session.commit()
 
-        return dict(message='You designate some new coaches into project.')
+        return dict(message='You designated some new coaches into project.')
 
     except Exception as e:
         db.session.rollback()
@@ -148,7 +148,7 @@ def withdraw_coach_in_project(current_user_id: int, id_project: int, data: Dict)
     _required_own_or_coach_in_project(current_user_id=current_user_id, project=project)
 
     try:
-        # Find new coaches in participants
+        # Find some coaches
         coaches = project.coaches.filter(User.id.in_(data['coaches'])).all()
 
         for user in coaches:
@@ -160,7 +160,28 @@ def withdraw_coach_in_project(current_user_id: int, id_project: int, data: Dict)
 
         db.session.commit()
 
-        return dict(message='You withdraw some coaches. They will be a participant')
+        return dict(message='You withdrew some coaches. They will be a participant.')
+
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(str(e), exc_info=True)
+        raise InternalServerError("The server encountered an internal error and was unable to remove your data.")
+
+def remove_participant_in_project(current_user_id: int, id_project: int, data: Dict) -> Dict:
+    project = get_project_item(id_project)
+    _required_own_or_coach_in_project(current_user_id=current_user_id, project=project)
+
+    try:
+        # Find some participants
+        participants = project.participants.filter(User.id.in_(data['participants'])).all()
+
+        for user in participants:
+            # Remove them from list participants
+            project.participants.remove(user)
+
+        db.session.commit()
+
+        return dict(message='You removed some participants.')
 
     except Exception as e:
         db.session.rollback()
