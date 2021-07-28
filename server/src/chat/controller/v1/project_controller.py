@@ -80,7 +80,7 @@ class Invite(Resource):
         return invite_participant_into_project(self.post.current_user_id, id, data)
 
 
-@api.route('/<int:id>/leve')
+@api.route('/<int:id>/leave')
 @api.doc('Participant left from the project', security='Bearer')
 @api.response(int(HTTPStatus.OK), 'Successfully add new participants the project.')
 @api.response(int(HTTPStatus.FORBIDDEN), 'Error unauthorized.')
