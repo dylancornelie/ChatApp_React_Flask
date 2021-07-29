@@ -82,19 +82,18 @@ def delete_project(current_user_id: int, id_project: int) -> Dict:
 
 def invite_participant_into_project(current_user_id: int, id_project: int, data: Dict) -> Dict:
     project = get_project_item(id_project)
-    if project.owner_id == current_user_id \
-            or project.coaches.any(User.id == current_user_id) \
-            or project.participants.any(User.id == current_user_id):
-        # Find all participants exist in project
-        participants_project = project.participants.filter(User.id.notin_(data['participants'])).all()
-        id_participants_project = [user.id for user in participants_project]
 
-        # Remove participants duple
-        data_insert_participants = [id for id in data['participants'] if id not in id_participants_project]
-        insert_participants(id_project=project.id, participants=data_insert_participants)
+    _required_member_in_project(current_user_id=current_user_id, project=project)
 
-        return dict(message='You added these participants.')
-    raise Forbidden("You must be an participant of project.")
+    # Find all participants exist in project
+    participants_project = project.participants.filter(User.id.in_(data['participants'])).all()
+    id_participants_project = [user.id for user in participants_project]
+
+    # Remove participants duple
+    data_insert_participants = [id for id in data['participants'] if id not in id_participants_project]
+    insert_participants(id_project=project.id, participants=data_insert_participants)
+
+    return dict(message='You added these participants.')
 
 
 def leave_from_project(current_user_id: int, id_project: int) -> Dict:
@@ -167,6 +166,7 @@ def withdraw_coach_in_project(current_user_id: int, id_project: int, data: Dict)
         current_app.logger.error(str(e), exc_info=True)
         raise InternalServerError("The server encountered an internal error and was unable to remove your data.")
 
+
 def remove_participant_in_project(current_user_id: int, id_project: int, data: Dict) -> Dict:
     project = get_project_item(id_project)
     _required_own_or_coach_in_project(current_user_id=current_user_id, project=project)
@@ -195,15 +195,22 @@ def _required_own_project(current_user_id: int, project: Project) -> None:
 
 
 def _required_own_or_coach_in_project(current_user_id: int, project: Project) -> None:
-    if project.owner_id != current_user_id or project.coaches.all(User.id != current_user_id):
-        raise Forbidden("Only owner or coach can add new coach.")
+    if not (project.owner_id == current_user_id or project.coaches.any(User.id == current_user_id)):
+        raise Forbidden("Yous must be an project's owner or coach.")
 
 
-def insert_participants(id_project: int, participants: List):
+def _required_member_in_project(current_user_id: int, project: Project) -> None:
+    if not (project.owner_id == current_user_id
+            or project.coaches.any(User.id == current_user_id)
+            or project.participants.any(User.id == current_user_id)):
+        raise Forbidden("You must be a project's member.")
+
+
+def insert_participants(id_project: int, participants: List) -> None:
     data_participant = list(dict(user_id=i, project_id=id_project) for i in participants)
     insert_data(user_participates_of_project, data_participant)
 
 
-def insert_coaches(id_project: int, coaches: List):
+def insert_coaches(id_project: int, coaches: List) -> None:
     data_participant = list(dict(user_id=i, project_id=id_project) for i in coaches)
     insert_data(user_coaches_to_project, data_participant)

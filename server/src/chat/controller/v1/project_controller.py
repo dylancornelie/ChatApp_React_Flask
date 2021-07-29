@@ -24,11 +24,11 @@ class List(Resource):
 
     @token_required
     @api.doc('List of project', params=project_params, security='Bearer')
-    @api.response(int(HTTPStatus.OK), 'Collection for projects.')
+    @api.response(int(HTTPStatus.OK), 'Collection for projects.', project_list)
     @api.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), 'Error internal server.')
     @api.response(int(HTTPStatus.UNAUTHORIZED), 'Unauthorized.')
     @api.response(int(HTTPStatus.FORBIDDEN), 'Provide a valid auth token.')
-    @api.marshal_list_with(project_list, skip_none=True)
+    @api.marshal_with(project_list, skip_none=True)
     def get(self):
         """List all registered project"""
         filter_by = request.args.get('filter_by')

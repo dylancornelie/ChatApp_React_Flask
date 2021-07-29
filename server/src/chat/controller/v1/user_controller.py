@@ -20,11 +20,11 @@ class List(Resource):
 
     @token_required
     @api.doc('List_of_registered_users', params=user_params, security='Bearer')
-    @api.response(int(HTTPStatus.OK), 'Collection for users.')
+    @api.response(int(HTTPStatus.OK), 'Collection for users.', user_list)
     @api.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), 'Error internal server.')
     @api.response(int(HTTPStatus.UNAUTHORIZED), 'Unauthorized.')
     @api.response(int(HTTPStatus.FORBIDDEN), 'Provide a valid auth token.')
-    @api.marshal_list_with(user_list)
+    @api.marshal_with(user_list)
     def get(self):
         """List all registered users"""
         filter_by = request.args.get('filter_by')
@@ -48,7 +48,7 @@ class Me(Resource):
 
     @token_required
     @api.doc('Get my profile', security='Bearer')
-    @api.response(int(HTTPStatus.OK), 'Successfully get my profile.')
+    @api.response(int(HTTPStatus.OK), 'Successfully get my profile.', user_item)
     @api.marshal_with(user_item)
     def get(self):
         """Your profile"""
