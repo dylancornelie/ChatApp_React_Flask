@@ -273,11 +273,6 @@ class TestUserControllerModel(BaseTestCase):
             )
 
             self.assert200(response)
-            response = json.loads(response.data)
-            self.assertEqual(1, response['id'])
-            self.assertEqual('user1', response['username'])
-            self.assertEqual('first_name1', response['first_name'])
-            self.assertEqual('last_name2', response['last_name'])
 
     def test_update_my_password_my_profile_require_attributes(self):
         with self.client as client:
