@@ -1,4 +1,4 @@
-"""API endpoint definitions for /project namespace."""
+"""API endpoint definitions for /projects namespace."""
 
 from http import HTTPStatus
 

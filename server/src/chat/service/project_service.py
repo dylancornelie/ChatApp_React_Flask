@@ -46,7 +46,7 @@ def save_new_project(current_user_id: int, data: Dict) -> Tuple[Project, int]:
 
 def get_all_projects(current_user_id: int, filter_by) -> Pagination:
     """
-    Save a new project with data
+    Get project of a member
 
     :param current_user_id: int
     :param filter_by: str | None
@@ -344,7 +344,7 @@ def required_own_or_coach_in_project(current_user_id: int, project: Project) -> 
         raise Forbidden("Yous must be an project's owner or coach.")
 
 
-def required_member_in_project(current_user_id: int, project: Project) -> None:
+def required_member_in_project(current_user_id: int, project: Project, message = "You must be a project's member.") -> None:
     """
     Check user is member
 
@@ -355,7 +355,7 @@ def required_member_in_project(current_user_id: int, project: Project) -> None:
     if not (project.owner_id == current_user_id
             or any(current_user_id == user.id for user in project.coaches)
             or any(current_user_id == user.id for user in project.participants)):
-        raise Forbidden("You must be a project's member.")
+        raise Forbidden(message)
 
 
 def insert_participants(id_project: int, participants: List[int]) -> None:

@@ -8,7 +8,7 @@ import click
 from dotenv import load_dotenv
 
 from src.chat import create_app, db
-from src.chat.model import user, token_blacklist, project
+from src.chat.model import user, token_blacklist, project, message
 
 load_dotenv()  # take environment variables from .env.
 
@@ -22,6 +22,7 @@ def shell():
         'User': user.User,
         'BlacklistedToken': token_blacklist.BlacklistedToken,
         'Project': project.Project,
+        'Message': message.Message,
     }
 
 
@@ -67,6 +68,8 @@ def seed(n):
         random_value = choice(['owner', 'coach', 'participant'])
         list_fake_user[random_value].append(fake_user)
 
+    db.session.commit()
+
     # fake for project
     for _ in range(n * 2):
         fake_project = project.Project(
@@ -81,4 +84,19 @@ def seed(n):
                                         k=randint(2, len(list_fake_user['participant']))):
             fake_project.participants.append(user_participant)
 
-    db.session.commit()
+        db.session.commit()
+
+        coach_id = [coach.id for coach in fake_project.coaches] + [fake_project.owner_id]
+        participant_id = [participant.id for participant in fake_project.participants]
+        members = coach_id + participant_id
+        for _ in range(randint(1, n * 2)):
+            fake_message = message.Message(
+                content=fake.sentence(),
+                owner_id=choice(members),
+                project_id=fake_project.id,
+            )
+            if choices([True, False], [0.1, 0.9]) and fake_message.owner_id in coach_id:
+                fake_message.receiver_id=choice(members)
+            db.session.add(fake_message)
+
+            db.session.commit()

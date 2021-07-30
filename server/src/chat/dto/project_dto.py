@@ -1,4 +1,4 @@
-"""The definition for User schema."""
+"""The definition for Project schema."""
 
 from flask_cors import cross_origin
 from flask_restx import Namespace, fields
