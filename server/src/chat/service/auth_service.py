@@ -14,6 +14,7 @@ from src.chat.service.blacklist_service import save_token_into_blacklist, check_
 def encode_auth_token(user_id: int) -> Tuple[str, int]:
     """
     Generates the Auth Token ex
+
     :param user_id: integer
     :return: string, int: JWT and expire_in
     """
@@ -39,6 +40,7 @@ def encode_auth_token(user_id: int) -> Tuple[str, int]:
 def decode_auth_token(auth_token: str) -> int:
     """
     Decodes the auth token
+
     :param auth_token: string : JWT
     :return: integer|string: User's ID or Error message
     """
@@ -55,10 +57,11 @@ def decode_auth_token(auth_token: str) -> int:
 
 def login_user(email: str, password: str) -> Dict:
     """
-        Login by user's email
-        :param email: str
-        :param password: str
-        :return: object: Object message JWT
+    Login by user's email
+
+    :param email: str
+    :param password: str
+    :return: object: Object message JWT
     """
     # fetch the user data
     user = User.query.filter_by(email=email).first()
@@ -69,9 +72,10 @@ def login_user(email: str, password: str) -> Dict:
 
 def logout_user(auth_token: str) -> Dict:
     """
-       Logout account
-       :param auth_token: str
-       :return: object: Object message
+    Logout account
+
+    :param auth_token: str
+    :return: object: Object message
     """
 
     # mark the token as blacklisted
@@ -84,16 +88,23 @@ def logout_user(auth_token: str) -> Dict:
 
 def refresh_token(current_user_id: int) -> Dict:
     """
-        Refresh token
-        :param current_user_id: str
-        :return: Dict: Object message JWT
+    Refresh token
+
+    :param current_user_id: int
+    :return: Dict: Object message JWT
     """
 
     return generate_token(user_id=current_user_id, message='Successfully refresh token.')
 
 
 def generate_token(user_id: int, message: str) -> Dict:
-    # generate the auth token
+    """
+    Generate the auth token
+
+    :param user_id: int
+    :param message: str
+    :return: Dict: Object consist JWT
+    """
     auth_token, expire = encode_auth_token(user_id)
     response_object = dict(
         message=message,

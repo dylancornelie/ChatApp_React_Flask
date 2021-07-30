@@ -11,7 +11,8 @@ from src.chat.dto.project_dto import (
 )
 from src.chat.service.project_service import (
     save_new_project, get_all_projects, update_project, delete_project,
-    invite_participant_into_project, leave_from_project, designate_coach_into_project, withdraw_coach_in_project
+    invite_participant_into_project, leave_from_project, designate_coach_into_project, withdraw_coach_in_project,
+    remove_participant_in_project,
 )
 from src.chat.util.decorator import token_required
 
@@ -39,7 +40,7 @@ class List(Resource):
     @api.response(int(HTTPStatus.CREATED), 'Project successfully created.')
     @api.response(int(HTTPStatus.CONFLICT), 'Project already exists.')
     @api.expect(project_post, validate=True)
-    @api.marshal_with(project_item, skip_none=True)
+    @api.marshal_with(project_item)
     def post(self):
         """Creates a new Project """
         data = request.json
@@ -69,7 +70,7 @@ class Item(Resource):
 @api.doc('Invite participant into the project', security='Bearer')
 @api.response(int(HTTPStatus.OK), 'Successfully add new participants the project.')
 @api.response(int(HTTPStatus.FORBIDDEN), 'Error unauthorized.')
-@api.response(int(HTTPStatus.NOT_FOUND), 'Not found project.')
+@api.response(int(HTTPStatus.NOT_FOUND), 'Not found.')
 @api.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), 'Error saving data.')
 class Invite(Resource):
     @token_required
@@ -93,38 +94,37 @@ class Leave(Resource):
         return leave_from_project(self.delete.current_user_id, id)
 
 
-@api.route('/<int:id>/designate-coaches')
+@api.route('/<int:id>/designate-coach')
 @api.doc('A coach (and the owner) can designate a new coach, remove the coach status', security='Bearer')
 @api.response(int(HTTPStatus.OK), 'Successfully designate coach the project.')
 @api.response(int(HTTPStatus.FORBIDDEN), 'Error unauthorized.')
 @api.response(int(HTTPStatus.NOT_FOUND), 'Not found project.')
 @api.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), 'Error saving data.')
+@api.expect(project_designate_coach, validate=True)
 class Designate(Resource):
     @token_required
-    @api.expect(project_designate_coach, validate=True)
     def post(self, id: int):
         """A coach (and the owner) can designate some new coaches. They will be withdrawn from list participants"""
         data = request.json
         return designate_coach_into_project(self.post.current_user_id, id, data)
 
     @token_required
-    @api.expect(project_designate_coach, validate=True)
     def delete(self, id: int):
         """A coach (and the owner) can withdraw some coaches status in project and they will be a participant"""
         data = request.json
         return withdraw_coach_in_project(self.delete.current_user_id, id, data)
 
 
-@api.route('/<int:id>/remove-participants')
+@api.route('/<int:id>/remove-participant')
 @api.doc('A coach (and the owner) can remove some participants from project', security='Bearer')
 @api.response(int(HTTPStatus.OK), 'Successfully designate coach the project.')
 @api.response(int(HTTPStatus.FORBIDDEN), 'Error unauthorized.')
 @api.response(int(HTTPStatus.NOT_FOUND), 'Not found project.')
 @api.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), 'Error saving data.')
-class Designate(Resource):
+class KickOut(Resource):
     @token_required
     @api.expect(project_participant, validate=True)
     def delete(self, id: int):
         """A coach (and the owner) can remove some participants from project"""
         data = request.json
-        return withdraw_coach_in_project(self.delete.current_user_id, id, data)
+        return remove_participant_in_project(self.delete.current_user_id, id, data)

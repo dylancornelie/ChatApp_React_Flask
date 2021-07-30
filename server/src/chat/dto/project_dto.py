@@ -20,11 +20,11 @@ project_put = api.model('Project_Put', {
 })
 
 project_participant = api.model('Project_Participant', {
-    'participants': fields.List(fields.Integer(description="User's identify"))
+    'participant': fields.Integer(description="User's identify", required=True)
 })
 
-project_designate_coach = api.model('Project_Designate_New_Coaches', {
-    'coaches': fields.List(fields.Integer(description="User's identify"))
+project_designate_coach = api.model('Project_Designate_New_Coach', {
+    'coach': fields.Integer(description="User's identify")
 })
 
 project_item = api.model('Project_Item', {

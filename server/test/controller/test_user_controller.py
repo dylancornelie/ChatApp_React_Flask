@@ -40,7 +40,7 @@ def get_user(client, token='', page=Pagination.DEFAULT_PAGE_NUMBER, per_page=Pag
     )
 
 
-class TestUserControllerModel(BaseTestCase):
+class TestUserController(BaseTestCase):
 
     def seed(self, email='test@test.com',
              username='username', password='test',

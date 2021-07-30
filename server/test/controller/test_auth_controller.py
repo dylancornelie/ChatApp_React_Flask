@@ -19,7 +19,7 @@ def login_user(client, email='test@test.com', password='test'):
     )
 
 
-class TestAuthBlueprint(BaseTestCase):
+class TestAuthController(BaseTestCase):
 
     def setUp(self):
         super().setUp()
