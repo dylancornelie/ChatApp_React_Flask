@@ -1,6 +1,6 @@
 import React from 'react';
 
-const MeetingElement = ({ data, active }) => {
+const MeetingElement = ({ meeting, active }) => {
 
   return (
     <div
@@ -8,7 +8,7 @@ const MeetingElement = ({ data, active }) => {
         active ? 'meetingElement-container active' : 'meetingElement-container'
       }
     >
-      <p>{data.meetingName}</p>
+      <p>{meeting.title}</p>
     </div>
   );
 };

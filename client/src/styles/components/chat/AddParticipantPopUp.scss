@@ -8,6 +8,7 @@
     border-radius: 17px;
     box-shadow: $box-shadow;
     overflow: hidden;
+    box-shadow: $box-shadow;
   
     input {
       background-color: $secondary-color;
@@ -24,6 +25,10 @@
       &:focus {
         outline: none;
       }
+
+      &::placeholder{
+        color:$primary-color;
+      }
     }
   
     .addbylogin-button-container {
@@ -31,7 +36,6 @@
       justify-content: space-around;
       align-items: center;
       width: 100%;
-      box-shadow: $box-shadow;
   
       button {
         text-align: center;
@@ -55,4 +59,9 @@
         }
       }
     }
+  }
+
+  .addbylogin-infobox {
+    margin-bottom: 1rem;
+    font-style: italic;
   }

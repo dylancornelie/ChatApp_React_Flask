@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from 'react';
+import {useDispatch, useSelector} from 'react-redux'
 import Banner from '../utils/Banner';
 import HeaderWithArrow from '../utils/HeaderWithArrow';
 import { useHistory } from 'react-router';
 import { tokenIsEmpty, tokenIsValid } from '../../utils/utils';
+import { createMeeting } from '../../actions/user.action';
 
 const CreateMeeting = () => {
   const history = useHistory();
-  const [chatName, setChatName] = useState('');
+  const dispatch = useDispatch();
+  const userState = useSelector(state => state.userReducer)
+  const [meetingName, setMeetingName] = useState('');
 
   useEffect(()=> {
     if (tokenIsEmpty()|| !tokenIsValid()) history.push('/');
   })
 
-  const handleCreateChat = (e) => {
+  const handleCreateMeeting = (e) => {
     e.preventDefault();
+    dispatch(createMeeting(meetingName));
   };
 
   const leftIconAction = () => {
@@ -29,17 +34,17 @@ const CreateMeeting = () => {
       />
       <div className='signin-page'>
         <Banner title='Enter a meeting name' />
-        <form className='signin-form-container' onSubmit={handleCreateChat}>
+        <form className='signin-form-container' onSubmit={handleCreateMeeting}>
           <input
             type='text'
             required
-            placeholder='chat name'
-            value={chatName}
-            onChange={(e) => setChatName(e.target.value)}
+            placeholder='meeting name'
+            value={meetingName}
+            onChange={(e) => setMeetingName(e.target.value)}
           />
 
-          <button>Create chat</button>
-          <p className='signin-form-infobox'>Chatname already exists</p>
+          <button>Create meeting</button>
+          <p className='signin-form-infobox'>{userState.createMeetingError}</p>
         </form>
       </div>
     </>

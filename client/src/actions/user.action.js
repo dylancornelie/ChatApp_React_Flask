@@ -6,6 +6,8 @@ export const REFRESH_TOKEN = 'REFRESH_TOKEN';
 export const DISCONNECT_USER = 'DISCONNECT_USER';
 export const GET_USER = 'GET_USER';
 export const ACCOUNT_DATA_CHANGE = 'ACCOUNT_DATA_CHANGE';
+export const CREATE_MEETING = 'CREATE_MEETING';
+export const GET_MEETINGS = 'GET_MEETINGS';
 
 export const signUpUser = (
   email,
@@ -157,9 +159,7 @@ export const disconnectUser = () => {
         }
       })
       .catch((err) => {
-
-          console.error(err);
-        
+        console.error(err);
       });
   };
 };
@@ -186,4 +186,50 @@ export const accountDataChange = (email, login, firstName, lastName) => {
         });
       })
       .catch((err) => console.error(err));
+};
+
+export const createMeeting = (title) => {
+  return (dispatch) => {
+    axios({
+      method: 'POST',
+      url: `${process.env.REACT_APP_API_URL}/api/v1/projects/`,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+      data: {
+        title,
+      },
+    })
+      .then((response) => {
+        return dispatch({
+          type: CREATE_MEETING,
+          payload: { newMeeting: response.data, createMeetingError: 'Meeting successfully created' },
+        });
+      })
+      .catch(() =>
+        dispatch({
+          type: CREATE_MEETING,
+          payload: { createMeetingError: 'Meeting name already used' },
+        })
+      );
+  };
+};
+
+export const getMeetings = () => {
+  return (dispatch) => {
+    axios({
+      method: 'GET',
+      url: `${process.env.REACT_APP_API_URL}/api/v1/projects/`,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    })
+      .then((response) => {
+        dispatch({
+          type: GET_MEETINGS,
+          payload: { meetings: response.data.data },
+        });
+      })
+      .catch((err) => console.error(err));
+  };
 };

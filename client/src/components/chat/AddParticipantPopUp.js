@@ -1,36 +1,35 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { showAddParticipant } from '../../actions/chat.action';
 import QRCode from 'react-qr-code';
+import { useDispatch } from 'react-redux';
+import { addParticipant } from '../../actions/chat.action';
 
-const AddParticipantPopUp = () => {
+const AddParticipantPopUp = ({ outsideClickAction, meetingId }) => {
   const dispatch = useDispatch();
   const [showQrCode, setShowQrCode] = useState(false);
   const [addByLogin, setAddByLogin] = useState(false);
+  const [login, setLogin] = useState('');
 
   const handleAddByLogin = () => {
-    console.log('adding the guy...')
-  }
-  
+    console.log('adding the guy...',meetingId);
+    dispatch(addParticipant(meetingId,login));
+  };
+
   const viewWidth = Math.max(
     document.documentElement.clientWidth || 0,
     window.innerWidth || 0
   );
-  
+
   const viewHeight = Math.max(
     document.documentElement.clientHeight || 0,
     window.innerHeight || 0
   );
 
   return (
-    <div
-      className='context-menu-backdrop'
-      onClick={() => dispatch(showAddParticipant())}
-    >
+    <div className='context-menu-backdrop' onClick={() => outsideClickAction()}>
       {showQrCode ? (
         <QRCode
           className='qrcode'
-          value='youhou ça fonctionne ! :)'
+          value={meetingId}
           size={
             viewWidth * 0.8 > viewHeight * 0.7
               ? viewHeight * 0.7
@@ -46,13 +45,21 @@ const AddParticipantPopUp = () => {
                 e.stopPropagation();
               }}
             >
-              <input type='text' placeholder='login' />
+              <input
+                type='text'
+                placeholder='login'
+                value={login}
+                onChange={(e) => setLogin(e.target.value)}
+              />
               <div className='addbylogin-button-container'>
                 <button onClick={() => setAddByLogin(!addByLogin)}>
                   Cancel
                 </button>
-                <button onClick={()=>handleAddByLogin()}>Add</button>
+                <button onClick={() => handleAddByLogin()}>Add</button>
               </div>
+              <p className='addbylogin-infobox'>
+                Participant successfully added !
+              </p>
             </div>
           ) : (
             <div

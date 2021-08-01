@@ -1,18 +1,28 @@
 import {
+  ADD_PARTICIPANT,
+  DELETE_MEETING,
+  REMOVE_PARTICIPANT,
+} from '../actions/chat.action';
+import {
   ACCOUNT_DATA_CHANGE,
+  CREATE_MEETING,
   DISCONNECT_USER,
+  GET_MEETINGS,
   GET_USER,
   REFRESH_TOKEN,
   SIGN_IN_USER,
   SIGN_UP_USER,
 } from '../actions/user.action';
+import { isEmpty } from '../utils/utils';
 
 const initialState = {
   signInError: '',
   signUpError: '',
   changePasswordError: '',
+  createMeetingError: '',
   user: {},
   token: '',
+  meetings: [],
 };
 
 export default function userReducer(state = initialState, action) {
@@ -58,6 +68,28 @@ export default function userReducer(state = initialState, action) {
       };
     case DISCONNECT_USER:
       return { initialState };
+    case GET_MEETINGS:
+      return { ...state, meetings: action.payload.meetings };
+    case CREATE_MEETING:
+      if (!isEmpty(action.payload.newMeeting))
+        state.meetings.push(action.payload.newMeeting);
+      return {
+        ...state,
+        createMeetingError: action.payload.createMeetingError,
+      };
+    case ADD_PARTICIPANT:
+      console.log('ajout dans user reducer');
+      return { ...state };
+    case REMOVE_PARTICIPANT:
+      console.log('retrait d un participant');
+      return { ...state };
+    case DELETE_MEETING:
+      return {
+        ...state,
+        meetings: state.meetings.filter(
+          (meeting) => meeting.id !== action.payload.meetingId
+        ),
+      };
     default:
       return state;
   }
