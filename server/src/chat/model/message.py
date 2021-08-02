@@ -17,7 +17,7 @@ class Message(db.Model):
     owner = db.relationship('User', backref=db.backref('own_message', lazy='dynamic'), foreign_keys=[owner_id])
 
     receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
-    receiver = db.relationship('User', backref=db.backref('receiver_projects', lazy='dynamic'), foreign_keys=[receiver_id])
+    receiver = db.relationship('User', backref=db.backref('receiver_message', lazy='dynamic'), foreign_keys=[receiver_id])
 
     project_id = db.Column(db.Integer, db.ForeignKey('project.id'), nullable=False)
     project = db.relationship('Project', backref=db.backref('message_project', lazy='dynamic'))
@@ -31,4 +31,4 @@ class Message(db.Model):
         return self._registered_on.strftime('%m/%d/%Y, %H:%M')
 
     def __repr__(self):
-        return "<Message '{}'>".format(self.title)
+        return "<Message '{}'>".format(self.id)

@@ -89,7 +89,7 @@ class TestProjectService(BaseTestCase):
     def test_required_owner_or_coach_in_project(self):
         # It's owner
         self.assertIsNone(required_own_or_coach_in_project(
-            current_user_id=self.owner.id,
+            user_id=self.owner.id,
             project=self.project
         ))
 
@@ -100,7 +100,7 @@ class TestProjectService(BaseTestCase):
 
         # It's coach
         self.assertIsNone(required_own_or_coach_in_project(
-            current_user_id=self.coach.id,
+            user_id=self.coach.id,
             project=self.project
         ))
 
@@ -112,7 +112,7 @@ class TestProjectService(BaseTestCase):
     def test_required_member_in_project(self):
         # It's owner
         self.assertIsNone(required_member_in_project(
-            current_user_id=self.owner.id,
+            user_id=self.owner.id,
             project=self.project
         ))
 
@@ -123,7 +123,7 @@ class TestProjectService(BaseTestCase):
 
         # It's coach
         self.assertIsNone(required_member_in_project(
-            current_user_id=self.coach.id,
+            user_id=self.coach.id,
             project=self.project
         ))
 
@@ -134,7 +134,7 @@ class TestProjectService(BaseTestCase):
 
         # It's participant
         self.assertIsNone(required_member_in_project(
-            current_user_id=self.participant.id,
+            user_id=self.participant.id,
             project=self.project
         ))
 

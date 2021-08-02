@@ -19,6 +19,7 @@ message_item = api.model('Message_Item', {
     'content': fields.String,
     'owner': fields.Nested(user_item, description="Message's owner"),
     'receiver': fields.Nested(user_item, description="Message's receiver", skip_none=True, allow_null=True),
+    'created_at': fields.String
 })
 
 message_list = api.model('Project_List', model=list_model(message_item))

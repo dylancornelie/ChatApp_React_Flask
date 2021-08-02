@@ -135,7 +135,7 @@ def invite_participant_into_project(current_user_id: int, id_project: int, data:
     project = get_project_item(id_project)
     user = get_a_user(data.get('participant'))
 
-    required_member_in_project(current_user_id=current_user_id, project=project)
+    required_member_in_project(user_id=current_user_id, project=project)
 
     # check new user exist project ou non
     if user.id == project.owner_id or user in project.participants or user in project.coaches:
@@ -163,7 +163,7 @@ def leave_from_project(current_user_id: int, id_project: int) -> Dict:
     project = get_project_item(id_project)
     current_user = get_a_user(current_user_id)
 
-    required_member_in_project(current_user_id=current_user_id, project=project)
+    required_member_in_project(user_id=current_user_id, project=project)
 
     if project.owner == current_user:
         e = BadRequest()
@@ -200,7 +200,7 @@ def designate_coach_into_project(current_user_id: int, id_project: int, data: Di
     """
 
     project = get_project_item(id_project)
-    required_own_or_coach_in_project(current_user_id=current_user_id, project=project)
+    required_own_or_coach_in_project(user_id=current_user_id, project=project)
     user = get_a_user(data.get('coach'))
 
     if user == project.owner or user in project.coaches:
@@ -247,7 +247,7 @@ def withdraw_coach_in_project(current_user_id: int, id_project: int, data: Dict)
     """
 
     project = get_project_item(id_project)
-    required_own_or_coach_in_project(current_user_id=current_user_id, project=project)
+    required_own_or_coach_in_project(user_id=current_user_id, project=project)
     user = get_a_user(data.get('coach'))
 
     if user == project.owner or user not in project.coaches:
@@ -286,7 +286,7 @@ def remove_participant_in_project(current_user_id: int, id_project: int, data: D
     """
 
     project = get_project_item(id_project)
-    required_own_or_coach_in_project(current_user_id=current_user_id, project=project)
+    required_own_or_coach_in_project(user_id=current_user_id, project=project)
     user = get_a_user(data.get('participant'))
 
     if user == project.owner or user in project.coaches:
@@ -331,31 +331,28 @@ def required_own_project(current_user_id: int, project: Project) -> None:
         raise Forbidden("You must be the project's owner.")
 
 
-def required_own_or_coach_in_project(current_user_id: int, project: Project) -> None:
+def required_own_or_coach_in_project(user_id: int, project: Project) -> None:
     """
     Check user is owner or coach
 
-    :param current_user_id: int
+    :param user_id: int
     :param project: Project
     """
 
-    if not (project.owner_id == current_user_id
-            or any(current_user_id == user.id for user in project.coaches)):
+    if not (is_owner(user_id, project) or is_coach(user_id, project)):
         raise Forbidden("Yous must be an project's owner or coach.")
 
 
-def required_member_in_project(current_user_id: int, project: Project, message = "You must be a project's member.") -> None:
+def required_member_in_project(user_id: int, project: Project) -> None:
     """
     Check user is member
 
-    :param current_user_id: int
+    :param user_id: int
     :param project: Project
     """
 
-    if not (project.owner_id == current_user_id
-            or any(current_user_id == user.id for user in project.coaches)
-            or any(current_user_id == user.id for user in project.participants)):
-        raise Forbidden(message)
+    if not (is_owner(user_id, project) or is_coach(user_id, project) or is_participant(user_id, project)):
+        raise Forbidden("You must be a project's member.")
 
 
 def insert_participants(id_project: int, participants: List[int]) -> None:
@@ -380,3 +377,15 @@ def insert_coaches(id_project: int, coaches: List[int]) -> None:
 
     data_participant = list(dict(user_id=i, project_id=id_project) for i in coaches)
     insert_data(user_coaches_to_project, data_participant)
+
+
+def is_owner(user_id: int, project: Project) -> bool:
+    return project.owner_id == user_id
+
+
+def is_coach(user_id: int, project: Project) -> bool:
+    return any(user_id == user.id for user in project.coaches)
+
+
+def is_participant(user_id: int, project: Project) -> bool:
+    return any(user_id == user.id for user in project.participants)
