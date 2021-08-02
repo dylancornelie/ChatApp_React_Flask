@@ -27,6 +27,9 @@ class Config:
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD', None)
     MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER', 'Chat Server')
 
+    # Redis
+    REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
+
 
 class DevelopmentConfig(Config):
     # uncomment the line below to use postgres

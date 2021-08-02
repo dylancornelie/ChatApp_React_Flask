@@ -1,18 +1,19 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
-from flask_migrate import Migrate
 from flask_cors import CORS
 from flask_mailman import Mail
+from flask_migrate import Migrate
+from flask_redis import FlaskRedis
+from flask_sqlalchemy import SQLAlchemy
 
 from src.chat.config import config_by_name
-
 
 db = SQLAlchemy()
 migrate = Migrate()
 flask_bcrypt = Bcrypt()
 cors = CORS()
 mail = Mail()
+redis = FlaskRedis()
 
 
 def create_app(config_name):
@@ -27,5 +28,6 @@ def create_app(config_name):
     flask_bcrypt.init_app(app)
     cors.init_app(app)
     mail.init_app(app)
+    redis.init_app(app)
 
     return app

@@ -15,3 +15,18 @@
 
 # Server email
 - Flask-Mailman [here](https://www.waynerv.com/flask-mailman/)
+
+# Notification
+## SSE - Client
+### Registered
+````js
+const sse = new EventSource('/api/v1/users/stream');
+
+sse.addEventListener('greeting', (event)=>{
+          console.log(JSON.parse(event.data))
+})
+````
+### Notify
+````js
+axios.post('/api/v1/users/stream');
+````
