@@ -38,6 +38,7 @@ def get_all_users(filter_by) -> Pagination:
         query = query.filter((User.username.like(f'%{filter_by}%'))
                              | (User.first_name.like(f'%{filter_by}%'))
                              | (User.last_name.like(f'%{filter_by}%'))
+                             | (User.username.like(f'%{filter_by}%'))
                              )
 
     return paginate(query)

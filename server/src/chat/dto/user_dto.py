@@ -83,5 +83,5 @@ user_item = api.model('User_Item', {
 user_list = api.model('User_List', model=list_model(user_item))
 
 user_params = params.copy()
-user_params['filter_by'] = {'in': 'query', 'description': 'The filter for email, first name and last name',
+user_params['filter_by'] = {'in': 'query', 'description': 'The filter for email, first name, last name, ou username',
                             'type': 'string'}
