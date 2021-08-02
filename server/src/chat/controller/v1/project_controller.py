@@ -7,7 +7,7 @@ from flask_restx import Resource
 
 from src.chat.dto.project_dto import (
     api, project_list, project_item, project_post, project_params,
-    project_participant, project_designate_coach
+    project_participant, project_designate_coach, user_item
 )
 from src.chat.service.project_service import (
     save_new_project, get_all_projects, update_project, delete_project,
@@ -75,6 +75,7 @@ class Item(Resource):
 class Invite(Resource):
     @token_required
     @api.expect(project_participant, validate=True)
+    @api.marshal_with(user_item, skip_none=True)
     def post(self, id: int):
         """Invite some participants into the project"""
         data = request.json

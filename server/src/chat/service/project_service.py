@@ -122,14 +122,14 @@ def delete_project(current_user_id: int, id_project: int) -> Dict:
         raise InternalServerError("The server encountered an internal error and was unable to delete your data.")
 
 
-def invite_participant_into_project(current_user_id: int, id_project: int, data: Dict) -> Dict:
+def invite_participant_into_project(current_user_id: int, id_project: int, data: Dict) -> User:
     """
     Invite new member into project
 
     :param current_user_id: int
     :param id_project: int
     :param data: Dict['participant']
-    :return: Message
+    :return: User
     """
 
     project = get_project_item(id_project)
@@ -148,7 +148,7 @@ def invite_participant_into_project(current_user_id: int, id_project: int, data:
 
     insert_participants(id_project=project.id, participants=[data.get('participant')])
 
-    return dict(message='You added these participants.')
+    return user
 
 
 def leave_from_project(current_user_id: int, id_project: int) -> Dict:
