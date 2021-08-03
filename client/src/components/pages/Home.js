@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Loader from 'react-loader-spinner';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import { getMeetings, getUser } from '../../actions/user.action';
@@ -55,7 +56,7 @@ const Home = () => {
             {meeting.id === moreInfo && <MeetingInfo data={meeting} />}
           </div>
           ))*/}
-        {!isEmpty(userStates.meetings) &&
+        {!isEmpty(userStates.meetings) ? (
           userStates.meetings.map((meeting) => (
             <div
               key={meeting.id}
@@ -85,7 +86,21 @@ const Home = () => {
               />
               {meeting.id === moreInfo && <MeetingInfo meeting={meeting} />}
             </div>
-          ))}
+          ))
+        ) : (
+          <Loader
+            type='Rings'
+            color='#4f6d7a'
+            height={200}
+            width={200}
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              flexGrow: '1',
+            }}
+          />
+        )}
       </div>
       <div className='home-button-container'>
         <button onClick={() => history.push('/meeting/create')}>

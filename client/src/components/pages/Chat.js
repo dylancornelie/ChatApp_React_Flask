@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import Loader from 'react-loader-spinner';
 import ChatHeader from '../chat/ChatHeader';
 import MessageInput from '../chat/MessageInput';
 import MessageList from '../chat/MessageList';
@@ -6,7 +7,7 @@ import ParticipantList from '../chat/ParticipantList';
 import { useDispatch, useSelector } from 'react-redux';
 import ChatContextMenu from '../chat/ChatContextMenu';
 import AddParticipantPopUp from '../chat/AddParticipantPopUp';
-import { tokenIsEmpty, tokenIsValid } from '../../utils/utils';
+import { isEmpty, tokenIsEmpty, tokenIsValid } from '../../utils/utils';
 import { useHistory } from 'react-router-dom';
 import { showAddParticipant } from '../../actions/chat.action';
 
@@ -23,19 +24,36 @@ const Chat = () => {
   return (
     <div className='chat-component-container'>
       <ChatHeader title='Chat TX' />
-      {chatStates.showParticipants && <ParticipantList />}
-      {chatStates.showContextMenu && <ChatContextMenu />}
-      {chatStates.showAddParticipant && (
-        <AddParticipantPopUp
-          outsideClickAction={() => dispatch(showAddParticipant())}
-          meetingId={chatStates.meeting.id}
+      {isEmpty(chatStates.meeting) ? (
+        <Loader
+          type='Rings'
+          color='#4f6d7a'
+          height={300}
+          width={300}
+          style={{
+            flexGrow:'1',
+            display:'flex',
+            justifyContent:'center',
+            alignItems:'center'
+          }}
         />
+      ) : (
+        <>
+          {chatStates.showParticipants && <ParticipantList />}
+          {chatStates.showContextMenu && <ChatContextMenu />}
+          {chatStates.showAddParticipant && (
+            <AddParticipantPopUp
+              outsideClickAction={() => dispatch(showAddParticipant())}
+              meetingId={chatStates.meeting.id}
+            />
+          )}
+          <MessageList />
+          {(userStates.user.id === chatStates.meeting.owner.id ||
+            chatStates.meeting.coaches.find(
+              (coach) => coach.id === userStates.user.id
+            )) && <MessageInput />}
+        </>
       )}
-      <MessageList />
-      {(userStates.user.id === chatStates.meeting.owner.id ||
-        chatStates.meeting.coaches.find(
-          (coach) => coach.id === userStates.user.id
-        )) && <MessageInput />}
     </div>
   );
 };
