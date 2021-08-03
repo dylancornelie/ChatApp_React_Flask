@@ -7,19 +7,20 @@ import {
   SHOW_CONTEXT_MENU,
   SHOW_PARTICIPANTS,
 } from '../actions/chat.action';
+import { isEmpty } from '../utils/utils';
 
 const initialState = {
   showParticipants: false,
   showContextMenu: false,
   showAddParticipant: false,
   messageReceiver: '',
-  meetingInfo: null,
+  meeting: null,
 };
 
 export default function chatReducer(state = initialState, action) {
   switch (action.type) {
     case JOIN_CHAT:
-      return { initialState, meetingInfo: action.payload.meeting };
+      return { initialState, meeting: action.payload.meeting };
     case SHOW_PARTICIPANTS:
       return { ...state, showParticipants: !state.showParticipants };
     case SHOW_CONTEXT_MENU:
@@ -28,12 +29,6 @@ export default function chatReducer(state = initialState, action) {
       return { ...state, showAddParticipant: !state.showAddParticipant };
     case SET_MESSAGE_RECEIVER:
       return { ...state, messageReceiver: action.payload.receiver };
-    case ADD_PARTICIPANT:
-      console.log('ajout dans chat reducer');
-      return { ...state };
-    case REMOVE_PARTICIPANT:
-      console.log('retrait d un participant');
-      return { ...state };
     default:
       return state;
   }

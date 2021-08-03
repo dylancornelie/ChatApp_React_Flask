@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react';
 import { IoAdd } from 'react-icons/io5';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { showAddParticipant } from '../../actions/chat.action';
 import ParticipantItem from './ParticipantItem';
 
 const ParticipantList = () => {
+  const chatStates = useSelector((state) => state.chatReducer);
   const dispatch = useDispatch();
 
   useEffect(() => {
-
     let isDown = false;
     let startX = null;
     let scrollLeft = null;
@@ -45,36 +45,21 @@ const ParticipantList = () => {
 
   return (
     <div className='chat-participant-list'>
-      <div className='chat-participant-item 'id='add-logo'>
+      <div className='chat-participant-item ' id='add-logo'>
         <IoAdd
-        style={{height:'100%', width:'auto', maxHeight:'7rem'}}
-
+          style={{ height: '100%', width: 'auto', maxHeight: '7rem' }}
           color='#4f6d7a'
           className='chat-participant-item-add-logo'
           onClick={() => dispatch(showAddParticipant())}
         />
       </div>
-      <ParticipantItem />
-      <ParticipantItem />
-      <ParticipantItem />
-      <ParticipantItem />
-      <ParticipantItem />
-      <ParticipantItem />
-      <ParticipantItem />
-      <ParticipantItem />
-      <ParticipantItem />
-      <ParticipantItem />
-      <ParticipantItem />
-      <ParticipantItem />
-      <ParticipantItem />
-      <ParticipantItem />
-      <ParticipantItem />
-      <ParticipantItem />
-      <ParticipantItem />
-      <ParticipantItem />
-      <ParticipantItem />
-      <ParticipantItem />
-    </div>
+      {chatStates.meeting.coaches.map((coach) => (
+        <ParticipantItem user={coach} />
+      ))}
+      {chatStates.meeting.participants.map((participant) => (
+        <ParticipantItem user={participant} />
+      ))}
+          </div>
   );
 };
 

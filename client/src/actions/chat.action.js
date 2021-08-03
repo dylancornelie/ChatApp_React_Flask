@@ -11,26 +11,39 @@ export const SHOW_ADD_PARTICIPANT = 'SHOW_ADD_PARTICIPANT';
 export const SET_MESSAGE_RECEIVER = 'SET_MESSAGE_RECEIVER';
 
 export const addParticipant = (meetingId, login) => {
-  console.log(login);
   return (dispatch) => {
     axios({
-      method: 'POST',
-      url: `${process.env.REACT_APP_API_URL}/api/v1/projects/${meetingId}/invite`,
+      method: 'GET',
+      url: `${process.env.REACT_APP_API_URL}/api/v1/users/?page=1&per_page=50&filter_by=${login}`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
-      data: {
-        participant: parseInt(login),
-      },
-    })
-      .then((response) => {
-        return dispatch({ type: ADD_PARTICIPANT, payload: response.data });
+    }).then((response) => {
+      const userToAdd = response.data.data.find(
+        (user) => user.username === login
+      );
+      axios({
+        method: 'POST',
+        url: `${process.env.REACT_APP_API_URL}/api/v1/projects/${meetingId}/invite`,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        data: {
+          participant: userToAdd.id,
+        },
       })
-      .catch((err) => console.error(err));
+        .then((response) => {
+          return dispatch({
+            type: ADD_PARTICIPANT,
+            payload: { newUser: response.data, meetingId: meetingId, addByLoginError:'User successfully added' },
+          });
+        })
+        .catch((err) => dispatch({type:ADD_PARTICIPANT, payload:{addByLoginError : 'User already added'}}) );
+    }).catch(err => dispatch({type:ADD_PARTICIPANT, payload:{addByLoginError : 'Invalid login'}}));
   };
 };
 
-export const removeParticipant = (meetingId, login) => {
+export const removeParticipant = (meetingId, userId) => {
   return (dispatch) => {
     axios({
       method: 'DELETE',
@@ -39,11 +52,14 @@ export const removeParticipant = (meetingId, login) => {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
       data: {
-        participant: parseInt(login),
+        participant: parseInt(userId),
       },
     })
-      .then((response) => {
-        return dispatch({ type: REMOVE_PARTICIPANT, payload: response.data });
+      .then(() => {
+        return dispatch({
+          type: REMOVE_PARTICIPANT,
+          payload: { userIdToRemove: userId, meetingId },
+        });
       })
       .catch((err) => console.error(err));
   };

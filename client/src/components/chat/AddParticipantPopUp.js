@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import QRCode from 'react-qr-code';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addParticipant } from '../../actions/chat.action';
 
 const AddParticipantPopUp = ({ outsideClickAction, meetingId }) => {
   const dispatch = useDispatch();
+  const userStates = useSelector(state => state.userReducer);
   const [showQrCode, setShowQrCode] = useState(false);
   const [addByLogin, setAddByLogin] = useState(false);
   const [login, setLogin] = useState('');
 
   const handleAddByLogin = () => {
-    console.log('adding the guy...',meetingId);
-    dispatch(addParticipant(meetingId,login));
+      dispatch(addParticipant(meetingId, login))
   };
 
   const viewWidth = Math.max(
@@ -58,7 +58,7 @@ const AddParticipantPopUp = ({ outsideClickAction, meetingId }) => {
                 <button onClick={() => handleAddByLogin()}>Add</button>
               </div>
               <p className='addbylogin-infobox'>
-                Participant successfully added !
+                {userStates.addByLoginError}
               </p>
             </div>
           ) : (

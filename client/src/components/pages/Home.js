@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import { getMeetings, getUser } from '../../actions/user.action';
-import data from '../../data/meetings.json';
+// import data from '../../data/meetings.json';
 import { isEmpty, tokenIsEmpty, tokenIsValid } from '../../utils/utils';
 import HomeHeader from '../home/HomeHeader';
 import MeetingElement from '../home/MeetingElement';
@@ -13,16 +13,16 @@ const Home = () => {
   const dispatch = useDispatch();
   const userStates = useSelector((state) => state.userReducer);
   const [moreInfo, setMoreInfo] = useState(null);
-  const [fetchMeeting, setFetchMeeting] = useState(false)
+  const [fetchMeeting, setFetchMeeting] = useState(false);
 
   useEffect(() => {
     if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
     if (isEmpty(userStates.user) && tokenIsValid()) dispatch(getUser());
     if (!fetchMeeting && isEmpty(userStates.meetings) && tokenIsValid()) {
       dispatch(getMeetings());
-      setFetchMeeting(true)
-    };
-  },[userStates.user,dispatch,history, userStates.meetings,fetchMeeting]);
+      setFetchMeeting(true);
+    }
+  }, [userStates.user, dispatch, history, userStates.meetings, fetchMeeting]);
 
   return (
     <div className='home-container'>
@@ -55,8 +55,9 @@ const Home = () => {
             {meeting.id === moreInfo && <MeetingInfo data={meeting} />}
           </div>
           ))*/}
-          {
-            !isEmpty(userStates.meetings) && userStates.meetings.map(meeting =>(<div
+        {!isEmpty(userStates.meetings) &&
+          userStates.meetings.map((meeting) => (
+            <div
               key={meeting.id}
               style={
                 meeting.id === moreInfo
@@ -78,10 +79,13 @@ const Home = () => {
                 }
               }}
             >
-              <MeetingElement meeting={meeting} active={meeting.id === moreInfo} />
+              <MeetingElement
+                meeting={meeting}
+                active={meeting.id === moreInfo}
+              />
               {meeting.id === moreInfo && <MeetingInfo meeting={meeting} />}
-            </div>) )
-          }
+            </div>
+          ))}
       </div>
       <div className='home-button-container'>
         <button onClick={() => history.push('/meeting/create')}>

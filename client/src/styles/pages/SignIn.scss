@@ -77,14 +77,10 @@
   .signin-form-bottom-link {
     margin-top: 2rem;
     font-size: 1rem;
-    color: $accentuation-color;
     margin-bottom: 5rem;
-
-    & > :visited {
-      color: $accentuation-color;
-    }
-
+    
     a {
+      color: $accentuation-color;
       display: block;
       text-align: center;
       text-decoration: underline;

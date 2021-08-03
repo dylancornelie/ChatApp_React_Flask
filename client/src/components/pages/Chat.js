@@ -27,7 +27,7 @@ const Chat = () => {
       {chatStates.showAddParticipant && (
         <AddParticipantPopUp
           outsideClickAction={() => dispatch(showAddParticipant())}
-          meetingId={chatStates.meetingId}
+          meetingId={chatStates.meeting.id}
         />
       )}
       <MessageList />

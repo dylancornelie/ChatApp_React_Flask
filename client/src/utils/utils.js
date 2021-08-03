@@ -51,10 +51,16 @@ export const addAnchorTag = (message) => {
 
 export const tokenIsEmpty = () =>
   isEmpty(localStorage.getItem('token')) ||
-  isEmpty(localStorage.getItem('tokenExpiration')) || localStorage.length === 0;
+  isEmpty(localStorage.getItem('tokenExpiration')) ||
+  localStorage.length === 0;
 
-export const tokenIsValid = () =>{
-  if(!((localStorage.getItem('tokenExpiration') - 5) > Math.floor(Date.now() / 1000)))
-    return false ;
+export const tokenIsValid = () => {
+  if (
+    !(
+      localStorage.getItem('tokenExpiration') - 5 >
+      Math.floor(Date.now() / 1000)
+    )
+  )
+    return false;
   else return true;
-}
+};

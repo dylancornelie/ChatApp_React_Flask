@@ -20,6 +20,7 @@ const initialState = {
   signUpError: '',
   changePasswordError: '',
   createMeetingError: '',
+  addByLoginError: '',
   user: {},
   token: '',
   meetings: [],
@@ -78,11 +79,28 @@ export default function userReducer(state = initialState, action) {
         createMeetingError: action.payload.createMeetingError,
       };
     case ADD_PARTICIPANT:
-      console.log('ajout dans user reducer');
-      return { ...state };
+      return {
+        ...state,
+        addByLoginError: action.payload.addByLoginError,
+        meetings: state.meetings.map((meeting) => {
+          if (meeting.id === action.payload.meetingId) {
+            meeting.participants.push(action.payload.newUser);
+          }
+          return meeting;
+        }),
+      };
     case REMOVE_PARTICIPANT:
-      console.log('retrait d un participant');
-      return { ...state };
+      return {
+        ...state,
+        meetings: state.meetings.map((meeting) => {
+          if (meeting.id === action.payload.meetingId)
+            meeting.participants = meeting.participants.filter(
+              (participant) => participant.id !== action.payload.userIdToRemove
+            );
+          return meeting;
+        }),
+      };
+
     case DELETE_MEETING:
       return {
         ...state,
