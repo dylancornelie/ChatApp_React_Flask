@@ -55,6 +55,7 @@ class List(Resource):
 @api.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), 'Error saving data.')
 class Item(Resource):
     @token_required
+    @api.marshal_with(project_item)
     def put(self, id: int):
         """Edit your registered project"""
         data = request.json

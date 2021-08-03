@@ -75,14 +75,14 @@ def get_project_item(id_project: int) -> Project:
     return Project.query.filter_by(id=id_project).first_or_404('Project Not Found')
 
 
-def update_project(current_user_id: int, id_project: int, data: Dict) -> Dict:
+def update_project(current_user_id: int, id_project: int, data: Dict) -> Project:
     """
     Update project with new data
 
     :param current_user_id: int
     :param id_project: int
     :param data: Dict['title']
-    :return: Message
+    :return: Project
     """
 
     project = get_project_item(id_project)
@@ -98,6 +98,7 @@ def update_project(current_user_id: int, id_project: int, data: Dict) -> Dict:
         current_app.logger.error(str(e), exc_info=True)
         raise InternalServerError("The server encountered an internal error and was unable to save your data.")
 
+    return project
 
 def delete_project(current_user_id: int, id_project: int) -> Dict:
     """
