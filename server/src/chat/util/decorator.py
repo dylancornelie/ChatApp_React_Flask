@@ -1,7 +1,7 @@
 from functools import wraps
 
 from flask import request
-from werkzeug.exceptions import Unauthorized, Forbidden
+from werkzeug.exceptions import Forbidden
 
 from src.chat.service.auth_service import decode_auth_token
 

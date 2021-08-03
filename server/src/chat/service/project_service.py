@@ -1,27 +1,32 @@
 """Service logic for project """
 
-from http import HTTPStatus
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 from flask import current_app
+from flask_restx import marshal
 from werkzeug.exceptions import Conflict, Forbidden, InternalServerError, BadRequest
 
 from src.chat import db
+from src.chat.dto.project_dto import (
+    project_item, user_item
+)
 from src.chat.model.pagination import Pagination
 from src.chat.model.project import Project, user_coaches_to_project, user_participates_of_project
 from src.chat.model.user import User
 from src.chat.service import save_data, insert_data
-from src.chat.service.user_service import get_a_user
+from src.chat.service.user_service import get_a_user, get_channel_stream
+from src.chat.util.constant import *
 from src.chat.util.pagination import paginate
+from src.chat.util.stream import publish
 
 
-def save_new_project(current_user_id: int, data: Dict) -> Tuple[Project, int]:
+def save_new_project(current_user_id: int, data: Dict) -> Project:
     """
     Save a new project with data
 
     :param current_user_id: int
     :param data: Dict['title', 'participants', 'coaches']
-    :return: Project and status Http created
+    :return: Project
     """
 
     project = Project.query.filter_by(title=data['title']).first()
@@ -41,7 +46,16 @@ def save_new_project(current_user_id: int, data: Dict) -> Tuple[Project, int]:
     if data.get('coaches'):
         insert_coaches(id_project=new_project.id, coaches=data.get('coaches'))
 
-    return new_project, HTTPStatus.CREATED
+    # Notify
+    data = dict(
+        type=TYPE_NOTIFICATION_ADD_INTO_PROJECT,
+        message=f"You was added into the project '{project.title}' by {project.owner.name}.",
+        data=marshal(project, project_item)
+    )
+    notify_all_member_in_project(project=project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
+                                 exclude_users_id=[current_user_id])
+
+    return new_project
 
 
 def get_all_projects(current_user_id: int, filter_by) -> Pagination:
@@ -88,17 +102,29 @@ def update_project(current_user_id: int, id_project: int, data: Dict) -> Project
     project = get_project_item(id_project)
     required_own_project(current_user_id, project)
 
+    older_project_title = project.title
+
     try:
         project.title = data['title']
         db.session.commit()
-        return dict(message='Your project was successfully changed.')
 
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(str(e), exc_info=True)
         raise InternalServerError("The server encountered an internal error and was unable to save your data.")
 
+    else:
+        # Notify
+        data = dict(
+            type=TYPE_NOTIFICATION_EDIT_PROJECT,
+            message=f"The project '{older_project_title}' was edited by {project.owner.name}.",
+            data=marshal(project, project_item)
+        )
+        notify_all_member_in_project(project=project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
+                                     exclude_users_id=[current_user_id])
+
     return project
+
 
 def delete_project(current_user_id: int, id_project: int) -> Dict:
     """
@@ -111,16 +137,27 @@ def delete_project(current_user_id: int, id_project: int) -> Dict:
 
     project = get_project_item(id_project)
     required_own_project(current_user_id, project)
+    older_project_title = project.title
 
     try:
         db.session.delete(project)
         db.session.commit()
-        return dict(message='Your project was successfully removed.')
 
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(str(e), exc_info=True)
         raise InternalServerError("The server encountered an internal error and was unable to delete your data.")
+
+    else:
+        # Notify
+        data = dict(
+            type=TYPE_NOTIFICATION_DELETE_PROJECT,
+            message=f"The project '{older_project_title}' was removed by {project.owner.name}.",
+        )
+        notify_all_member_in_project(project=project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
+                                     exclude_users_id=[current_user_id])
+
+    return dict(message='Your project was successfully removed.')
 
 
 def invite_participant_into_project(current_user_id: int, id_project: int, data: Dict) -> User:
@@ -148,6 +185,23 @@ def invite_participant_into_project(current_user_id: int, id_project: int, data:
         raise e
 
     insert_participants(id_project=project.id, participants=[data.get('participant')])
+
+    # Notify to new participant
+    data = dict(
+        type=TYPE_NOTIFICATION_ADD_INTO_PROJECT,
+        message=f"You was added into the project '{project.title}'.",
+        data=marshal(project, project_item)
+    )
+    notify_one_member_in_project(user_id=user.id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT)
+
+    # Notify to other members
+    data = dict(
+        type=TYPE_NOTIFICATION_ADD_INTO_PROJECT,
+        message=f"The new participant '@{user.username}' was added into the project '{project.title}'.",
+        data=marshal(user, user_item)
+    )
+    notify_all_member_in_project(project=project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
+                                 exclude_users_id=[current_user_id, user.id])
 
     return user
 
@@ -182,12 +236,22 @@ def leave_from_project(current_user_id: int, id_project: int) -> Dict:
 
         db.session.commit()
 
-        return dict(message='You left the project.')
-
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(str(e), exc_info=True)
         raise InternalServerError("The server encountered an internal error and was unable to remove your data.")
+
+    else:
+        # Notify
+        data = dict(
+            type=TYPE_NOTIFICATION_EDIT_PROJECT,
+            message=f"@{current_user.username} left the project'{project.title}'.",
+            data=dict(user_id=current_user_id)
+        )
+        notify_all_member_in_project(project=project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
+                                     exclude_users_id=[current_user_id])
+
+    return dict(message='You left the project.')
 
 
 def designate_coach_into_project(current_user_id: int, id_project: int, data: Dict) -> Dict:
@@ -229,12 +293,29 @@ def designate_coach_into_project(current_user_id: int, id_project: int, data: Di
 
         db.session.commit()
 
-        return dict(message='You designated a new coach.')
-
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(str(e), exc_info=True)
         raise InternalServerError("The server encountered an internal error and was unable to remove your data.")
+
+    else:
+        # Notify to new coach
+        data = dict(
+            type=TYPE_NOTIFICATION_EDIT_PROJECT,
+            message=f"You was designated new coach in the project '{project.title}'.",
+        )
+        notify_one_member_in_project(user_id=user.id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT)
+
+        # Notify to the other members
+        data = dict(
+            type=TYPE_NOTIFICATION_EDIT_PROJECT,
+            message=f"@{user.username} was designated new coach in the project '{project.title}'.",
+            data=dict(user_id=user.id)
+        )
+        notify_all_member_in_project(project=project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
+                                     exclude_users_id=[current_user_id, user.id])
+
+    return dict(message='You designated a new coach.')
 
 
 def withdraw_coach_in_project(current_user_id: int, id_project: int, data: Dict) -> Dict:
@@ -268,12 +349,29 @@ def withdraw_coach_in_project(current_user_id: int, id_project: int, data: Dict)
 
         db.session.commit()
 
-        return dict(message='You withdrew a coach. He will be a participant.')
-
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(str(e), exc_info=True)
         raise InternalServerError("The server encountered an internal error and was unable to remove your data.")
+
+    else:
+        # Notify to new participant
+        data = dict(
+            type=TYPE_NOTIFICATION_EDIT_PROJECT,
+            message=f"You was withdrew from coach in the project '{project.title}'.",
+        )
+        notify_one_member_in_project(user_id=user.id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT)
+
+        # Notify to the other members
+        data = dict(
+            type=TYPE_NOTIFICATION_EDIT_PROJECT,
+            message=f"@{user.username} was withdrew from coach, he will be a participant the project'{project.title}'.",
+            data=dict(user_id=user.id)
+        )
+        notify_all_member_in_project(project=project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
+                                     exclude_users_id=[current_user_id, user.id])
+
+    return dict(message='You withdrew a coach. He will be a participant.')
 
 
 def remove_participant_in_project(current_user_id: int, id_project: int, data: Dict) -> Dict:
@@ -288,9 +386,9 @@ def remove_participant_in_project(current_user_id: int, id_project: int, data: D
 
     project = get_project_item(id_project)
     required_own_or_coach_in_project(user_id=current_user_id, project=project)
-    user = get_a_user(data.get('participant'))
+    participant = get_a_user(data.get('participant'))
 
-    if user == project.owner or user in project.coaches:
+    if is_owner(user_id=participant.id, project=project) or is_coach(user_id=participant.id, project=project):
         e = BadRequest()
         e.data = dict(
             errors=dict(participant="You can't remove an owner or coach from project."),
@@ -298,7 +396,7 @@ def remove_participant_in_project(current_user_id: int, id_project: int, data: D
         )
         raise e
 
-    if user not in project.participants:
+    if not is_participant(user_id=participant.id, project=project):
         e = BadRequest()
         e.data = dict(
             errors=dict(participant="You can't remove a not member from project."),
@@ -308,16 +406,32 @@ def remove_participant_in_project(current_user_id: int, id_project: int, data: D
 
     try:
         # Remove them from list participants
-        project.participants.remove(user)
-
+        project.participants.remove(participant)
         db.session.commit()
-
-        return dict(message='You removed some participants.')
 
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(str(e), exc_info=True)
         raise InternalServerError("The server encountered an internal error and was unable to remove your data.")
+
+    else:
+        # Notify to this member
+        data = dict(
+            type=TYPE_NOTIFICATION_EDIT_PROJECT,
+            message=f"You was removed in the project '{project.title}'.",
+        )
+        notify_one_member_in_project(user_id=participant.id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT)
+
+        # Notify to the other members
+        data = dict(
+            type=TYPE_NOTIFICATION_EDIT_PROJECT,
+            message=f"@{participant.username} was removed in the project '{project.title}'.",
+            data=dict(user_id=participant.id)
+        )
+        notify_all_member_in_project(project=project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
+                                     exclude_users_id=[current_user_id, participant.id])
+
+    return dict(message='You removed some participants.')
 
 
 def required_own_project(current_user_id: int, project: Project) -> None:
@@ -390,3 +504,24 @@ def is_coach(user_id: int, project: Project) -> bool:
 
 def is_participant(user_id: int, project: Project) -> bool:
     return any(user_id == user.id for user in project.participants)
+
+
+def notify_all_member_in_project(project: Project, data, type_publish: str = None,
+                                 exclude_users_id: List[int] = None) -> None:
+    # Owner
+    notify_one_member_in_project(project.owner_id, data, type_publish, exclude_users_id)
+
+    # Coaches
+    for coach in project.coaches:
+        notify_one_member_in_project(coach.id, data, type_publish, exclude_users_id)
+
+    # Participants
+    for participant in project.participants:
+        notify_one_member_in_project(participant.id, data, type_publish, exclude_users_id)
+
+
+def notify_one_member_in_project(user_id: int, data, type_publish: str = None,
+                                 exclude_users_id: List[int] = None) -> None:
+    if not exclude_users_id or user_id not in exclude_users_id:
+        channel = get_channel_stream(user_id)
+        publish(channel, data, type_publish)

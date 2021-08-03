@@ -116,3 +116,7 @@ def update_forget_password(email: str) -> Dict:
         raise InternalServerError("The server encountered an internal error and was unable to send your email.")
 
     return dict(message=f'Your new password was successfully sent your email {email}.')
+
+
+def get_channel_stream(user_id: int) -> str:
+    return f"Stream_User_{user_id}"

@@ -44,7 +44,8 @@ class List(Resource):
     def post(self):
         """Creates a new Project """
         data = request.json
-        return save_new_project(current_user_id=self.post.current_user_id, data=data)
+        new_project = save_new_project(current_user_id=self.post.current_user_id, data=data)
+        return new_project, HTTPStatus.CREATED
 
 
 @api.route('/<int:id>')

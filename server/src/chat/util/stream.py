@@ -85,7 +85,7 @@ class Message(object):
         )
 
 
-def publish(channel: str, data, type: str = None, id=None, retry: int = None) -> None:
+def publish(channel: str, data, type: str = None, id: int = None, retry: int = None) -> None:
     """
     Publish data as a server-sent event.
 
