@@ -1,17 +1,16 @@
 """API endpoint definitions for /users namespace."""
-import datetime
 from http import HTTPStatus
 
-from flask import request, Response
+from flask import request
 from flask_restx import Resource
 
 from src.chat.dto.auth_dto import auth_resp
 from src.chat.dto.user_dto import (api, user_item, user_list, user_post, user_params, user_put, user_password,
                                    user_forget_password)
 from src.chat.service.user_service import (save_new_user, get_all_users, get_a_user, update_a_user,
-                                           update_a_user_password, update_forget_password)
-from src.chat.util.decorator import token_required
-from src.chat.util.stream import stream, publish
+                                           update_a_user_password, update_forget_password, get_channel_stream)
+from src.chat.util.decorator import token_required, decode_auth_token
+from src.chat.util.stream import stream
 
 
 @api.route('/')
@@ -104,12 +103,9 @@ class Me_Forget_Password(Resource):
         return update_forget_password(data['email'])
 
 
-@api.route('/stream')
-class Test(Resource):
-    def get(self):
-        return stream('time')
-
-    def post(self):
-        now = datetime.datetime.now().replace(microsecond=0).time()
-        publish('time', dict(time=now.isoformat()), type='greeting')
-        return Response(status=204)
+@api.route('/stream/<string:token>')
+class Stream(Resource):
+    def get(self, token: str):
+        user_id = decode_auth_token(token)
+        channel = get_channel_stream(user_id)
+        return stream(channel)
