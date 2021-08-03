@@ -4,7 +4,7 @@ import { IoAdd, IoSend } from 'react-icons/io5';
 import { TiDeleteOutline } from 'react-icons/ti';
 import { useDispatch, useSelector } from 'react-redux';
 import { isEmpty } from '../../utils/utils';
-import { setMessageReceiver } from '../../actions/chat.action';
+import { sendMessage, setMessageReceiver } from '../../actions/chat.action';
 
 const MessageInput = () => {
   const chatStates = useSelector((state) => state.chatReducer);
@@ -19,7 +19,15 @@ const MessageInput = () => {
     return newHeight;
   }
 
-  const handleSendMessage = () => {};
+  const handleSendMessage = () => {
+    isEmpty(chatStates.messageReceiver)
+      ? sendMessage(chatStates.meeting.id, message)
+      : sendMessage(
+          chatStates.meeting.id,
+          message,
+          chatStates.messageReceiver.id
+        );
+  };
 
   const [height, setHeight] = useState(25);
   const [message, setMessage] = useState('');
@@ -30,7 +38,7 @@ const MessageInput = () => {
       {!isEmpty(chatStates.messageReceiver) && isEmpty(file) && (
         <div className='messageInput-infobox'>
           <p className='messageInput-infobox-message'>
-            This message will be sent to
+            {`This message will be sent to ${chatStates.messageReceiver.first_name} ${chatStates.messageReceiver.last_name}`}
           </p>
           <IoAdd
             className='messageInput-infobox-logo'

@@ -1,10 +1,16 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
-import { setMessageReceiver, showContextMenu } from '../../actions/chat.action';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  designateCoach,
+  removeParticipant,
+  removePrivileges,
+  setMessageReceiver,
+  showContextMenu,
+} from '../../actions/chat.action';
 
 const ChatContextMenu = () => {
-
   const dispatch = useDispatch();
+  const chatStates = useSelector((state) => state.chatReducer);
 
   return (
     <div
@@ -17,9 +23,50 @@ const ChatContextMenu = () => {
           //e.stopPropagation();
         }}
       >
-        <button className='context-menu-button' onClick={()=>dispatch(setMessageReceiver('usernaaamme !!'))}>Send a private message</button>
-        <button className='context-menu-button'>Designate coach</button>
-        <button className='context-menu-button'>Remove participant</button>
+        <button
+          className='context-menu-button'
+          onClick={() => dispatch(setMessageReceiver(chatStates.targetedUser))}
+        >
+          Send a private message
+        </button>
+        {!chatStates.targetedUserIsCoach ? (
+          <button
+            className='context-menu-button'
+            onClick={() =>
+              dispatch(
+                designateCoach(chatStates.meeting.id, chatStates.targetedUser)
+              )
+            }
+          >
+            Designate coach
+          </button>
+        ) : (
+          <button
+            className='context-menu-button'
+            onClick={() =>
+              dispatch(
+                removePrivileges(chatStates.meeting.id, chatStates.targetedUser)
+              )
+            }
+          >
+            Remove privileges
+          </button>
+        )}
+        {!chatStates.targetedUserIsCoach && (
+          <button
+            className='context-menu-button'
+            onClick={() =>
+              dispatch(
+                removeParticipant(
+                  chatStates.meeting.id,
+                  chatStates.targetedUser.id
+                )
+              )
+            }
+          >
+            Remove participant
+          </button>
+        )}
       </div>
     </div>
   );

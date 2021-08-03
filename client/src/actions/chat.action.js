@@ -5,6 +5,10 @@ export const ADD_PARTICIPANT = 'ADD_PARTICIPANT';
 export const REMOVE_PARTICIPANT = 'REMOVE_PARTICIPANT';
 export const DELETE_MEETING = 'DELETE_MEETING';
 export const LEAVE_MEETING = 'LEAVE_MEETING';
+export const DESIGNATE_COACH = 'DESIGNATE_COACH';
+export const REMOVE_PRIVILEGES = 'REMOVE_PRIVILEGES';
+export const FETCH_MESSAGES = 'FETCH_MESSAGES';
+export const SEND_MESSAGE = 'SEND_MESSAGE';
 export const SHOW_PARTICIPANTS = 'SHOW_PARTICIPANTS';
 export const SHOW_CONTEXT_MENU = 'SHOW_CONTEXT_MENU';
 export const SHOW_ADD_PARTICIPANT = 'SHOW_ADD_PARTICIPANT';
@@ -18,28 +22,44 @@ export const addParticipant = (meetingId, login) => {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
-    }).then((response) => {
-      const userToAdd = response.data.data.find(
-        (user) => user.username === login
-      );
-      axios({
-        method: 'POST',
-        url: `${process.env.REACT_APP_API_URL}/api/v1/projects/${meetingId}/invite`,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-        data: {
-          participant: userToAdd.id,
-        },
-      })
-        .then((response) => {
-          return dispatch({
-            type: ADD_PARTICIPANT,
-            payload: { newUser: response.data, meetingId: meetingId, addByLoginError:'User successfully added' },
-          });
+    })
+      .then((response) => {
+        const userToAdd = response.data.data.find(
+          (user) => user.username === login
+        );
+        axios({
+          method: 'POST',
+          url: `${process.env.REACT_APP_API_URL}/api/v1/projects/${meetingId}/invite`,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+          data: {
+            participant: userToAdd.id,
+          },
         })
-        .catch((err) => dispatch({type:ADD_PARTICIPANT, payload:{addByLoginError : 'User already added'}}) );
-    }).catch(err => dispatch({type:ADD_PARTICIPANT, payload:{addByLoginError : 'Invalid login'}}));
+          .then((response) => {
+            return dispatch({
+              type: ADD_PARTICIPANT,
+              payload: {
+                newUser: response.data,
+                meetingId: meetingId,
+                addByLoginError: 'User successfully added',
+              },
+            });
+          })
+          .catch((err) =>
+            dispatch({
+              type: ADD_PARTICIPANT,
+              payload: { addByLoginError: 'User already added' },
+            })
+          );
+      })
+      .catch((err) =>
+        dispatch({
+          type: ADD_PARTICIPANT,
+          payload: { addByLoginError: 'Invalid login' },
+        })
+      );
   };
 };
 
@@ -102,8 +122,88 @@ export const joinChat = (meeting) => ({
   payload: { meeting },
 });
 
+export const designateCoach = (meetingId, user) => {
+  return (dispatch) => {
+    axios({
+      method: 'POST',
+      url: `${process.env.REACT_APP_API_URL}/api/v1/projects/${meetingId}/designate-coach`,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+      data: {
+        coach: user.id,
+      },
+    })
+      .then(() => {
+        return dispatch({
+          type: DESIGNATE_COACH,
+          payload: { meetingId, newCoach: user },
+        });
+      })
+      .catch((err) => console.error(err));
+  };
+};
+
+export const removePrivileges = (meetingId, user) => {
+  return (dispatch) => {
+    axios({
+      method: 'DELETE',
+      url: `${process.env.REACT_APP_API_URL}/api/v1/projects/${meetingId}/designate-coach`,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+      data: {
+        coach: user.id,
+      },
+    })
+      .then(() => {
+        return dispatch({
+          type: REMOVE_PRIVILEGES,
+          payload: { meetingId, oldCoach: user },
+        });
+      })
+      .catch((err) => console.error(err));
+  };
+};
+
+export const fetchMessages = (meetingId) => {
+  return (dispatch) =>
+    axios({
+      method: 'GET',
+      url: `${process.env.REACT_APP_API_URL}/api/v1/messages/${meetingId}?page=1&per_page=50`,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    })
+      .then((response) =>
+        dispatch({ type: FETCH_MESSAGES, payload: { data: response.data } })
+      )
+      .catch((err) => console.error(err));
+};
+
+export const sendMessage = (meetingId, message, receiverId = 0) => {
+  axios({
+    method: 'POST',
+    url: `${process.env.REACT_APP_API_URL}/api/v1/messages/${meetingId}`,
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+    data: {
+      content: message,
+      receiver: receiverId,
+    },
+  })
+    .then((response) => {
+      console.log('A implementer dans le reducer ', response);
+    })
+    .catch((err) => console.error(err));
+};
+
 export const showParticipants = () => ({ type: SHOW_PARTICIPANTS });
-export const showContextMenu = () => ({ type: SHOW_CONTEXT_MENU });
+export const showContextMenu = (user, isCoach) => ({
+  type: SHOW_CONTEXT_MENU,
+  payload: { targetedUser: user, targetedUserIsCoach: isCoach },
+});
 export const showAddParticipant = () => ({ type: SHOW_ADD_PARTICIPANT });
 export const setMessageReceiver = (receiver) => ({
   type: SET_MESSAGE_RECEIVER,

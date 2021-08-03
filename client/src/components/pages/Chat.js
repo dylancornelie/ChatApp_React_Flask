@@ -12,6 +12,7 @@ import { showAddParticipant } from '../../actions/chat.action';
 
 const Chat = () => {
   const chatStates = useSelector((state) => state.chatReducer);
+  const userStates = useSelector((state) => state.userReducer);
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -31,7 +32,10 @@ const Chat = () => {
         />
       )}
       <MessageList />
-      <MessageInput />
+      {(userStates.user.id === chatStates.meeting.owner.id ||
+        chatStates.meeting.coaches.find(
+          (coach) => coach.id === userStates.user.id
+        )) && <MessageInput />}
     </div>
   );
 };

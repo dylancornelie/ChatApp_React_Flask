@@ -1,6 +1,7 @@
 import {
   ADD_PARTICIPANT,
   DELETE_MEETING,
+  LEAVE_MEETING,
   REMOVE_PARTICIPANT,
 } from '../actions/chat.action';
 import {
@@ -108,6 +109,11 @@ export default function userReducer(state = initialState, action) {
           (meeting) => meeting.id !== action.payload.meetingId
         ),
       };
+      case LEAVE_MEETING:
+      state.meetings = state.meetings.filter(meeting => meeting.id !== action.payload.meetingId)  
+      return {
+          ...state
+        }
     default:
       return state;
   }

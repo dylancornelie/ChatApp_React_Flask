@@ -1,9 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchMessages } from '../../actions/chat.action';
 import data from '../../data/messages.json';
+import { isEmpty } from '../../utils/utils';
 import Message from './Message';
 
 const MessageList = () => {
+  const chatStates = useSelector((state) => state.chatReducer);
+  const dispatch = useDispatch();
   const messageEnd = useRef(null);
+  const [loadMessage,setLoadMessage] = useState(true)
+
+  useEffect(() => {
+    if ( loadMessage && !isEmpty(chatStates.meeting.id)){
+      dispatch(fetchMessages(chatStates.meeting.id));
+      setLoadMessage(false)
+    }
+  }, [chatStates.meeting.id, chatStates.messages, dispatch, loadMessage]);
 
   const scrollToBottom = () => {
     messageEnd.current.scrollIntoView({
@@ -22,8 +35,6 @@ const MessageList = () => {
         setToBottom(true);
       }, 10);
     }
-
-    
   }, [toBottom]);
 
   return (

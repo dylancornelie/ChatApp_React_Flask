@@ -54,10 +54,10 @@ const ParticipantList = () => {
         />
       </div>
       {chatStates.meeting.coaches.map((coach) => (
-        <ParticipantItem user={coach} />
+        <ParticipantItem key={coach.id} user={coach} isCoach={true} />
       ))}
       {chatStates.meeting.participants.map((participant) => (
-        <ParticipantItem user={participant} />
+        <ParticipantItem key={participant.id} user={participant} isCoach={false} />
       ))}
           </div>
   );
