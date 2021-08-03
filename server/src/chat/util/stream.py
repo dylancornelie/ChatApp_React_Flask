@@ -1,7 +1,9 @@
-import json
+"""Logic for """
 
-import six
-from flask import stream_with_context, Response
+import json
+from collections import OrderedDict
+
+from flask import stream_with_context, Response, current_app
 
 from src.chat import redis
 
@@ -11,15 +13,21 @@ class Message(object):
     Data that is published as a server-sent event.
     """
 
-    def __init__(self, data, type=None):
+    def __init__(self, data, type=None, id=None, retry=None):
         """
         Create a server-sent event.
         :param data: The event data. If it is not a string, it will be
-            serialized to JSON using the Flask application
+            serialized to JSON using the Flask application's
+            :class:`~flask.json.JSONEncoder`.
         :param type: An optional event type.
+        :param id: An optional event ID.
+        :param retry: An optional integer, to specify the reconnect time for
+            disconnected clients of this stream.
         """
         self.data = data
         self.type = type
+        self.id = id
+        self.retry = retry
 
     def to_dict(self):
         """
@@ -29,37 +37,78 @@ class Message(object):
         d = {"data": self.data}
         if self.type:
             d["type"] = self.type
+        if self.id:
+            d["id"] = self.id
+        if self.retry:
+            d["retry"] = self.retry
         return d
 
     def __str__(self):
         """
-        Serialize this object to a string, according to the `server-sent events
-        specification <https://www.w3.org/TR/eventsource/>`_.
+        Serialize this object to a string, according to the `server-sent events specification`.
         """
-        if isinstance(self.data, six.string_types):
-            data = self.data
-        else:
-            data = json.dumps(self.data)
+        data = json.dumps(self.data)
         lines = ["data:{value}".format(value=line) for line in data.splitlines()]
         if self.type:
             lines.insert(0, "event:{value}".format(value=self.type))
+        if self.id:
+            lines.append("id:{value}".format(value=self.id))
+        if self.retry:
+            lines.append("retry:{value}".format(value=self.retry))
         return "\n".join(lines) + "\n\n"
+
+    def __repr__(self):
+        kwargs = OrderedDict()
+        if self.type:
+            kwargs["type"] = self.type
+        if self.id:
+            kwargs["id"] = self.id
+        if self.retry:
+            kwargs["retry"] = self.retry
+        kwargs_repr = "".join(
+            ", {key}={value!r}".format(key=key, value=value)
+            for key, value in kwargs.items()
+        )
+        return "{classname}({data!r}{kwargs})".format(
+            classname=self.__class__.__name__,
+            data=self.data,
+            kwargs=kwargs_repr,
+        )
 
     def __eq__(self, other):
         return (
                 isinstance(other, self.__class__) and
                 self.data == other.data and
-                self.type == other.type
+                self.type == other.type and
+                self.id == other.id and
+                self.retry == other.retry
         )
 
 
-def publish(channel: str, data, type: str = None):
-    message = Message(data, type=type)
+def publish(channel: str, data, type: str = None, id=None, retry: int = None) -> None:
+    """
+    Publish data as a server-sent event.
+
+    :param data: The event data. If it is not a string, it will be
+        serialized to JSON using the Flask application's.
+    :param type: An optional event type.
+    :param id: An optional event ID.
+    :param retry: An optional integer, to specify the reconnect time for
+        disconnected clients of this stream.
+    :param channel: If you want to direct different events to different
+        clients, you may specify a channel for this event to go to.
+        Only clients listening to the same channel will receive this event.
+        Defaults to "sse".
+    """
+    message = Message(data, type=type, id=id, retry=retry)
     msg_json = json.dumps(message.to_dict())
     redis.publish(channel, msg_json)
 
 
 def messages(channel: str):
+    """
+        A generator objects from the given channel.
+    """
     pubsub = redis.pubsub()
     pubsub.subscribe(channel)
     try:
@@ -70,11 +119,15 @@ def messages(channel: str):
     finally:
         try:
             pubsub.unsubscribe(channel)
-        except ConnectionError:
-            pass
+        except ConnectionError as e:
+            current_app.logger.error(str(e), exc_info=True)
 
 
-def stream(channel: str):
+def stream(channel: str = 'sse'):
+    """
+    A view function that streams server-sent events.
+    """
+
     @stream_with_context
     def generator():
         for message in messages(channel=channel):
