@@ -49,7 +49,7 @@ def save_new_project(current_user_id: int, data: Dict) -> Project:
     # Notify
     data = dict(
         type=TYPE_NOTIFICATION_ADD_INTO_PROJECT,
-        message=f"You was added into the project '{project.title}' by {project.owner.name}.",
+        message=f"You was added into the project '{project.title}'.",
         data=marshal(project, project_item)
     )
     notify_all_member_in_project(project=project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
@@ -117,8 +117,8 @@ def update_project(current_user_id: int, id_project: int, data: Dict) -> Project
         # Notify
         data = dict(
             type=TYPE_NOTIFICATION_EDIT_PROJECT,
-            message=f"The project '{older_project_title}' was edited by {project.owner.name}.",
-            data=marshal(project, project_item)
+            message=f"The title's project '{older_project_title}' become the new tilte '{project.title}'.",
+            data=dict(project_title=project.title)
         )
         notify_all_member_in_project(project=project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
                                      exclude_users_id=[current_user_id])
@@ -152,7 +152,7 @@ def delete_project(current_user_id: int, id_project: int) -> Dict:
         # Notify
         data = dict(
             type=TYPE_NOTIFICATION_DELETE_PROJECT,
-            message=f"The project '{older_project_title}' was removed by {project.owner.name}.",
+            message=f"The project '{older_project_title}' was removed by '@{project.owner.username}'.",
         )
         notify_all_member_in_project(project=project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
                                      exclude_users_id=[current_user_id])
@@ -245,7 +245,7 @@ def leave_from_project(current_user_id: int, id_project: int) -> Dict:
         # Notify
         data = dict(
             type=TYPE_NOTIFICATION_EDIT_PROJECT,
-            message=f"@{current_user.username} left the project'{project.title}'.",
+            message=f"'@{current_user.username}' left the project'{project.title}'.",
             data=dict(user_id=current_user_id)
         )
         notify_all_member_in_project(project=project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
@@ -309,7 +309,7 @@ def designate_coach_into_project(current_user_id: int, id_project: int, data: Di
         # Notify to the other members
         data = dict(
             type=TYPE_NOTIFICATION_EDIT_PROJECT,
-            message=f"@{user.username} was designated new coach in the project '{project.title}'.",
+            message=f"'@{user.username}' was designated new coach in the project '{project.title}'.",
             data=dict(user_id=user.id)
         )
         notify_all_member_in_project(project=project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
@@ -365,7 +365,7 @@ def withdraw_coach_in_project(current_user_id: int, id_project: int, data: Dict)
         # Notify to the other members
         data = dict(
             type=TYPE_NOTIFICATION_EDIT_PROJECT,
-            message=f"@{user.username} was withdrew from coach, he will be a participant the project'{project.title}'.",
+            message=f"'@{user.username}' was withdrew from coach, he will be a participant the project'{project.title}'.",
             data=dict(user_id=user.id)
         )
         notify_all_member_in_project(project=project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
@@ -425,13 +425,13 @@ def remove_participant_in_project(current_user_id: int, id_project: int, data: D
         # Notify to the other members
         data = dict(
             type=TYPE_NOTIFICATION_EDIT_PROJECT,
-            message=f"@{participant.username} was removed in the project '{project.title}'.",
+            message=f"'@{participant.username}' was removed in the project '{project.title}'.",
             data=dict(user_id=participant.id)
         )
         notify_all_member_in_project(project=project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
                                      exclude_users_id=[current_user_id, participant.id])
 
-    return dict(message='You removed some participants.')
+    return dict(message='You removed a participant.')
 
 
 def required_own_project(current_user_id: int, project: Project) -> None:
