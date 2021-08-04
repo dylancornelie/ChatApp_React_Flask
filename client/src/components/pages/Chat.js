@@ -23,8 +23,9 @@ const Chat = () => {
 
   return (
     <div className='chat-component-container'>
-      <ChatHeader title='Chat TX' />
       {isEmpty(chatStates.meeting) ? (
+        <>
+        <ChatHeader title='Loading...' />
         <Loader
           type='Rings'
           color='#4f6d7a'
@@ -37,8 +38,10 @@ const Chat = () => {
             alignItems:'center'
           }}
         />
+        </>
       ) : (
         <>
+          <ChatHeader title={chatStates.meeting.title} />
           {chatStates.showParticipants && <ParticipantList />}
           {chatStates.showContextMenu && <ChatContextMenu />}
           {chatStates.showAddParticipant && (

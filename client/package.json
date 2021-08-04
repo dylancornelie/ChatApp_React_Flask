@@ -2,6 +2,17 @@
   "name": "client",
   "version": "0.1.0",
   "private": true,
+  "author": {
+    "name": "Dylan Cornelie",
+    "email": "cornelie.dylan@gmail.com"
+  },
+  "repository": {
+    "type": "GIT",
+    "url": "https://gitlab.utc.fr/gidelthi/tx_chat"
+  },
+  "contributors": [],
+  "license": "MIT",
+  "description": "Côté client d'une application de chat réalisée dans le cadre d'une TX à l'UTC",
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
