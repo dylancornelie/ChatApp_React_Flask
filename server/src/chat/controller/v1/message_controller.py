@@ -27,12 +27,12 @@ class List(Resource):
         """List all registered message in project"""
         return get_all_messages(user_id=self.get.current_user_id, project_id=project_id)
 
-    @token_required
-    @api.doc('Create a new message', security='Bearer')
-    @api.response(int(HTTPStatus.CREATED), 'Message successfully created.')
-    @api.response(int(HTTPStatus.CONFLICT), 'Message already exists.')
-    @api.expect(message_post, validate=True)
-    def post(self, project_id: int):
-        """All member can create a new Message"""
-        data = request.json
-        return save_new_message(user_id=self.post.current_user_id, project_id=project_id, data=data)
+    # @token_required
+    # @api.doc('Create a new message', security='Bearer')
+    # @api.response(int(HTTPStatus.CREATED), 'Message successfully created.')
+    # @api.response(int(HTTPStatus.CONFLICT), 'Message already exists.')
+    # @api.expect(message_post, validate=True)
+    # def post(self, project_id: int):
+    #     """All member can create a new Message"""
+    #     data = request.json
+    #     return save_new_message(user_id=self.post.current_user_id, project_id=project_id, data=data)

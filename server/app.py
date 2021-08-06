@@ -92,10 +92,10 @@ def seed(n):
         for _ in range(randint(1, n * 2)):
             fake_message = message.Message(
                 content=fake.sentence(),
-                owner_id=choice(members),
+                sender_id=choice(members),
                 project_id=fake_project.id,
             )
-            if choices([True, False], [0.1, 0.9]) and fake_message.owner_id in coach_id:
+            if choices([True, False], [0.1, 0.9]) and fake_message.sender_id in coach_id:
                 fake_message.receiver_id = choice(members)
             db.session.add(fake_message)
 

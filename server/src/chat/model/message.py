@@ -13,8 +13,8 @@ class Message(db.Model):
     content = db.Column(db.String, nullable=False)
     _registered_on = db.Column(db.DateTime, default=func.now())
 
-    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    owner = db.relationship('User', backref=db.backref('own_message', lazy='dynamic'), foreign_keys=[owner_id])
+    sender_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    sender = db.relationship('User', backref=db.backref('sender_message', lazy='dynamic'), foreign_keys=[sender_id])
 
     receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     receiver = db.relationship('User', backref=db.backref('receiver_message', lazy='dynamic'), foreign_keys=[receiver_id])

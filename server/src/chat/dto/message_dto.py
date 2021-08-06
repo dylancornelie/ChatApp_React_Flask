@@ -17,7 +17,7 @@ message_post = api.model('Message_Post', {
 message_item = api.model('Message_Item', {
     'id': fields.Integer(description="Message's identifier"),
     'content': fields.String,
-    'owner': fields.Nested(user_item, description="Message's owner"),
+    'sender': fields.Nested(user_item, description="Message's owner"),
     'receiver': fields.Nested(user_item, description="Message's receiver", skip_none=True, allow_null=True),
     'created_at': fields.String
 })

@@ -128,3 +128,41 @@ When the membrr goes into(out) the meeting, he must joins(leaves) the project
 socket.emit('join_project', {project_id: int});
 socket.emit('leave_project', {project_id: int});
 ````
+
+## Send/Recive message in the project
+
+````js
+socket.emit('send_message', {
+    'project_id': int,
+    'sender_id': int,
+    'content': string,
+    'receiver_id': int / null
+});
+socket.on('receive_message', function (data) {
+    console.log(data)
+});
+````
+
+- Schema receive message
+
+````js
+{
+    content: str
+    created_at: str // "08/06/2021, 22:58"
+    id: int
+    sender: {
+        email: str
+        first_name: str
+        id: int
+        last_name: str
+        username: str
+    }
+    receiver: null | {
+        email: str,
+        first_name: str,
+        id: int,
+        last_name: str,
+        username: str,
+    }
+}
+````
