@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { refreshToken } from './actions/user.action';
+import { invitedIntoMeeting, refreshToken } from './actions/user.action';
 import Routes from './components/routes/Routes';
 import { tokenIsEmpty, tokenIsValid } from './utils/utils';
 
@@ -19,6 +19,15 @@ const App = () => {
       notificationSource.addEventListener('action_project', (event) => {
         //console.log(JSON.parse(event.data));
         const data = JSON.parse(event.data);
+        console.log(data)
+        switch(data.type){
+          case 'add_into_project':
+            dispatch(invitedIntoMeeting(data.data));
+            break;
+          default:
+            console.log('to do...')
+            break;
+        }
         new Notification(data.message, {
           icon: '../image/logo72.png',
           vibrate: [200, 100, 200],

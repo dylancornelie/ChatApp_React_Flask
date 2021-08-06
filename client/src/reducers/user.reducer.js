@@ -10,6 +10,7 @@ import {
   DISCONNECT_USER,
   GET_MEETINGS,
   GET_USER,
+  INVITED_INTO_MEETING,
   REFRESH_TOKEN,
   SIGN_IN_USER,
   SIGN_UP_USER,
@@ -109,11 +110,16 @@ export default function userReducer(state = initialState, action) {
           (meeting) => meeting.id !== action.payload.meetingId
         ),
       };
-      case LEAVE_MEETING:
-      state.meetings = state.meetings.filter(meeting => meeting.id !== action.payload.meetingId)  
+    case LEAVE_MEETING:
+      state.meetings = state.meetings.filter(
+        (meeting) => meeting.id !== action.payload.meetingId
+      );
       return {
-          ...state
-        }
+        ...state,
+      };
+    case INVITED_INTO_MEETING:
+      state.meetings.push(action.payload.meetingData);
+      return { ...state };
     default:
       return state;
   }
