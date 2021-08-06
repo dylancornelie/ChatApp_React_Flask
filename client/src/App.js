@@ -9,6 +9,27 @@ const App = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    const handleNotification = () => {
+      const notificationSource = new EventSource(
+        `${
+          process.env.REACT_APP_API_URL
+        }/api/v1/users/stream/${localStorage.getItem('token')}`
+      );
+
+      notificationSource.addEventListener('action_project', (event) => {
+        //console.log(JSON.parse(event.data));
+        const data = JSON.parse(event.data);
+        new Notification(data.message, {
+          icon: '../image/logo72.png',
+          vibrate: [200, 100, 200],
+          renotify: true,
+          tag: 'txChat',
+          badge: '../image/logo72.png',
+          lang: 'EN',
+        });
+      });
+    };
+
     if (!tokenIsEmpty() && tokenIsValid()) {
       console.log(
         'Next token in : ',
@@ -29,6 +50,21 @@ const App = () => {
       localStorage.clear();
       console.log('no valid token');
     }
+
+    if ('Notification' in window) {
+      if (Notification.permission === 'granted' && !tokenIsEmpty()) {
+        handleNotification();
+      } else if (
+        Notification.permission !== 'denied' ||
+        Notification.permission === 'default'
+      ) {
+        Notification.requestPermission((permission) => {
+          if (permission === 'granted' && !tokenIsEmpty()) {
+            handleNotification();
+          } else console.log('Notifications are disabled');
+        });
+      }
+    } else console.log('Notifications are not supported by your browser');
   }, [userStates.token, dispatch]);
 
   return (

@@ -11,18 +11,3 @@ if ('serviceWorker' in navigator) {
       );
   });
 }
-
-if ('Notification' in window) {
-  if (Notification.permission === 'granted') {
-    new Notification('Youpi ça marche');
-  } else if (
-    Notification.permission !== 'denied' ||
-    Notification.permission === 'default'
-  ) {
-    Notification.requestPermission((permission) => {
-      if (permission === 'granted') {
-        new Notification('Youpi ça marche');
-      } else console.log('Notifications are disabled');
-    });
-  }
-} else console.log('Notifications are not supported by your browser');

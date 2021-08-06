@@ -9,6 +9,9 @@ import { sendMessage, setMessageReceiver } from '../../actions/chat.action';
 const MessageInput = () => {
   const chatStates = useSelector((state) => state.chatReducer);
   const dispatch = useDispatch();
+  const [height, setHeight] = useState(25);
+  const [message, setMessage] = useState('');
+  const [file, setFile] = useState(null);
 
   function calcHeight(value) {
     const numberOfLineBreaks = (value.match(/\n/g) || []).length;
@@ -29,9 +32,6 @@ const MessageInput = () => {
         );
   };
 
-  const [height, setHeight] = useState(25);
-  const [message, setMessage] = useState('');
-  const [file, setFile] = useState(null);
 
   return (
     <div className='messageInput-container'>

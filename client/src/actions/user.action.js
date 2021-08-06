@@ -203,13 +203,19 @@ export const createMeeting = (title) => {
       .then((response) => {
         return dispatch({
           type: CREATE_MEETING,
-          payload: { newMeeting: response.data, createMeetingError: 'Meeting successfully created' },
+          payload: {
+            newMeeting: response.data,
+            createMeetingError: 'Meeting successfully created',
+          },
         });
       })
       .catch(() =>
         dispatch({
           type: CREATE_MEETING,
-          payload: { createMeetingError: 'Meeting name already used' },
+          payload: {
+            createMeetingError: 'Meeting name already used',
+            newMeeting: {},
+          },
         })
       );
   };

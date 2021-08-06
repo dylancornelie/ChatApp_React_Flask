@@ -97,7 +97,7 @@ export const deleteMeeting = (meetingId) => {
       .then(() => {
         return dispatch({ type: DELETE_MEETING, payload: { meetingId } });
       })
-      .catch((err) => console.erro(err));
+      .catch((err) => console.error(err));
   };
 };
 
@@ -113,7 +113,7 @@ export const leaveMeeting = (meetingId) => {
       .then(() => {
         return dispatch({ type: LEAVE_MEETING, payload: { meetingId } });
       })
-      .catch((err) => console.erro(err));
+      .catch((err) => console.error(err));
   };
 };
 
@@ -182,21 +182,7 @@ export const fetchMessages = (meetingId) => {
 };
 
 export const sendMessage = (meetingId, message, receiverId = 0) => {
-  axios({
-    method: 'POST',
-    url: `${process.env.REACT_APP_API_URL}/api/v1/messages/${meetingId}`,
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`,
-    },
-    data: {
-      content: message,
-      receiver: receiverId,
-    },
-  })
-    .then((response) => {
-      console.log('A implementer dans le reducer ', response);
-    })
-    .catch((err) => console.error(err));
+ console.log('message sending... to be implemented')
 };
 
 export const showParticipants = () => ({ type: SHOW_PARTICIPANTS });
