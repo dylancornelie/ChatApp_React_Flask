@@ -1,17 +1,18 @@
-from flask_socketio import Namespace, ConnectionRefusedError
-from werkzeug.exceptions import Forbidden, Unauthorized
+from flask import request
+from flask_socketio import Namespace
 
-from src.chat.util.decorator import token_required
+from src.chat.service.socket.message_socket_service import ws_connect, input_room
 
 
 class WsMessageNamespace(Namespace):
-    @token_required
-    def _login(self):
-        pass
 
     def on_connect(self):
-        try:
-            self._login()
-        except (Forbidden, Unauthorized) as e:
-            raise ConnectionRefusedError(e.description)
+        ws_connect()
 
+    def on_join_project(self, data):
+        room = input_room(data)
+        self.enter_room(request.sid, room)
+
+    def on_leave_project(self, data):
+        room = input_room(data)
+        self.leave_room(request.sid, room)

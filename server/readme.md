@@ -114,8 +114,17 @@ socket.on('connect_error', function (e) {
 ## Error
 
 ````js
- socket.on('error', function (e) {
+socket.on('error', function (e) {
     console.log("error")
     console.log(e)
 });
+````
+
+## Join/Leave the project
+
+When the membrr goes into(out) the meeting, he must joins(leaves) the project
+
+````js
+socket.emit('join_project', {project_id: int});
+socket.emit('leave_project', {project_id: int});
 ````
