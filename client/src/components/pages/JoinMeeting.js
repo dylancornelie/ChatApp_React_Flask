@@ -1,21 +1,35 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useHistory } from 'react-router';
-import BarcodeScannerComponent from 'react-qr-barcode-scanner';
+import QRCode from 'qrcode.react';
 import Banner from '../utils/Banner';
 import HeaderWithArrow from '../utils/HeaderWithArrow';
-import { tokenIsEmpty, tokenIsValid } from '../../utils/utils';
+import { isEmpty, tokenIsEmpty, tokenIsValid } from '../../utils/utils';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUser } from '../../actions/user.action';
 
 const JoinMeeting = () => {
   const history = useHistory();
-  const [stopStream, setStopStream] = useState(false);
+  const dispatch = useDispatch();
+  const userStates = useSelector((state) => state.userReducer);
 
-  useEffect(()=> {
+  const viewWidth = Math.max(
+    document.documentElement.clientWidth || 0,
+    window.innerWidth || 0
+  );
+
+  const viewHeight = Math.max(
+    document.documentElement.clientHeight || 0,
+    window.innerHeight || 0
+  );
+
+  useEffect(() => {
     if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
-  })
+    if (isEmpty(userStates.user) && tokenIsValid()) dispatch(getUser());
+  });
 
   const handleHeaderArrowClick = () => {
-   history.push('/home')
-  }
+    history.push('/home');
+  };
 
   return (
     <>
@@ -24,16 +38,16 @@ const JoinMeeting = () => {
         leftIconAction={handleHeaderArrowClick}
       />
       <div className='joinMeeting-container'>
-        <Banner title='Scan a QR code to join a meeting' />
-        <BarcodeScannerComponent
-          width='70%'
-          stopStream={stopStream}
-          onUpdate={(err, result) => {
-            if (result) {
-              console.log(result);
-              setStopStream(true);
-            }
-          }}
+        <Banner title='Show your QR code to join a meeting' />
+        <QRCode
+          className='qrcode'
+          value={userStates.user.login}
+          size={
+            viewWidth * 0.8 > viewHeight * 0.7
+              ? viewHeight * 0.7
+              : viewWidth * 0.8
+          }
+          includeMargin={true}
         />
       </div>
     </>
