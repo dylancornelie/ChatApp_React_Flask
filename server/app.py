@@ -7,7 +7,7 @@ from random import choices, choice, randint
 import click
 from dotenv import load_dotenv
 
-from src.chat import create_app, db
+from src.chat import create_app, db, sio
 from src.chat.model import user, token_blacklist, project, message
 
 load_dotenv()  # take environment variables from .env.
@@ -96,7 +96,11 @@ def seed(n):
                 project_id=fake_project.id,
             )
             if choices([True, False], [0.1, 0.9]) and fake_message.owner_id in coach_id:
-                fake_message.receiver_id=choice(members)
+                fake_message.receiver_id = choice(members)
             db.session.add(fake_message)
 
             db.session.commit()
+
+
+if __name__ == '__main__':
+    sio.run(app)

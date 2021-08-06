@@ -4,6 +4,7 @@ from flask_cors import CORS
 from flask_mailman import Mail
 from flask_migrate import Migrate
 from flask_redis import FlaskRedis
+from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 
 from src.chat.config import config_by_name
@@ -14,6 +15,7 @@ flask_bcrypt = Bcrypt()
 cors = CORS()
 mail = Mail()
 redis = FlaskRedis()
+sio = SocketIO()
 
 
 def create_app(config_name):
@@ -29,5 +31,6 @@ def create_app(config_name):
     cors.init_app(app)
     mail.init_app(app)
     redis.init_app(app)
+    sio.init_app(app, cors_allowed_origins="*", async_mode='threading', message_queue=app.config['REDIS_URL'])
 
     return app

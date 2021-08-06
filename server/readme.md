@@ -34,8 +34,9 @@ sse.addEventListener(event, (event) => {
 ````
 
 ### Notify
+
 1. Channel
-     - open
+    - open
     ````js
     eventSource.addEventListener('open', () => console.log('connected'));
       ````
@@ -69,16 +70,52 @@ sse.addEventListener(event, (event) => {
         ````
     1. Type:
         - add_into_project:
-          - _You was added into the project '{project.title}'._ => schema of project item
-          - _The new participant '@{user.username}' was added into the project '{project.title}'._ => schema of user
+            - _You was added into the project '{project.title}'._ => schema of project item
+            - _The new participant '@{user.username}' was added into the project '{project.title}'._ => schema of user
         - delete_project:
-          - message: _The project '{older_project_title}' was removed by '@{owner.username}'._ => No have data
+            - message: _The project '{older_project_title}' was removed by '@{owner.username}'._ => No have data
         - edit_project:
-          - _The title's project '{older_project_title}' become the new tilte '{project.title}'._ => data: `{project_title: new_title}`
-          - _'@{current_user.username}' left the project'{project.title}'._ => data: `{user_id: user_left_id}`
-          - _You was designated new coach in the project '{project.title}'._ => No data
-          - _'@{user.username}' was designated new coach in the project '{project.title}'._ => data: `{user_id: new_coach_id}`
-          - _You was withdrew from coach in the project '{project.title}'._ => No data
-          - _'@{user.username}' was withdrew from coach, he will be a participant the project'{project.title}'._ => data: `{user_id: older_coach_id}`
-          - _You was removed in the project '{project.title}'._ => No data
-          - _'@{participant.username}' was removed in the project '{project.title}'._ => data: `{user_id: older_participant_id}`
+            - _The title's project '{older_project_title}' become the new tilte '{project.title}'._ =>
+              data: `{project_title: new_title}`
+            - _'@{current_user.username}' left the project'{project.title}'._ => data: `{user_id: user_left_id}`
+            - _You was designated new coach in the project '{project.title}'._ => No data
+            - _'@{user.username}' was designated new coach in the project '{project.title}'._ =>
+              data: `{user_id: new_coach_id}`
+            - _You was withdrew from coach in the project '{project.title}'._ => No data
+            - _'@{user.username}' was withdrew from coach, he will be a participant the project'{project.title}'._ =>
+              data: `{user_id: older_coach_id}`
+            - _You was removed in the project '{project.title}'._ => No data
+            - _'@{participant.username}' was removed in the project '{project.title}'._ =>
+              data: `{user_id: older_participant_id}`
+
+# SocketIo
+
+## Install
+
+`yarn add socket.io-client`
+
+## Connect
+
+````js
+const socket = socketIOClient('/ws/messages', {
+    extraHeaders: {
+        Authorization: "Bearer authorization_token_here"
+    }
+});
+socket.on('connect', function () {
+    console.log('connect')
+});
+socket.on('connect_error', function (e) {
+    console.log("connect_error")
+    console.log(e)
+});
+````
+
+## Error
+
+````js
+ socket.on('error', function (e) {
+    console.log("error")
+    console.log(e)
+});
+````
