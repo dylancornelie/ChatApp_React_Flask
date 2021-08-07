@@ -3,15 +3,13 @@
 from typing import Dict
 
 from flask import current_app
-from flask_socketio import ConnectionRefusedError
-from werkzeug.exceptions import Forbidden, Unauthorized, BadRequest
+from werkzeug.exceptions import BadRequest
 
 from src.chat.model.message import Message
 from src.chat.model.pagination import Pagination
 from src.chat.service import save_data
 from src.chat.service.project_service import (get_project_item, is_owner, is_coach, is_participant,
                                               required_member_in_project)
-from src.chat.util.decorator import token_required
 from src.chat.util.pagination import paginate
 
 
@@ -89,13 +87,6 @@ def get_all_messages(user_id: int, project_id: int) -> Pagination:
         .order_by(Message.id.desc())
 
     return paginate(query)
-
-
-def ws_connect():
-    try:
-        token_required(ws_connect)
-    except (Forbidden, Unauthorized) as e:
-        raise ConnectionRefusedError(e.description)
 
 
 def valid_input_room(data):

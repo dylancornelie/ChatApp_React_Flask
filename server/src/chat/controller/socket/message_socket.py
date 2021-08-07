@@ -3,13 +3,15 @@ from flask_restx import marshal
 from flask_socketio import Namespace
 
 from src.chat.dto.message_dto import message_item
-from src.chat.service.message_service import save_new_message, ws_connect, valid_input_room, valid_input_message
+from src.chat.service.message_service import save_new_message, valid_input_room, valid_input_message
+from src.chat.util.decorator import token_required
 
 
 class WsMessageNamespace(Namespace):
 
+    @token_required
     def on_connect(self):
-        ws_connect()
+        pass
 
     def on_join_project(self, data):
         room = valid_input_room(data)

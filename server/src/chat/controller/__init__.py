@@ -1,5 +1,6 @@
 from flask import Blueprint, request
 from flask_restx import Api
+from flask_socketio import ConnectionRefusedError
 
 from src.chat import sio
 from src.chat.controller.auth_controller import api as auth_ns
@@ -38,7 +39,7 @@ sio.on_namespace(WsMessageNamespace('/ws/messages'))
 @sio.on_error_default
 def default_error_handler(e):
     if request.event["message"] == 'connect':
-        raise e
+        raise ConnectionRefusedError(e.description)
 
     if hasattr(e, 'data'):
         error = e.data
