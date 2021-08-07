@@ -90,3 +90,17 @@
       }
     }
   }
+
+  .prepared-message-container{
+    display:flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    align-items: center;
+    margin:0.5rem 0.5rem;
+  }
+
+  .prepared-message-item{
+    display: block;
+    margin:0.5rem 0.5rem;
+    padding:1rem 1rem;
+  }

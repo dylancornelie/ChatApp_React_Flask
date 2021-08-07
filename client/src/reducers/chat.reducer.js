@@ -2,6 +2,7 @@ import {
   DESIGNATE_COACH,
   FETCH_MESSAGES,
   JOIN_CHAT,
+  REFRESH_MEETING_DATA,
   REMOVE_PRIVILEGES,
   SET_MESSAGE_RECEIVER,
   SHOW_ADD_PARTICIPANT,
@@ -60,6 +61,8 @@ export default function chatReducer(state = initialState, action) {
         messages: action.payload.data.data,
         hasNext: { ...newHasNext },
       };
+      case REFRESH_MEETING_DATA:
+        return {...state, meeting:action.payload.newMeetingData}
     default:
       return state;
   }

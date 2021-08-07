@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 export const JOIN_CHAT = 'JOIN_CHAT';
+export const REFRESH_MEETING_DATA = 'REFRESH_MEETING_DATA';
 export const ADD_PARTICIPANT = 'ADD_PARTICIPANT';
 export const REMOVE_PARTICIPANT = 'REMOVE_PARTICIPANT';
 export const DELETE_MEETING = 'DELETE_MEETING';
@@ -182,7 +183,7 @@ export const fetchMessages = (meetingId) => {
 };
 
 export const sendMessage = (meetingId, message, receiverId = 0) => {
- console.log('message sending... to be implemented')
+  console.log('message sending... to be implemented');
 };
 
 export const showParticipants = () => ({ type: SHOW_PARTICIPANTS });
@@ -194,4 +195,9 @@ export const showAddParticipant = () => ({ type: SHOW_ADD_PARTICIPANT });
 export const setMessageReceiver = (receiver) => ({
   type: SET_MESSAGE_RECEIVER,
   payload: { receiver },
+});
+
+export const refreshMeetingData = (newMeetingData) => ({
+  type: REFRESH_MEETING_DATA,
+  payload: { newMeetingData },
 });

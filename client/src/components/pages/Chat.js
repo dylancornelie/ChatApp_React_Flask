@@ -9,7 +9,10 @@ import ChatContextMenu from '../chat/ChatContextMenu';
 import AddParticipantPopUp from '../chat/AddParticipantPopUp';
 import { isEmpty, tokenIsEmpty, tokenIsValid } from '../../utils/utils';
 import { useHistory } from 'react-router-dom';
-import { showAddParticipant } from '../../actions/chat.action';
+import {
+  refreshMeetingData,
+  showAddParticipant,
+} from '../../actions/chat.action';
 
 const Chat = () => {
   const chatStates = useSelector((state) => state.chatReducer);
@@ -19,25 +22,38 @@ const Chat = () => {
 
   useEffect(() => {
     if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
-  });
+    if (!isEmpty(chatStates.meeting)) {
+      const meetingId = chatStates.meeting.id;
+      const refreshMeeting = userStates.meetings.find(
+        (meeting) => meeting.id === meetingId
+      );
+      if (!isEmpty(refreshMeeting)) {
+        dispatch(refreshMeetingData(refreshMeeting));
+      } else {
+        history.push('/home');
+      }
+    } else {
+      history.push('/home');
+    }
+  }, [userStates.meetings, history, chatStates.meeting, dispatch]);
 
   return (
     <div className='chat-component-container'>
       {isEmpty(chatStates.meeting) ? (
         <>
-        <ChatHeader title='Loading...' />
-        <Loader
-          type='Rings'
-          color='#4f6d7a'
-          height={300}
-          width={300}
-          style={{
-            flexGrow:'1',
-            display:'flex',
-            justifyContent:'center',
-            alignItems:'center'
-          }}
-        />
+          <ChatHeader title='Loading...' />
+          <Loader
+            type='Rings'
+            color='#4f6d7a'
+            height={300}
+            width={300}
+            style={{
+              flexGrow: '1',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          />
         </>
       ) : (
         <>

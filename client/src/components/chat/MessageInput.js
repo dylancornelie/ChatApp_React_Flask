@@ -32,7 +32,7 @@ const MessageInput = () => {
         );
   };
 
-
+  
   return (
     <div className='messageInput-container'>
       {!isEmpty(chatStates.messageReceiver) && isEmpty(file) && (
@@ -83,49 +83,65 @@ const MessageInput = () => {
           </div>
         </div>
       )}
-      <div className='left-logo-container'>
-        {isEmpty(file) ? (
-          <>
-            <label htmlFor='file-input'>
-              <FiPaperclip className='logo' size='30' color='#4F6D7A' />
-            </label>
+      {false ? (
+        <>
+          <div className='left-logo-container'>
+            {isEmpty(file) ? (
+              <>
+                <label htmlFor='file-input'>
+                  <FiPaperclip className='logo' size='30' color='#4F6D7A' />
+                </label>
 
-            <input
-              id='file-input'
-              type='file'
-              style={{ display: 'none' }}
-              onChange={(e) => setFile(e.target.files)}
-            />
-          </>
-        ) : (
-          <TiDeleteOutline
-            size='30'
-            color='#4F6D7A'
-            className='logo'
-            onClick={() => setFile(null)}
-          />
-        )}
-      </div>
-      <textarea
-        placeholder='write a message...'
-        style={{
-          height: height + 'px',
-        }}
-        className='messageInput'
-        onKeyUp={(event) => {
-          calcHeight(event.target.value);
-        }}
-        onKeyPress={(event) => {
-          event.key === 'Enter' && !event.shiftKey && handleSendMessage();
-        }}
-        onChange={(e) => {
-          setMessage(e.target.value);
-        }}
-        value={message}
-      ></textarea>
-      <div className='right-logo-container' onClick={() => handleSendMessage()}>
-        <IoSend size='30' color='#4F6D7A' className='logo' />
-      </div>
+                <input
+                  id='file-input'
+                  type='file'
+                  style={{ display: 'none' }}
+                  onChange={(e) => setFile(e.target.files)}
+                />
+              </>
+            ) : (
+              <TiDeleteOutline
+                size='30'
+                color='#4F6D7A'
+                className='logo'
+                onClick={() => setFile(null)}
+              />
+            )}
+          </div>
+          <textarea
+            placeholder='write a message...'
+            style={{
+              height: height + 'px',
+            }}
+            className='messageInput'
+            onKeyUp={(event) => {
+              calcHeight(event.target.value);
+            }}
+            onKeyPress={(event) => {
+              event.key === 'Enter' && !event.shiftKey && handleSendMessage();
+            }}
+            onChange={(e) => {
+              setMessage(e.target.value);
+            }}
+            value={message}
+          ></textarea>
+          <div
+            className='right-logo-container'
+            onClick={() => handleSendMessage()}
+          >
+            <IoSend size='30' color='#4F6D7A' className='logo' />
+          </div>
+        </>
+      ) : (
+        <div className='prepared-message-container'>
+          <button className='prepared-message-item'>Message personnalisé 1</button>
+          <button className='prepared-message-item' >Message personnalisé 2</button> 
+          <button className='prepared-message-item'>Message personnalisé 3</button>
+          <button className='prepared-message-item'>Message personnalisé 4</button>
+          <button className='prepared-message-item'>Message personnalisé 5</button>
+          <button className='prepared-message-item'>Message personnalisé 6</button>
+        </div>
+      )}
     </div>
   );
 };

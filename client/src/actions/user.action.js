@@ -8,7 +8,6 @@ export const GET_USER = 'GET_USER';
 export const ACCOUNT_DATA_CHANGE = 'ACCOUNT_DATA_CHANGE';
 export const CREATE_MEETING = 'CREATE_MEETING';
 export const GET_MEETINGS = 'GET_MEETINGS';
-export const INVITED_INTO_MEETING = 'INVITED_INTO_MEETING';
 
 export const signUpUser = (
   email,
@@ -232,15 +231,11 @@ export const getMeetings = () => {
       },
     })
       .then((response) => {
-        dispatch({
+        return dispatch({
           type: GET_MEETINGS,
           payload: { meetings: response.data.data },
         });
       })
       .catch((err) => console.error(err));
   };
-};
-
-export const invitedIntoMeeting = (meetingData) => {
-  return { type: INVITED_INTO_MEETING, payload: { meetingData } };
 };
