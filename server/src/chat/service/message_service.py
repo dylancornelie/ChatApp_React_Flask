@@ -2,6 +2,7 @@
 
 from typing import Dict
 
+from flask import current_app
 from flask_socketio import ConnectionRefusedError
 from werkzeug.exceptions import Forbidden, Unauthorized, BadRequest
 
@@ -24,16 +25,25 @@ def save_new_message(data: Dict) -> Message:
 
     project_id = data.get('project_id')
     sender_id = data.get('sender_id')
+
     content = data.get('content')
+    file_name = data.get('file_name')
+    file_base64 = data.get('file_base64')
+
     receiver = data.get('receiver_id', None)
 
     project = get_project_item(project_id)
     required_member_in_project(sender_id, project)
     new_message = Message(
-        content=content,
         sender_id=sender_id,
         project_id=project_id
     )
+
+    if content:
+        new_message.content = content
+    if file_name and file_base64:
+        new_message.file_name = file_name
+        new_message.file_base64 = file_base64
 
     if receiver:
         # Receiver must be a member
@@ -90,7 +100,7 @@ def ws_connect():
 
 def valid_input_room(data):
     if data.get('project_id'):
-        return f"project_id_{data.get('project_id')}"
+        return _get_room_for_project(data.get('project_id'))
 
     e = BadRequest()
     e.data = dict(
@@ -106,8 +116,19 @@ def valid_input_message(data):
         errors['project_id'] = "'project_id' is required."
     if not data.get('sender_id'):
         errors['sender_id'] = "'sender_id' is required."
-    if not data.get('content'):
+
+    if not data.get('content') and not (data.get('file_name') and data.get('file_base64')):
         errors['content'] = "'content' is required."
+
+    if not data.get('file_name') and data.get('file_base64'):
+        errors['file_name'] = "'file_name' is required. "
+    if data.get('file_name') and not data.get('file_base64'):
+        errors['file_name'] = "'file_base64' is required."
+
+    if data.get('file_name') and not _allowed_file(data.get('file_name')):
+        errors['file_name'] = "'file_name' must be allowed extensions " \
+                              + f"in {current_app.config['ALLOWED_EXTENSIONS']}"
+
     if errors:
         e = BadRequest()
         e.data = dict(
@@ -116,6 +137,15 @@ def valid_input_message(data):
         )
         raise e
 
-    data['room'] = f"project_id_{data.get('project_id')}"
+    data['room'] = _get_room_for_project(data.get('project_id'))
 
     return data
+
+
+def _get_room_for_project(project_id: int) -> str:
+    return f"Project_id_{project_id}"
+
+
+def _allowed_file(filename) -> bool:
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']

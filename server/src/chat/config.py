@@ -30,6 +30,10 @@ class Config:
     # Redis
     REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
 
+    # File upload
+    UPLOAD_FOLDER = os.path.join(basedir, '../..', 'public', 'files')
+    ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'doc'}
+
 
 class DevelopmentConfig(Config):
     # uncomment the line below to use postgres

@@ -122,7 +122,7 @@ socket.on('error', function (e) {
 
 ## Join/Leave the project
 
-When the membrr goes into(out) the meeting, he must joins(leaves) the project
+When the member goes into(out) the meeting, he must joins(leaves) the project
 
 ````js
 socket.emit('join_project', {project_id: int});
@@ -131,11 +131,16 @@ socket.emit('leave_project', {project_id: int});
 
 ## Send/Recive message in the project
 
+- `content` or `file_name && file_base64` must be required
+- `file_name` has extensions: txt, pdf, png, jpg, jpeg, gif, doc
+
 ````js
 socket.emit('send_message', {
     'project_id': int,
     'sender_id': int,
-    'content': string,
+    'content': str,
+    'file_name': str,
+    'file_base64': str,
     'receiver_id': int / null
 });
 socket.on('receive_message', function (data) {
@@ -143,11 +148,36 @@ socket.on('receive_message', function (data) {
 });
 ````
 
+Use `FileReader` to get file in client
+
+````js
+var selectedFile;
+const changeHandler = (event) => {
+    selectedFile(event.target.files[0]);
+};
+
+const handleSubmission = () => {
+    var fileReader = new FileReader();
+    fileReader.readAsDataURL(selectedFile)
+    fileReader.onload = () => {
+        var arrayBuffer = fileReader.result;
+        socket.emit('send_message', {
+            'project_id': 5,
+            'sender_id': 1,
+            'file_name': selectedFile.name,
+            'file_base64': arrayBuffer
+        })
+    }
+}
+````
+
 - Schema receive message
 
 ````js
 {
     content: str
+    file_name: str
+    file_base64: str
     created_at: str // "08/06/2021, 22:58"
     id: int
     sender: {

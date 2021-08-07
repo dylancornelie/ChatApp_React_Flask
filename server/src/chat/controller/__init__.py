@@ -42,6 +42,9 @@ def default_error_handler(e):
 
     if hasattr(e, 'data'):
         error = e.data
-    else:
+        sio.emit('error', error, namespace='/ws/messages')
+    elif hasattr(e, 'description'):
         error = dict(message=e.description)
-    sio.emit('error', error, namespace='/ws/messages')
+        sio.emit('error', error, namespace='/ws/messages')
+    else:
+        raise e
