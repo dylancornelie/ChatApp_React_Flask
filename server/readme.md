@@ -38,11 +38,11 @@ sse.addEventListener(event, (event) => {
 1. Channel
     - open
     ````js
-    eventSource.addEventListener('open', () => console.log('connected'));
+    sse.addEventListener('open', () => console.log('connected'));
       ````
     - error
     ````js
-    eventSource.addEventListener('error', event => {
+    sse.addEventListener('error', event => {
       console.log(event);
       if (eventSource.readyState === EventSource.CLOSED) {
         /* Traitement en cas de perte de connexion définitive avec le serveur */
@@ -129,10 +129,10 @@ socket.emit('join_project', {project_id: int});
 socket.emit('leave_project', {project_id: int});
 ````
 
-## Send/Recive message in the project
+## Send/Receive message in the project
 
 - `content` or `file_name && file_base64` must be required
-- `file_name` has extensions: txt, pdf, png, jpg, jpeg, gif, doc
+- `file_name` has extensions: txt, pdf, png, jpg, jpeg, gif, doc. File's size maximum depends on encoding base64 of capability's browser  
 
 ````js
 socket.emit('send_message', {
@@ -196,3 +196,6 @@ const handleSubmission = () => {
     }
 }
 ````
+
+- For image: `<img src={data.file_base64} alt={data.file_name}/>`
+- For file download: `<a href={data.file_base64} download>Download</a>`
