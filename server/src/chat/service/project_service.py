@@ -423,6 +423,7 @@ def remove_participant_in_project(current_user_id: int, id_project: int, data: D
         data = dict(
             type=TYPE_NOTIFICATION_EDIT_PROJECT,
             message=f"You was removed in the project '{project.title}'.",
+            data=dict(project_id=project.id),
         )
         notify_one_member_in_project(user_id=participant.id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT)
 

@@ -84,7 +84,7 @@ sse.addEventListener(event, (event) => {
             - _You was withdrawn from coach in the project '{project.title}'._ => data: `{project_id: project_id_for_be_withdrawn}`
             - _'@{user.username}' was withdrew from coach, he will be a participant the project'{project.title}'._ =>
               data: `{user_id: older_coach_id}`
-            - _You was removed in the project '{project.title}'._ => No data
+            - _You was removed in the project '{project.title}'._ => data: `{project_id: project_id_for_be_removed}`
             - _'@{participant.username}' was removed in the project '{project.title}'._ =>
               data: `{user_id: older_participant_id}`
 
