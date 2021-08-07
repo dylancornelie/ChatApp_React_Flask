@@ -117,6 +117,6 @@ export default function userReducer(state = initialState, action) {
         ...state,
       };
     default:
-      return state;
+      return { ...state };
   }
 }

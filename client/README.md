@@ -33,3 +33,5 @@ Pour lancer le conteneur il suffit de lancer la commande : ``docker run -d -p nu
 Icône conçue par [Freepik](https://www.freepik.com) from [www.flaticon.com](https://www.flaticon.com/fr/)
 
 Images conçues par pch.vector sur [Freepik](https://www.freepik.com)
+
+Icon file download : [Crédits](https://icon-library.com/icon/icon-file-downloads-11.html)

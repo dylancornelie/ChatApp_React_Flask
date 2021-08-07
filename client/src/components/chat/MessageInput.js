@@ -4,10 +4,11 @@ import { IoAdd, IoSend } from 'react-icons/io5';
 import { TiDeleteOutline } from 'react-icons/ti';
 import { useDispatch, useSelector } from 'react-redux';
 import { isEmpty } from '../../utils/utils';
-import { sendMessage, setMessageReceiver } from '../../actions/chat.action';
+import { setMessageReceiver } from '../../actions/chat.action';
 
-const MessageInput = () => {
+const MessageInput = ({ socket }) => {
   const chatStates = useSelector((state) => state.chatReducer);
+  const userStates = useSelector((state) => state.userReducer);
   const dispatch = useDispatch();
   const [height, setHeight] = useState(25);
   const [message, setMessage] = useState('');
@@ -23,16 +24,45 @@ const MessageInput = () => {
   }
 
   const handleSendMessage = () => {
-    isEmpty(chatStates.messageReceiver)
-      ? sendMessage(chatStates.meeting.id, message)
-      : sendMessage(
-          chatStates.meeting.id,
-          message,
-          chatStates.messageReceiver.id
-        );
+    if (isEmpty(file) && !isEmpty(message)) {
+      socket.emit('send_message', {
+        project_id: chatStates.meeting.id,
+        sender_id: userStates.user.id,
+        content: message,
+        receiver_id: isEmpty(chatStates.messageReceiver)
+          ? 0
+          : chatStates.messageReceiver.id,
+      });
+    } else if (!isEmpty(file)) {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file[0]);
+      fileReader.onload = () => {
+        if (!isEmpty(fileReader.result))
+          socket.emit('send_message', {
+            project_id: chatStates.meeting.id,
+            sender_id: userStates.user.id,
+            content: message,
+            receiver_id: isEmpty(chatStates.messageReceiver)
+              ? 0
+              : chatStates.messageReceiver.id,
+            file_name: file[0].name,
+            file_base64: fileReader.result,
+          });
+        else if (!isEmpty(message))
+          socket.emit('send_message', {
+            project_id: chatStates.meeting.id,
+            sender_id: userStates.user.id,
+            content: message,
+            receiver_id: isEmpty(chatStates.messageReceiver)
+              ? 0
+              : chatStates.messageReceiver.id,
+          });
+      };
+    }
+    setFile(null);
+    setMessage('');
   };
 
-  
   return (
     <div className='messageInput-container'>
       {!isEmpty(chatStates.messageReceiver) && isEmpty(file) && (
@@ -83,7 +113,7 @@ const MessageInput = () => {
           </div>
         </div>
       )}
-      {false ? (
+      {true ? (
         <>
           <div className='left-logo-container'>
             {isEmpty(file) ? (
@@ -91,10 +121,10 @@ const MessageInput = () => {
                 <label htmlFor='file-input'>
                   <FiPaperclip className='logo' size='30' color='#4F6D7A' />
                 </label>
-
                 <input
                   id='file-input'
                   type='file'
+                  accept='.txt,.pdf,.png,.jpg,.jpeg,.gif,.doc'
                   style={{ display: 'none' }}
                   onChange={(e) => setFile(e.target.files)}
                 />
@@ -118,7 +148,10 @@ const MessageInput = () => {
               calcHeight(event.target.value);
             }}
             onKeyPress={(event) => {
-              event.key === 'Enter' && !event.shiftKey && handleSendMessage();
+              if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                handleSendMessage();
+              }
             }}
             onChange={(e) => {
               setMessage(e.target.value);
@@ -134,12 +167,24 @@ const MessageInput = () => {
         </>
       ) : (
         <div className='prepared-message-container'>
-          <button className='prepared-message-item'>Message personnalisé 1</button>
-          <button className='prepared-message-item' >Message personnalisé 2</button> 
-          <button className='prepared-message-item'>Message personnalisé 3</button>
-          <button className='prepared-message-item'>Message personnalisé 4</button>
-          <button className='prepared-message-item'>Message personnalisé 5</button>
-          <button className='prepared-message-item'>Message personnalisé 6</button>
+          <button className='prepared-message-item'>
+            Message personnalisé 1
+          </button>
+          <button className='prepared-message-item'>
+            Message personnalisé 2
+          </button>
+          <button className='prepared-message-item'>
+            Message personnalisé 3
+          </button>
+          <button className='prepared-message-item'>
+            Message personnalisé 4
+          </button>
+          <button className='prepared-message-item'>
+            Message personnalisé 5
+          </button>
+          <button className='prepared-message-item'>
+            Message personnalisé 6
+          </button>
         </div>
       )}
     </div>

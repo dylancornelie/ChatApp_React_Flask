@@ -1,8 +1,8 @@
 import React from 'react';
-import { addAnchorTag, isEmpty } from '../../utils/utils';
+import { addAnchorTag, fileIsImage, isEmpty } from '../../utils/utils';
 import parser from 'html-react-parser';
 
-const Message = ({ data, position }) => {
+const Message = ({ message, position }) => {
   return (
     <div
       className='message-item'
@@ -14,7 +14,7 @@ const Message = ({ data, position }) => {
     >
       {position === 'left' && (
         <img
-        className='message-sender-pic'
+          className='message-sender-pic'
           src='./image/avatar.svg'
           alt='profil pic'
         />
@@ -35,11 +35,62 @@ const Message = ({ data, position }) => {
               }
         }
       >
-        {position === 'left' && <p className='message-sender'>{data.sender}</p>}
-        <p className='message-content'>{parser(addAnchorTag(data.content))}</p>
-        {!isEmpty(data.file) && data.fileType === 'img' && (
-          <a href={data.file} className='message-image-container'>
-            <img src={data.file} alt='message pic' className='message-image' />
+        {position === 'left' && (
+          <p className='message-sender'>{`${message.sender.first_name} ${message.sender.last_name}`}</p>
+        )}
+        {!isEmpty(message.content) && (
+          <p className='message-content'>
+            {parser(addAnchorTag(message.content.toString()))}
+          </p>
+        )}
+        {!isEmpty(message.file_name) && !fileIsImage(message.file_name) && (
+          <>
+            <a
+              className='attached-file'
+              href={message.file_base64}
+              download={message.file_name}
+            >
+              Click to download attached file :
+            </a>
+            <a
+              href={message.file_base64}
+              download={message.file_name}
+              className='message-image-container'
+            >
+              <img
+                className='attached-file-image'
+                src={'./image/fileToDownload.png'}
+                alt='attached file'
+              />
+            </a>
+            <a
+              className='attached-file'
+              href={message.file_base64}
+              download={message.file_name}
+              style={{
+                textAlign: 'center',
+                marginTop: '0rem',
+                textDecoration: 'none',
+                fontStyle: 'normal',
+                fontSize: '1rem',
+                marginBottom: '1rem',
+              }}
+            >
+              {message.file_name}
+            </a>
+          </>
+        )}
+        {!isEmpty(message.file_name) && fileIsImage(message.file_name) && (
+          <a
+            href={message.file_base64}
+            download={message.file_name}
+            className='message-image-container'
+          >
+            <img
+              src={message.file_base64}
+              alt='message pic'
+              className='message-image'
+            />
           </a>
         )}
         <p
@@ -50,7 +101,7 @@ const Message = ({ data, position }) => {
               : { textAlign: 'left' }
           }
         >
-          {data.receiver}
+          {isEmpty(message.receiver) ? `For everyone` : `For you`}
         </p>
       </div>
     </div>

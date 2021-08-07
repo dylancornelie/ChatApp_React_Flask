@@ -4,6 +4,8 @@ import {
   JOIN_CHAT,
   REFRESH_MEETING_DATA,
   REMOVE_PRIVILEGES,
+  SCROLLED_TO_BOTTOM,
+  SEND_MESSAGE,
   SET_MESSAGE_RECEIVER,
   SHOW_ADD_PARTICIPANT,
   SHOW_CONTEXT_MENU,
@@ -20,6 +22,7 @@ const initialState = {
   meeting: {},
   messages: [],
   hasNext: { hasNext: false, linkToNext: '' },
+  toScroll: true,
 };
 
 export default function chatReducer(state = initialState, action) {
@@ -60,10 +63,16 @@ export default function chatReducer(state = initialState, action) {
         ...state,
         messages: action.payload.data.data,
         hasNext: { ...newHasNext },
+        toScroll: true,
       };
-      case REFRESH_MEETING_DATA:
-        return {...state, meeting:action.payload.newMeetingData}
+    case REFRESH_MEETING_DATA:
+      return { ...state, meeting: action.payload.newMeetingData };
+    case SEND_MESSAGE:
+      state.messages.unshift(action.payload.message);
+      return { ...state, toScroll: true };
+    case SCROLLED_TO_BOTTOM:
+      return { ...state, toScroll: false };
     default:
-      return state;
+      return { ...state };
   }
 }

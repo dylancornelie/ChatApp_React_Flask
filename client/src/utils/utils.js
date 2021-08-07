@@ -64,3 +64,10 @@ export const tokenIsValid = () => {
     return false;
   else return true;
 };
+
+export const fileIsImage = (fileName) => {
+  const regExp = /\.jpg$|\.jpeg$|\.png$|\.gif$/g;
+  if (fileName.match(regExp))
+    return true;
+  return false
+}

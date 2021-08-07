@@ -14,6 +14,7 @@ export const SHOW_PARTICIPANTS = 'SHOW_PARTICIPANTS';
 export const SHOW_CONTEXT_MENU = 'SHOW_CONTEXT_MENU';
 export const SHOW_ADD_PARTICIPANT = 'SHOW_ADD_PARTICIPANT';
 export const SET_MESSAGE_RECEIVER = 'SET_MESSAGE_RECEIVER';
+export const SCROLLED_TO_BOTTOM = 'SCROLLED_TO_BOTTOM'
 
 export const addParticipant = (meetingId, login) => {
   return (dispatch) => {
@@ -182,8 +183,8 @@ export const fetchMessages = (meetingId) => {
       .catch((err) => console.error(err));
 };
 
-export const sendMessage = (meetingId, message, receiverId = 0) => {
-  console.log('message sending... to be implemented');
+export const sendMessage = (message) => {
+  return { type: SEND_MESSAGE, payload: { message } };
 };
 
 export const showParticipants = () => ({ type: SHOW_PARTICIPANTS });
@@ -201,3 +202,5 @@ export const refreshMeetingData = (newMeetingData) => ({
   type: REFRESH_MEETING_DATA,
   payload: { newMeetingData },
 });
+
+export const scrolledToBottom = () => ({type:SCROLLED_TO_BOTTOM})
