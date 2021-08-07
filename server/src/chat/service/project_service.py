@@ -138,6 +138,7 @@ def delete_project(current_user_id: int, id_project: int) -> Dict:
     project = get_project_item(id_project)
     required_own_project(current_user_id, project)
     older_project_title = project.title
+    older_project_id = project.id
 
     try:
         db.session.delete(project)
@@ -153,6 +154,7 @@ def delete_project(current_user_id: int, id_project: int) -> Dict:
         data = dict(
             type=TYPE_NOTIFICATION_DELETE_PROJECT,
             message=f"The project '{older_project_title}' was removed by '@{project.owner.username}'.",
+            data=dict(project_id=older_project_id),
         )
         notify_all_member_in_project(project=project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
                                      exclude_users_id=[current_user_id])
@@ -303,6 +305,7 @@ def designate_coach_into_project(current_user_id: int, id_project: int, data: Di
         data = dict(
             type=TYPE_NOTIFICATION_EDIT_PROJECT,
             message=f"You was designated new coach in the project '{project.title}'.",
+            data=dict(project_id=project.id),
         )
         notify_one_member_in_project(user_id=user.id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT)
 
@@ -358,7 +361,8 @@ def withdraw_coach_in_project(current_user_id: int, id_project: int, data: Dict)
         # Notify to new participant
         data = dict(
             type=TYPE_NOTIFICATION_EDIT_PROJECT,
-            message=f"You was withdrew from coach in the project '{project.title}'.",
+            message=f"You was withdrawn from coach in the project '{project.title}'.",
+            data=dict(project_id=project.id),
         )
         notify_one_member_in_project(user_id=user.id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT)
 

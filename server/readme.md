@@ -73,15 +73,15 @@ sse.addEventListener(event, (event) => {
             - _You was added into the project '{project.title}'._ => schema of project item
             - _The new participant '@{user.username}' was added into the project '{project.title}'._ => schema of user
         - delete_project:
-            - message: _The project '{older_project_title}' was removed by '@{owner.username}'._ => No have data
+            - message: _The project '{older_project_title}' was removed by '@{owner.username}'._ => data: `{project_id: older_project_id}`
         - edit_project:
             - _The title's project '{older_project_title}' become the new tilte '{project.title}'._ =>
               data: `{project_title: new_title}`
             - _'@{current_user.username}' left the project'{project.title}'._ => data: `{user_id: user_left_id}`
-            - _You was designated new coach in the project '{project.title}'._ => No data
+            - _You was designated new coach in the project '{project.title}'._ => data: `{project_id: project_id_for_your_new_coach}`
             - _'@{user.username}' was designated new coach in the project '{project.title}'._ =>
               data: `{user_id: new_coach_id}`
-            - _You was withdrew from coach in the project '{project.title}'._ => No data
+            - _You was withdrawn from coach in the project '{project.title}'._ => data: `{project_id: project_id_for_be_withdrawn}`
             - _'@{user.username}' was withdrew from coach, he will be a participant the project'{project.title}'._ =>
               data: `{user_id: older_coach_id}`
             - _You was removed in the project '{project.title}'._ => No data
