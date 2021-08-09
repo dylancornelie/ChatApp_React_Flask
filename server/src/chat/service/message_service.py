@@ -141,7 +141,7 @@ def valid_input_message(data: Dict) -> Dict:
 
 
 def _get_room_for_project(project_id: int) -> str:
-    return f"Project_Id_{project_id}:room"
+    return f"room:project:{project_id}"
 
 
 def _allowed_file(filename) -> bool:

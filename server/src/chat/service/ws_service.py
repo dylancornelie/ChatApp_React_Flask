@@ -13,8 +13,14 @@ def delete_user_id_by_sid():
     redis.delete(f'sid:{request.sid}')
 
 
-def get_user_id_by_sid():
-    redis.get(f'sid:{request.sid}')
+def get_user_id_by_sid() -> int:
+    return int(redis.get(f'sid:{request.sid}'))
+
+
+def get_sid_by_user_id(user_id: int) -> str:
+    for key in redis.scan_iter('sid:*'):
+        if int(redis.get(key)) == user_id:
+            return key
 
 
 def user_join_into_project(room: str) -> List:

@@ -5,7 +5,7 @@ from flask_socketio import Namespace
 from src.chat.dto.message_dto import message_item
 from src.chat.service.message_service import save_new_message, valid_input_room, valid_input_message
 from src.chat.service.ws_service import (save_user_id_with_sid, delete_user_id_by_sid, get_user_id_by_sid,
-                                         user_join_into_project, user_leave_from_project)
+                                         user_join_into_project, user_leave_from_project, get_sid_by_user_id)
 from src.chat.util.decorator import token_required
 
 
@@ -43,7 +43,11 @@ class WsMessageNamespace(Namespace):
         message = save_new_message(data)
         message_dto = marshal(message, message_item, skip_none=True)
 
-        self.emit('receive_message', data=message_dto, room=data.get('room'), include_self=False)
+        if not message.receiver_id:
+            self.emit('receive_message', data=message_dto, room=data.get('room'), include_self=False)
+        else:
+            sid_receive = get_sid_by_user_id(message.receiver_id)
+            self.emit('receive_message', data=message_dto, room=sid_receive, include_self=False)
 
     def on_disconnect(self):
         delete_user_id_by_sid()
