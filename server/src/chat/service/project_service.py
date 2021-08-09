@@ -6,7 +6,7 @@ from flask import current_app
 from flask_restx import marshal
 from werkzeug.exceptions import Conflict, Forbidden, InternalServerError, BadRequest
 
-from src.chat import db, redis
+from src.chat import db
 from src.chat.dto.project_dto import (
     project_item, user_item
 )
@@ -530,17 +530,3 @@ def notify_one_member_in_project(user_id: int, data, type_publish: str = None,
     if not exclude_users_id or user_id not in exclude_users_id:
         channel = get_channel_stream(user_id)
         publish(channel, data, type_publish)
-
-
-def user_join_into_project(data: Dict) -> List:
-    redis.sadd(data.get('room'), data.get('user_id'))
-    return list(
-        map(
-            lambda x: dict(user_id=int(x.decode("utf-8"))),
-            list(redis.smembers(data.get('room'))),
-        )
-    )
-
-
-def user_leave_from_project(data: Dict) -> None:
-    redis.srem(data.get('room'), data.get('user_id'))

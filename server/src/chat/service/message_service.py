@@ -89,16 +89,12 @@ def get_all_messages(user_id: int, project_id: int) -> Pagination:
     return paginate(query)
 
 
-def valid_input_room(data):
+def valid_input_room(data: Dict) -> Dict:
     errors = dict()
     if not data.get('project_id'):
         errors['project_id'] = "'project_id' is required."
     if data.get('project_id') and not isinstance(data.get('project_id'), int):
         errors['project_id'] = "'project_id' is number."
-    if not data.get('user_id'):
-        errors['user_id'] = "'user_id' is required."
-    if data.get('user_id') and not isinstance(data.get('user_id'), int):
-        errors['user_id'] = "'user_id' is number."
 
     if errors:
         e = BadRequest()
@@ -112,16 +108,12 @@ def valid_input_room(data):
     return data
 
 
-def valid_input_message(data):
+def valid_input_message(data: Dict) -> Dict:
     errors = dict()
     if not data.get('project_id'):
         errors['project_id'] = "'project_id' is required."
     if data.get('project_id') and not isinstance(data.get('project_id'), int):
         errors['project_id'] = "'project_id' is number."
-    if not data.get('sender_id'):
-        errors['sender_id'] = "'sender_id' is required."
-    if data.get('sender_id') and not isinstance(data.get('sender_id'), int):
-        errors['sender_id'] = "'sender_id' is number."
     if not data.get('content') and not (data.get('file_name') and data.get('file_base64')):
         errors['content'] = "'content' is required."
     if data.get('receiver_id') and not isinstance(data.get('receiver_id'), int):

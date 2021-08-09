@@ -127,9 +127,9 @@ When the member goes into(out) the meeting, he must joins(leaves) the project
 
 Schema data of callback (list user online in project) in `join_project`: `array({'user_id': int})`
 ````js
-socket.emit('join_project', {project_id: int, user_id: int},
+socket.emit('join_project', {project_id: int},
     (data) => console.log(data));
-socket.emit('leave_project', {project_id: int, user_id: int});
+socket.emit('leave_project', {project_id: int});
 ````
 
 Notify one user join/leave the project
@@ -149,7 +149,6 @@ socket.on('offline', (data)=>console.log(data));
 ````js
 socket.emit('send_message', {
     'project_id': int,
-    'sender_id': int,
     'content': str,
     'file_name': str,
     'file_base64': str,
