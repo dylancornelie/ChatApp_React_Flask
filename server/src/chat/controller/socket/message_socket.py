@@ -49,5 +49,7 @@ class WsMessageNamespace(Namespace):
             sid_receive = get_sid_by_user_id(message.receiver_id)
             self.emit('receive_message', data=message_dto, room=sid_receive, include_self=False)
 
+        return message_dto
+
     def on_disconnect(self):
         delete_user_id_by_sid()

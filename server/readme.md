@@ -153,7 +153,7 @@ socket.emit('send_message', {
     'file_name': str,
     'file_base64': str,
     'receiver_id': int / null
-});
+}, (data) => console.log(data));
 socket.on('receive_message', function (data) {
     console.log(data)
 });
