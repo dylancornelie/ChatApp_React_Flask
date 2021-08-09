@@ -43,11 +43,12 @@ const JoinMeeting = () => {
           className='qrcode'
           value={userStates.user.login}
           size={
-            viewWidth * 0.8 > viewHeight * 0.7
-              ? viewHeight * 0.7
-              : viewWidth * 0.8
+            viewWidth * 0.6 > viewHeight * 0.5
+              ? viewHeight * 0.5
+              : viewWidth * 0.6
           }
-          includeMargin={true}
+          includeMargin={false}
+          style={{margin:'2rem 0 5rem 0'}}
         />
       </div>
     </>

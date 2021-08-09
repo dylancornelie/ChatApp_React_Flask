@@ -38,7 +38,7 @@ const Chat = () => {
     if (isEmpty(socket.current) || !socket.current.status)
       socket.current = io(`${process.env.REACT_APP_API_URL}/ws/messages`, {
         extraHeaders: {
-          Authorization: 'Bearer authorization_token_here',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
     if (!isEmpty(socket.current)) {
@@ -57,7 +57,7 @@ const Chat = () => {
       );
 
       socket.current.on('receive_message', (data) => {
-        //console.log(`Message received : `,data);
+        console.log(`Message received : `,data);
         dispatch(sendMessage(data));
       });
 

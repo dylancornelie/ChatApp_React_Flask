@@ -4,7 +4,7 @@ import { IoAdd, IoSend } from 'react-icons/io5';
 import { TiDeleteOutline } from 'react-icons/ti';
 import { useDispatch, useSelector } from 'react-redux';
 import { isEmpty } from '../../utils/utils';
-import { setMessageReceiver } from '../../actions/chat.action';
+import { sendMessage, setMessageReceiver } from '../../actions/chat.action';
 
 const MessageInput = ({ socket }) => {
   const chatStates = useSelector((state) => state.chatReducer);
@@ -25,14 +25,18 @@ const MessageInput = ({ socket }) => {
 
   const handleSendMessage = () => {
     if (isEmpty(file) && !isEmpty(message)) {
-      socket.emit('send_message', {
-        project_id: chatStates.meeting.id,
-        sender_id: userStates.user.id,
-        content: message,
-        receiver_id: isEmpty(chatStates.messageReceiver)
-          ? 0
-          : chatStates.messageReceiver.id,
-      });
+      socket.emit(
+        'send_message',
+        {
+          project_id: chatStates.meeting.id,
+          sender_id: userStates.user.id,
+          content: message,
+          receiver_id: isEmpty(chatStates.messageReceiver)
+            ? 0
+            : chatStates.messageReceiver.id,
+        },
+        (data) => dispatch(sendMessage(data))
+      );
     } else if (!isEmpty(file)) {
       const fileReader = new FileReader();
       fileReader.readAsDataURL(file[0]);
@@ -61,6 +65,7 @@ const MessageInput = ({ socket }) => {
     }
     setFile(null);
     setMessage('');
+    dispatch(setMessageReceiver({}));
   };
 
   return (

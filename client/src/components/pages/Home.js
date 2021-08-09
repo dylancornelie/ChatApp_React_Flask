@@ -29,34 +29,7 @@ const Home = () => {
     <div className='home-container'>
       <HomeHeader />
       <div className='home-meetingCard-meeting-list'>
-        {/*data.map((meeting) => (
-          <div
-            key={meeting.id}
-            style={
-              meeting.id === moreInfo
-                ? {
-                    maxWidth: '90%',
-                    width: '37.5rem',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }
-                : { maxWidth: '90%', width: '37.5rem' }
-            }
-            onClick={() => {
-              if (moreInfo === meeting.id) {
-                setMoreInfo(null);
-              } else {
-                setMoreInfo(meeting.id);
-              }
-            }}
-          >
-            <MeetingElement data={meeting} active={meeting.id === moreInfo} />
-            {meeting.id === moreInfo && <MeetingInfo data={meeting} />}
-          </div>
-          ))*/}
-        {!isEmpty(userStates.meetings) ? (
+        {userStates.meetingFetched ? (
           userStates.meetings.map((meeting) => (
             <div
               key={meeting.id}

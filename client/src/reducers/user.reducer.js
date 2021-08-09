@@ -25,6 +25,7 @@ const initialState = {
   user: {},
   token: '',
   meetings: [],
+  meetingFetched: false,
 };
 
 export default function userReducer(state = initialState, action) {
@@ -71,7 +72,11 @@ export default function userReducer(state = initialState, action) {
     case DISCONNECT_USER:
       return { initialState };
     case GET_MEETINGS:
-      return { ...state, meetings: action.payload.meetings };
+      return {
+        ...state,
+        meetings: action.payload.meetings,
+        meetingFetched: true,
+      };
     case CREATE_MEETING:
       if (!isEmpty(action.payload.newMeeting))
         state.meetings.push(action.payload.newMeeting);
