@@ -5,7 +5,7 @@ from flask_socketio import Namespace
 from src.chat.dto.message_dto import message_item
 from src.chat.service.message_service import save_new_message, valid_input_room, valid_input_message
 from src.chat.service.ws_service import (save_user_id_with_sid, delete_user_id_by_sid, get_user_id_by_sid,
-                                         user_join_into_project, user_leave_from_project, get_sid_by_user_id)
+                                         user_join_into_project, user_leave_from_project, get_sid_by_user_id_in_room)
 from src.chat.util.decorator import token_required
 
 
@@ -32,9 +32,8 @@ class WsMessageNamespace(Namespace):
         self.leave_room(request.sid, data.get('room'))
 
         # one user leave from project
-        user_id = get_user_id_by_sid()
-        user_leave_from_project(data.get('room'))
-        self.emit('offline', data=dict(user_id=user_id), room=data.get('room'), include_self=False)
+        data_leave = user_leave_from_project(data.get('room'))
+        self.emit('offline', data=dict(user_id=data_leave.get('user_id')), room=data_leave.get('room'), include_self=False)
 
     def on_send_message(self, data):
         data = valid_input_message(data)
@@ -46,10 +45,14 @@ class WsMessageNamespace(Namespace):
         if not message.receiver_id:
             self.emit('receive_message', data=message_dto, room=data.get('room'), include_self=False)
         else:
-            sid_receive = get_sid_by_user_id(message.receiver_id)
-            self.emit('receive_message', data=message_dto, room=sid_receive, include_self=False)
+            sid_receive = get_sid_by_user_id_in_room(message.receiver_id, data.get('room'))
+            if sid_receive:
+                self.emit('receive_message', data=message_dto, room=sid_receive, include_self=False)
 
         return message_dto
 
     def on_disconnect(self):
-        delete_user_id_by_sid()
+        data = delete_user_id_by_sid()
+        if data.get('room'):
+            user_leave_from_project(data.get('room'))
+            self.emit('offline', data=dict(user_id=data.get('user_id')), room=data.get('room'), include_self=False)
