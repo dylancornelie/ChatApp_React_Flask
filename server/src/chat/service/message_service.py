@@ -90,27 +90,42 @@ def get_all_messages(user_id: int, project_id: int) -> Pagination:
 
 
 def valid_input_room(data):
-    if data.get('project_id'):
-        return _get_room_for_project(data.get('project_id'))
+    errors = dict()
+    if not data.get('project_id'):
+        errors['project_id'] = "'project_id' is required."
+    if data.get('project_id') and not isinstance(data.get('project_id'), int):
+        errors['project_id'] = "'project_id' is number."
+    if not data.get('user_id'):
+        errors['user_id'] = "'user_id' is required."
+    if data.get('user_id') and not isinstance(data.get('user_id'), int):
+        errors['user_id'] = "'user_id' is number."
 
-    e = BadRequest()
-    e.data = dict(
-        errors=dict(project_id="'project_id' is required."),
-        message='Input payload validation failed'
-    )
-    raise e
+    if errors:
+        e = BadRequest()
+        e.data = dict(
+            errors=errors,
+            message='Input payload validation failed.'
+        )
+        raise e
+    data['room'] = _get_room_for_project(data.get('project_id'))
+
+    return data
 
 
 def valid_input_message(data):
     errors = dict()
     if not data.get('project_id'):
         errors['project_id'] = "'project_id' is required."
+    if data.get('project_id') and not isinstance(data.get('project_id'), int):
+        errors['project_id'] = "'project_id' is number."
     if not data.get('sender_id'):
         errors['sender_id'] = "'sender_id' is required."
-
+    if data.get('sender_id') and not isinstance(data.get('sender_id'), int):
+        errors['sender_id'] = "'sender_id' is number."
     if not data.get('content') and not (data.get('file_name') and data.get('file_base64')):
         errors['content'] = "'content' is required."
-
+    if data.get('receiver_id') and not isinstance(data.get('receiver_id'), int):
+        errors['receiver_id'] = "'receiver_id' is number."
     if not data.get('file_name') and data.get('file_base64'):
         errors['file_name'] = "'file_name' is required. "
     if data.get('file_name') and not data.get('file_base64'):
@@ -134,7 +149,7 @@ def valid_input_message(data):
 
 
 def _get_room_for_project(project_id: int) -> str:
-    return f"Project_id_{project_id}"
+    return f"Project_Id_{project_id}:room"
 
 
 def _allowed_file(filename) -> bool:

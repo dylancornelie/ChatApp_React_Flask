@@ -73,15 +73,18 @@ sse.addEventListener(event, (event) => {
             - _You was added into the project '{project.title}'._ => schema of project item
             - _The new participant '@{user.username}' was added into the project '{project.title}'._ => schema of user
         - delete_project:
-            - message: _The project '{older_project_title}' was removed by '@{owner.username}'._ => data: `{project_id: older_project_id}`
+            - message: _The project '{older_project_title}' was removed by '@{owner.username}'._ =>
+              data: `{project_id: older_project_id}`
         - edit_project:
             - _The title's project '{older_project_title}' become the new tilte '{project.title}'._ =>
               data: `{project_title: new_title}`
             - _'@{current_user.username}' left the project'{project.title}'._ => data: `{user_id: user_left_id}`
-            - _You was designated new coach in the project '{project.title}'._ => data: `{project_id: project_id_for_your_new_coach}`
+            - _You was designated new coach in the project '{project.title}'._ =>
+              data: `{project_id: project_id_for_your_new_coach}`
             - _'@{user.username}' was designated new coach in the project '{project.title}'._ =>
               data: `{user_id: new_coach_id}`
-            - _You was withdrawn from coach in the project '{project.title}'._ => data: `{project_id: project_id_for_be_withdrawn}`
+            - _You was withdrawn from coach in the project '{project.title}'._ =>
+              data: `{project_id: project_id_for_be_withdrawn}`
             - _'@{user.username}' was withdrew from coach, he will be a participant the project'{project.title}'._ =>
               data: `{user_id: older_coach_id}`
             - _You was removed in the project '{project.title}'._ => data: `{project_id: project_id_for_be_removed}`
@@ -102,10 +105,8 @@ const socket = socketIOClient('/ws/messages', {
         Authorization: "Bearer authorization_token_here"
     }
 });
-socket.on('connect', function () {
-    console.log('connect')
-});
-socket.on('connect_error', function (e) {
+socket.on('connect', ()=> console.log('connect'));
+socket.on('connect_error', (e) => {
     console.log("connect_error")
     console.log(e)
 });
@@ -124,15 +125,26 @@ socket.on('error', function (e) {
 
 When the member goes into(out) the meeting, he must joins(leaves) the project
 
+Schema data of callback (list user online in project) in `join_project`: `array({'user_id': int})`
 ````js
-socket.emit('join_project', {project_id: int});
-socket.emit('leave_project', {project_id: int});
+socket.emit('join_project', {project_id: int, user_id: int},
+    (data) => console.log(data));
+socket.emit('leave_project', {project_id: int, user_id: int});
+````
+
+Notify one user join/leave the project
+
+Schema data: `{'user_id': int}`
+````js
+socket.on('online', (data)=>console.log(data));
+socket.on('offline', (data)=>console.log(data));
 ````
 
 ## Send/Receive message in the project
 
 - `content` or `file_name && file_base64` must be required
-- `file_name` has extensions: txt, pdf, png, jpg, jpeg, gif, doc. File's size maximum depends on encoding base64 of capability's browser  
+- `file_name` has extensions: txt, pdf, png, jpg, jpeg, gif, doc. File's size maximum depends on encoding base64 of
+  capability's browser
 
 ````js
 socket.emit('send_message', {

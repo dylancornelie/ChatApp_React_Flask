@@ -7,7 +7,7 @@ from random import choices, choice, randint
 import click
 from dotenv import load_dotenv
 
-from src.chat import create_app, db, sio
+from src.chat import create_app, db, sio, redis
 from src.chat.model import user, token_blacklist, project, message
 
 load_dotenv()  # take environment variables from .env.
@@ -23,6 +23,7 @@ def shell():
         'BlacklistedToken': token_blacklist.BlacklistedToken,
         'Project': project.Project,
         'Message': message.Message,
+        'redis': redis
     }
 
 
