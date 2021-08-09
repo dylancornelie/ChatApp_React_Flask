@@ -100,9 +100,11 @@ def publish(channel: str, data, type: str = None, id: int = None, retry: int = N
         Only clients listening to the same channel will receive this event.
         Defaults to "sse".
     """
-    message = Message(data, type=type, id=id, retry=retry)
-    msg_json = json.dumps(message.to_dict())
-    redis.publish(channel, msg_json)
+    # If channel exist, we will send notification
+    if redis.get(channel):
+        message = Message(data, type=type, id=id, retry=retry)
+        msg_json = json.dumps(message.to_dict())
+        redis.publish(channel, msg_json)
 
 
 def messages(channel: str):
@@ -111,6 +113,10 @@ def messages(channel: str):
     """
     pubsub = redis.pubsub()
     pubsub.subscribe(channel)
+
+    # Mark existence channel
+    redis.setnx(channel, 1)
+
     try:
         for pubsub_message in pubsub.listen():
             if pubsub_message['type'] == 'message':
@@ -119,6 +125,10 @@ def messages(channel: str):
     finally:
         try:
             pubsub.unsubscribe(channel)
+
+            # Delete the mark when finish
+            redis.delete(channel)
+
         except ConnectionError as e:
             current_app.logger.error(str(e), exc_info=True)
 

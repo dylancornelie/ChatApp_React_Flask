@@ -119,4 +119,4 @@ def update_forget_password(email: str) -> Dict:
 
 
 def get_channel_stream(user_id: int) -> str:
-    return f"Stream_User_{user_id}"
+    return f"sse:user:{user_id}"
