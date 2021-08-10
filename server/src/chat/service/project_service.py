@@ -139,6 +139,7 @@ def delete_project(current_user_id: int, id_project: int) -> Dict:
     required_own_project(current_user_id, project)
     older_project_title = project.title
     older_project_id = project.id
+    owner_user_name = project.owner.username
 
     try:
         db.session.delete(project)
@@ -153,7 +154,7 @@ def delete_project(current_user_id: int, id_project: int) -> Dict:
         # Notify
         data = dict(
             type=TYPE_NOTIFICATION_DELETE_PROJECT,
-            message=f"The project '{older_project_title}' was removed by '@{project.owner.username}'.",
+            message=f"The project '{older_project_title}' was removed by '@{owner_user_name}'.",
             data=dict(project_id=older_project_id),
         )
         notify_all_member_in_project(project=project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
