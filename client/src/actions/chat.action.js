@@ -191,11 +191,14 @@ export const sendMessage = (message) => {
 };
 
 export const showParticipants = () => ({ type: SHOW_PARTICIPANTS });
+
 export const showContextMenu = (user, isCoach) => ({
   type: SHOW_CONTEXT_MENU,
   payload: { targetedUser: user, targetedUserIsCoach: isCoach },
 });
+
 export const showAddParticipant = () => ({ type: SHOW_ADD_PARTICIPANT });
+
 export const setMessageReceiver = (receiver) => ({
   type: SET_MESSAGE_RECEIVER,
   payload: { receiver },
