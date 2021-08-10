@@ -9,12 +9,15 @@ export const LEAVE_MEETING = 'LEAVE_MEETING';
 export const DESIGNATE_COACH = 'DESIGNATE_COACH';
 export const REMOVE_PRIVILEGES = 'REMOVE_PRIVILEGES';
 export const FETCH_MESSAGES = 'FETCH_MESSAGES';
+export const FETCH_MORE_MESSAGES = 'FETCH_MORE_MESSAGES';
+export const STOP_FETCH_MORE_MESSAGES = 'STOP_FETCH_MORE_MESSAGES';
 export const SEND_MESSAGE = 'SEND_MESSAGE';
 export const SHOW_PARTICIPANTS = 'SHOW_PARTICIPANTS';
 export const SHOW_CONTEXT_MENU = 'SHOW_CONTEXT_MENU';
 export const SHOW_ADD_PARTICIPANT = 'SHOW_ADD_PARTICIPANT';
 export const SET_MESSAGE_RECEIVER = 'SET_MESSAGE_RECEIVER';
-export const SCROLLED_TO_BOTTOM = 'SCROLLED_TO_BOTTOM'
+export const SCROLLED_TO_BOTTOM = 'SCROLLED_TO_BOTTOM';
+export const SHOW_PREPARED_MESSAGE = 'SHOW_PREPARED_MESSAGE';
 
 export const addParticipant = (meetingId, login) => {
   return (dispatch) => {
@@ -172,7 +175,7 @@ export const fetchMessages = (meetingId) => {
   return (dispatch) =>
     axios({
       method: 'GET',
-      url: `${process.env.REACT_APP_API_URL}/api/v1/messages/${meetingId}?page=1&per_page=50`,
+      url: `${process.env.REACT_APP_API_URL}/api/v1/messages/${meetingId}?page=1&per_page=10`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
@@ -203,4 +206,26 @@ export const refreshMeetingData = (newMeetingData) => ({
   payload: { newMeetingData },
 });
 
-export const scrolledToBottom = () => ({type:SCROLLED_TO_BOTTOM})
+export const scrolledToBottom = () => ({ type: SCROLLED_TO_BOTTOM });
+
+export const showPreparedMessage = () => ({ type: SHOW_PREPARED_MESSAGE });
+
+export const fetchMoreMessages = (urlToNext) => {
+  return (dispatch) =>
+    axios({
+      method: 'GET',
+      url: `${process.env.REACT_APP_API_URL}${urlToNext}`,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    })
+      .then((response) =>
+        dispatch({
+          type: FETCH_MORE_MESSAGES,
+          payload: { data: response.data },
+        })
+      )
+      .catch((err) => console.error(err));
+};
+
+export const stopFetchMoreMessage = () => ({ type: STOP_FETCH_MORE_MESSAGES });

@@ -57,7 +57,7 @@ const Chat = () => {
       );
 
       socket.current.on('receive_message', (data) => {
-        console.log(`Message received : `,data);
+        console.log(`Message received : `, data);
         dispatch(sendMessage(data));
       });
 

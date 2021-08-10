@@ -1,6 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchMessages, scrolledToBottom } from '../../actions/chat.action';
+import {
+  fetchMessages,
+  fetchMoreMessages,
+  scrolledToBottom,
+  stopFetchMoreMessage,
+} from '../../actions/chat.action';
 import { isEmpty } from '../../utils/utils';
 import Message from './Message';
 
@@ -33,6 +38,25 @@ const MessageList = () => {
     chatStates.toScroll,
   ]);
 
+  useEffect(() => {
+    const messageList = document.querySelector('.message-list');
+    const loadMore = () => {
+      if (
+        chatStates.canFetchMoreMessage &&
+        chatStates.hasNext?.hasNext &&
+        messageList.scrollTop === 0
+      ) {
+        dispatch(stopFetchMoreMessage());
+        dispatch(fetchMoreMessages(chatStates.hasNext?.linkToNext));
+      }
+    };
+    messageList.addEventListener('scroll', loadMore);
+
+    return () => {
+      messageList.removeEventListener('scroll', loadMore);
+    };
+  });
+
   const scrollToBottom = () => {
     messageEnd.current.scrollIntoView({
       behavior: 'instant',
@@ -47,10 +71,10 @@ const MessageList = () => {
         chatStates.messages
           .slice()
           .reverse()
-          .map((message) => (
+          .map((message, index) => (
             <Message
               message={message}
-              key={message.id}
+              key={index}
               position={
                 message.sender.id === userStates.user.id ? 'right' : 'left'
               }

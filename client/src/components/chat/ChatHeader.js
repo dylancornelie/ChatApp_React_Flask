@@ -4,7 +4,10 @@ import { ImArrowLeft2 } from 'react-icons/im';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { BsArrowRepeat } from 'react-icons/bs';
 import { useDispatch, useSelector } from 'react-redux';
-import { showParticipants } from '../../actions/chat.action';
+import {
+  showParticipants,
+  showPreparedMessage,
+} from '../../actions/chat.action';
 import { isEmpty } from '../../utils/utils';
 
 const ChatHeader = ({ title }) => {
@@ -18,13 +21,14 @@ const ChatHeader = ({ title }) => {
     <div className='chat-header'>
       <ImArrowLeft2 size={30} onClick={() => history.push('/home')} />
       <p>{title}</p>
-      {(userStates.user.id === chatStates.meeting.owner.id ||
+      {(userStates.user.id === chatStates.meeting.owner?.id ||
         chatStates.meeting.coaches.find(
           (coach) => coach.id === userStates.user.id
         )) && (
         <BsArrowRepeat
           style={{ position: 'absolute', right: '60px' }}
           size={30}
+          onClick={() => dispatch(showPreparedMessage())}
         />
       )}
       {contextMenuToggled ? (

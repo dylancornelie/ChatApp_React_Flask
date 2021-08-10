@@ -1,6 +1,7 @@
 import {
   DESIGNATE_COACH,
   FETCH_MESSAGES,
+  FETCH_MORE_MESSAGES,
   JOIN_CHAT,
   REFRESH_MEETING_DATA,
   REMOVE_PRIVILEGES,
@@ -10,6 +11,8 @@ import {
   SHOW_ADD_PARTICIPANT,
   SHOW_CONTEXT_MENU,
   SHOW_PARTICIPANTS,
+  SHOW_PREPARED_MESSAGE,
+  STOP_FETCH_MORE_MESSAGES,
 } from '../actions/chat.action';
 
 const initialState = {
@@ -23,6 +26,8 @@ const initialState = {
   messages: [],
   hasNext: { hasNext: false, linkToNext: '' },
   toScroll: true,
+  showPreparedMessage: false,
+  canFetchMoreMessage: false,
 };
 
 export default function chatReducer(state = initialState, action) {
@@ -55,15 +60,27 @@ export default function chatReducer(state = initialState, action) {
       );
       return { ...state };
     case FETCH_MESSAGES:
-      const newHasNext = {
+      const hasNext = {
         hasNext: action.payload.data.has_next,
         linkToNext: action.payload.data.next,
       };
       return {
         ...state,
         messages: action.payload.data.data,
-        hasNext: { ...newHasNext },
+        hasNext: { ...hasNext },
         toScroll: true,
+        canFetchMoreMessage: true,
+      };
+    case FETCH_MORE_MESSAGES:
+      const newHasNext = {
+        hasNext: action.payload.data.has_next,
+        linkToNext: action.payload.data.next,
+      };
+      state.messages = [...state.messages, ...action.payload.data.data];
+      return {
+        ...state,
+        canFetchMoreMessage: true,
+        hasNext: { ...newHasNext },
       };
     case REFRESH_MEETING_DATA:
       return { ...state, meeting: action.payload.newMeetingData };
@@ -72,6 +89,10 @@ export default function chatReducer(state = initialState, action) {
       return { ...state, toScroll: true };
     case SCROLLED_TO_BOTTOM:
       return { ...state, toScroll: false };
+    case SHOW_PREPARED_MESSAGE:
+      return { ...state, showPreparedMessage: !state.showPreparedMessage };
+    case STOP_FETCH_MORE_MESSAGES:
+      return { ...state, canFetchMoreMessage: false };
     default:
       return { ...state };
   }

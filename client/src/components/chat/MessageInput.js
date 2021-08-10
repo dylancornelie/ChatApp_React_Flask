@@ -5,6 +5,7 @@ import { TiDeleteOutline } from 'react-icons/ti';
 import { useDispatch, useSelector } from 'react-redux';
 import { isEmpty } from '../../utils/utils';
 import { sendMessage, setMessageReceiver } from '../../actions/chat.action';
+import preparedMessage from '../../data/preparedMessage.json';
 
 const MessageInput = ({ socket }) => {
   const chatStates = useSelector((state) => state.chatReducer);
@@ -118,7 +119,7 @@ const MessageInput = ({ socket }) => {
           </div>
         </div>
       )}
-      {true ? (
+      {!chatStates.showPreparedMessage ? (
         <>
           <div className='left-logo-container'>
             {isEmpty(file) ? (
@@ -172,24 +173,31 @@ const MessageInput = ({ socket }) => {
         </>
       ) : (
         <div className='prepared-message-container'>
-          <button className='prepared-message-item'>
-            Message personnalisé 1
-          </button>
-          <button className='prepared-message-item'>
-            Message personnalisé 2
-          </button>
-          <button className='prepared-message-item'>
-            Message personnalisé 3
-          </button>
-          <button className='prepared-message-item'>
-            Message personnalisé 4
-          </button>
-          <button className='prepared-message-item'>
-            Message personnalisé 5
-          </button>
-          <button className='prepared-message-item'>
-            Message personnalisé 6
-          </button>
+          {preparedMessage.map((message) => (
+            <button
+              key={message.id}
+              className='prepared-message-item'
+              onClick={() => {
+                if (!isEmpty(chatStates.messageReceiver)) {
+                  socket.emit(
+                    'send_message',
+                    {
+                      project_id: chatStates.meeting.id,
+                      sender_id: userStates.user.id,
+                      content: message.message,
+                      receiver_id: isEmpty(chatStates.messageReceiver)
+                        ? 0
+                        : chatStates.messageReceiver.id,
+                    },
+                    (data) => dispatch(sendMessage(data))
+                  );
+                  dispatch(setMessageReceiver({}));
+                }
+              }}
+            >
+              {message.message}
+            </button>
+          ))}
         </div>
       )}
     </div>
