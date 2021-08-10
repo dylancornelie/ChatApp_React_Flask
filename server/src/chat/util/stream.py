@@ -107,7 +107,7 @@ def publish(channel: str, data, type: str = None, id: int = None, retry: int = N
         redis.publish(channel, msg_json)
 
 
-def messages(channel: str):
+def messages(channel: str = 'sse'):
     """
         A generator objects from the given channel.
     """
@@ -140,7 +140,7 @@ def stream(channel: str = 'sse'):
 
     @stream_with_context
     def generator():
-        for message in messages(channel=channel):
+        for message in messages(channel=f'sse:{channel}'):
             yield str(message)
 
     return Response(

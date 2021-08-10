@@ -9,7 +9,10 @@ from src.chat.model.message import Message
 from src.chat.model.pagination import Pagination
 from src.chat.service import save_data
 from src.chat.service.project_service import (get_project_item, is_owner, is_coach, is_participant,
-                                              required_member_in_project)
+                                              required_member_in_project, notify_one_member_in_project,
+                                              notify_all_member_in_project)
+from src.chat.service.ws_service import get_all_user_in_room
+from src.chat.util.constant import TYPE_NOTIFICATION_NEW_MESSAGE, TYPE_NOTIFICATION_ACTION_MESSAGE
 from src.chat.util.pagination import paginate
 
 
@@ -87,6 +90,23 @@ def get_all_messages(user_id: int, project_id: int) -> Pagination:
         .order_by(Message.id.desc())
 
     return paginate(query)
+
+
+def notify_new_message_into_members_offline(message: Message, room: str = None,
+                                            only_receive: bool = False):
+    data = dict(
+        type=TYPE_NOTIFICATION_NEW_MESSAGE,
+        message=f"'@{message.sender.username}' sent "
+                + f"{'a new message' if not only_receive else 'you a new private message'}.",
+        data=dict(project_title=message.project.title)
+    )
+    if only_receive:
+        notify_one_member_in_project(user_id=message.receiver_id, data=data,
+                                     type_publish=TYPE_NOTIFICATION_ACTION_MESSAGE)
+    else:
+        exclude_users_id = [user.get('user_id') for user in get_all_user_in_room(room)]
+        notify_all_member_in_project(project=message.project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_MESSAGE,
+                                     exclude_users_id=exclude_users_id)
 
 
 def valid_input_room(data: Dict) -> Dict:

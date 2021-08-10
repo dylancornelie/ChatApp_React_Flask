@@ -59,6 +59,13 @@ sse.addEventListener(event, (event) => {
     })
     ````
 
+    - action_message: All user don't join in project that they will receive a notification message
+    ````js
+    sse.addEventListener('action_message', (event) => {
+        console.log(JSON.parse(event.data))
+    })
+   ````
+
 1. Data of the event `action_project`
     1. Schema
         ````typescript
@@ -91,6 +98,20 @@ sse.addEventListener(event, (event) => {
             - _'@{participant.username}' was removed in the project '{project.title}'._ =>
               data: `{user_id: older_participant_id}`
 
+1. Data of the event `action_message`
+    1. Schema
+        ````typescript
+        type object = {
+          type: string;
+          message: string;
+          data?: object;
+        };
+        ````
+    1. Type:
+        - new_message:
+            - _'@{message.sender.username}' sent a new message._ => data: `{project_title: project.title}`
+            - _'@{message.sender.username}' sent you a new private message._ => data: `{project_title: project.title}`
+
 # SocketIo
 
 ## Install
@@ -105,7 +126,7 @@ const socket = socketIOClient('/ws/messages', {
         Authorization: "Bearer authorization_token_here"
     }
 });
-socket.on('connect', ()=> console.log('connect'));
+socket.on('connect', () => console.log('connect'));
 socket.on('connect_error', (e) => {
     console.log("connect_error")
     console.log(e)
@@ -126,6 +147,7 @@ socket.on('error', function (e) {
 When the member goes into(out) the meeting, he must joins(leaves) the project
 
 Schema data of callback (list user online in project) in `join_project`: `array({'user_id': int})`
+
 ````js
 socket.emit('join_project', {project_id: int},
     (data) => console.log(data));
@@ -135,9 +157,10 @@ socket.emit('leave_project', {project_id: int});
 Notify one user join/leave the project
 
 Schema data: `{'user_id': int}`
+
 ````js
-socket.on('online', (data)=>console.log(data));
-socket.on('offline', (data)=>console.log(data));
+socket.on('online', (data) => console.log(data));
+socket.on('offline', (data) => console.log(data));
 ````
 
 ## Send/Receive message in the project
