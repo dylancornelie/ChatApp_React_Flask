@@ -17,10 +17,12 @@ def delete_user_id_by_sid() -> Dict:
     return json.loads(data.decode("utf-8"))
 
 
-def get_user_id_by_sid() -> int:
+def get_user_id_by_sid() -> Optional[int]:
     data = redis.get(f'sid:{request.sid}')
-    data = json.loads(data.decode("utf-8"))
-    return data.get('user_id')
+    if data:
+        data = json.loads(data.decode("utf-8"))
+        return data.get('user_id')
+    return None
 
 
 def get_sid_by_user_id_in_room(user_id: int, room: str) -> Optional[str]:
