@@ -117,7 +117,7 @@ def update_project(current_user_id: int, id_project: int, data: Dict) -> Project
         # Notify
         data = dict(
             type=TYPE_NOTIFICATION_EDIT_PROJECT,
-            message=f"The title's project '{older_project_title}' become the new tilte '{project.title}'.",
+            message=f"The title's project '{older_project_title}' become the new title '{project.title}'.",
             data=dict(project_title=project.title)
         )
         notify_all_member_in_project(project=project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
@@ -140,6 +140,7 @@ def delete_project(current_user_id: int, id_project: int) -> Dict:
     older_project_title = project.title
     older_project_id = project.id
     owner_user_name = project.owner.username
+    members_id = [user.id for user in project.coaches] + [user.id for user in project.participants]
 
     try:
         db.session.delete(project)
@@ -157,8 +158,8 @@ def delete_project(current_user_id: int, id_project: int) -> Dict:
             message=f"The project '{older_project_title}' was removed by '@{owner_user_name}'.",
             data=dict(project_id=older_project_id),
         )
-        notify_all_member_in_project(project=project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
-                                     exclude_users_id=[current_user_id])
+        for user_id in members_id:
+            notify_one_member_in_project(user_id=user_id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT)
 
     return dict(message='Your project was successfully removed.')
 
