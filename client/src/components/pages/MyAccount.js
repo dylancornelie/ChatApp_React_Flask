@@ -53,6 +53,7 @@ const MyAccount = () => {
       <div className='signin-page'>
         <Banner title='Manage your account' />
         <div className='signin-form-container'>
+          <p className='login-info'>{`Your login : ${userStates.user.login}`}</p>
           <label htmlFor='firstName'>First Name</label>
           <input
             id='firstName'

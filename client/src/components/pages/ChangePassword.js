@@ -5,7 +5,7 @@ import Banner from '../utils/Banner';
 import HeaderWithArrow from '../utils/HeaderWithArrow';
 import axios from 'axios';
 import { passwordIsValid, tokenIsEmpty, tokenIsValid } from '../../utils/utils';
-import { changePasswordError } from '../../actions/user.action';
+import { changePasswordError, getMeetings } from '../../actions/user.action';
 
 const ChangePassword = () => {
   const dispatch = useDispatch();
@@ -46,6 +46,7 @@ const ChangePassword = () => {
     })
       .then(() => {
         dispatch(changePasswordError('Password successfully changed'));
+        dispatch(getMeetings());
         history.push('/home');
       })
       .catch(() => dispatch(changePasswordError('Wrong password')));

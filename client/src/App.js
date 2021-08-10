@@ -21,7 +21,7 @@ const App = () => {
       );
 
       notificationSource.addEventListener('action_project', (event) => {
-        console.log(JSON.parse(event.data));
+        //console.log(JSON.parse(event.data));
         const data = JSON.parse(event.data);
 
         dispatch(getMeetings());
@@ -34,6 +34,20 @@ const App = () => {
           lang: 'EN',
         });
       });
+
+      notificationSource.addEventListener('action_message', (event) => {
+        //console.log(JSON.parse(event.data));
+        const data = JSON.parse(event.data);
+
+        new Notification(data.message, {
+          icon: '../image/logo72.png',
+          vibrate: [200, 100, 200],
+          renotify: true,
+          tag: 'txChat',
+          badge: '../image/logo72.png',
+          lang: 'EN',
+        });
+    })
     };
 
     if (!tokenIsEmpty() && tokenIsValid()) {
