@@ -12,7 +12,8 @@ def save_user_id_with_sid(user_id: int) -> None:
 
 
 def delete_user_id_by_sid() -> Dict:
-    data = redis.getdel(f'sid:{request.sid}')
+    data = redis.get(f'sid:{request.sid}')
+    redis.delete(f'sid:{request.sid}')
     return json.loads(data.decode("utf-8"))
 
 
