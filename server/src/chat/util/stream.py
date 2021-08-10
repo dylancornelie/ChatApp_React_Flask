@@ -101,10 +101,11 @@ def publish(channel: str, data, type: str = None, id: int = None, retry: int = N
         Defaults to "sse".
     """
     # If channel exist, we will send notification
-    if redis.get(channel):
+    channel_sse = f'sse:{channel}'
+    if redis.get(channel_sse):
         message = Message(data, type=type, id=id, retry=retry)
         msg_json = json.dumps(message.to_dict())
-        redis.publish(channel, msg_json)
+        redis.publish(channel_sse, msg_json)
 
 
 def messages(channel: str = 'sse'):
