@@ -67,13 +67,13 @@ const Chat = () => {
         project_id: chatStates.meeting.id,
       });
 
-      socket.current.on('disconnect', () =>
-        console.log('Socket successfully disconnected')
-      );
     }
-
+    
     return () => {
       if (!isEmpty(socket.current)) {
+        socket.current.on('disconnect', () =>
+          console.log('Socket successfully disconnected')
+        );
         socket.current.emit('leave_project', {
           project_id: chatStates.meeting.id,
         });
