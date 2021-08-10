@@ -105,7 +105,7 @@ def notify_new_message_into_members_offline(message: Message, room: str = None,
                                      type_publish=TYPE_NOTIFICATION_ACTION_MESSAGE)
     else:
         exclude_users_id = [user.get('user_id') for user in get_all_user_in_room(room)]
-        notify_all_member_in_project(project=message.project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_MESSAGE,
+        notify_all_member_in_project(users_id=message.project.get_id_members(), data=data, type_publish=TYPE_NOTIFICATION_ACTION_MESSAGE,
                                      exclude_users_id=exclude_users_id)
 
 

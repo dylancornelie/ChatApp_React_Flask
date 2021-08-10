@@ -77,26 +77,86 @@ sse.addEventListener(event, (event) => {
         ````
     1. Type:
         - add_into_project:
-            - _You was added into the project '{project.title}'._ => schema of project item
+            - _@{new_project.owner.username}' created a new project '{new_project.title}'. You are invited to join it._
+              => schema of project item
             - _The new participant '@{user.username}' was added into the project '{project.title}'._ => schema of user
+            - _You was invited into the project '{project.title}'._ => schema of project item
         - delete_project:
-            - message: _The project '{older_project_title}' was removed by '@{owner.username}'._ =>
-              data: `{project_id: older_project_id}`
+            - message: _The project '{older_project_title}' was removed by '@{owner_username}'._ =>
+              data:
+              ````typescript
+                {
+                    project_id : int;
+                    project_title: str; // older project title
+                }
+              ````
         - edit_project:
             - _The title's project '{older_project_title}' become the new tilte '{project.title}'._ =>
-              data: `{project_title: new_title}`
-            - _'@{current_user.username}' left the project'{project.title}'._ => data: `{user_id: user_left_id}`
+              data:
+              ````typescript
+              {
+                project_id: int;
+                project_title: str; // new project title
+              }
+              ````
+            - _'@{current_user.username}' left the project'{project.title}'._ => data: 
+              ````typescript
+              {
+                user_id: int; // user left id
+                project_id: int;
+                project_title: str
+              }
+              ````
             - _You was designated new coach in the project '{project.title}'._ =>
-              data: `{project_id: project_id_for_your_new_coach}`
+              data: 
+              ```typescript
+              {
+                project_id: int; // project id for our new coach
+                project_title: str;
+              }
+              ```
             - _'@{user.username}' was designated new coach in the project '{project.title}'._ =>
-              data: `{user_id: new_coach_id}`
+              data: 
+              ````typescript
+              {
+                user_id: int; // new coach id
+                project_id: int;
+                project_title: str;
+              }
+              ````
             - _You was withdrawn from coach in the project '{project.title}'._ =>
-              data: `{project_id: project_id_for_be_withdrawn}`
+              data: 
+              ````typescript
+              {
+                project_id: int; // project id for be withdrawn
+                project_title: str;
+              }
+              ````
             - _'@{user.username}' was withdrew from coach, he will be a participant the project'{project.title}'._ =>
-              data: `{user_id: older_coach_id}`
-            - _You was removed in the project '{project.title}'._ => data: `{project_id: project_id_for_be_removed}`
+              data: 
+              ````typescript
+              {
+                user_id: int; // older coach id
+                project_id: int;
+                project_title: str;
+              }
+              ````
+            - _You was removed in the project '{project.title}'._ => data: 
+              ````typescript
+              {
+                project_id: int; // project id for be removed
+                project_title: str;
+              }
+              ````
             - _'@{participant.username}' was removed in the project '{project.title}'._ =>
-              data: `{user_id: older_participant_id}`
+              data: 
+              ````typescript
+              {
+                user_id: int; // older_participant_id
+                project_id: int;
+                project_title: str;
+              }
+              ````
 
 1. Data of the event `action_message`
     1. Schema

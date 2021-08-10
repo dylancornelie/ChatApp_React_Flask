@@ -26,14 +26,17 @@ class Project(db.Model):
     owner = db.relationship('User', backref=db.backref('own_projects', lazy='dynamic'))
 
     coaches = db.relationship('User',
-                                   secondary=user_coaches_to_project,
-                                   backref=db.backref('coach_projects', lazy='dynamic'),
-                                   lazy='dynamic')
+                              secondary=user_coaches_to_project,
+                              backref=db.backref('coach_projects', lazy='dynamic'),
+                              lazy='dynamic')
 
     participants = db.relationship('User',
                                    secondary=user_participates_of_project,
                                    backref=db.backref('participate_projects', lazy='dynamic'),
                                    lazy='dynamic')
+
+    def get_id_members(self):
+        return [self.owner_id] + [user.id for user in self.coaches] + [user.id for user in self.participants]
 
     def __repr__(self):
         return "<Project '{}'>".format(self.title)

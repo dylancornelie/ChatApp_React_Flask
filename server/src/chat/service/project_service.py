@@ -40,19 +40,19 @@ def save_new_project(current_user_id: int, data: Dict) -> Project:
     save_data(new_project)
 
     # Remove user duple of participants in coaches
-    participants = [user for user in data.get('participants', []) if user not in data.get('coaches', [])]
+    participants = list(set(data.get('participants', [])) - set(data.get('coaches', [])))
     if participants:
         insert_participants(id_project=new_project.id, participants=participants)
     if data.get('coaches'):
         insert_coaches(id_project=new_project.id, coaches=data.get('coaches'))
 
     # Notify
-    data = dict(
-        type=TYPE_NOTIFICATION_ADD_INTO_PROJECT,
-        message=f"You was added into the project '{new_project.title}'.",
-        data=marshal(new_project, project_item)
-    )
-    notify_all_member_in_project(project=new_project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
+    data = {'type': TYPE_NOTIFICATION_ADD_INTO_PROJECT,
+            'message': f"'@{new_project.owner.username}' created a new project '{new_project.title}'. "
+                       f"You are invited to join it.",
+            'data': marshal(new_project, project_item)}
+    notify_all_member_in_project(users_id=new_project.get_id_members(), data=data,
+                                 type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
                                  exclude_users_id=[current_user_id])
 
     return new_project
@@ -118,9 +118,10 @@ def update_project(current_user_id: int, id_project: int, data: Dict) -> Project
         data = dict(
             type=TYPE_NOTIFICATION_EDIT_PROJECT,
             message=f"The title's project '{older_project_title}' become the new title '{project.title}'.",
-            data=dict(project_title=project.title)
+            data=dict(project_id=project.id, project_title=project.title)
         )
-        notify_all_member_in_project(project=project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
+        notify_all_member_in_project(users_id=project.get_id_members(), data=data,
+                                     type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
                                      exclude_users_id=[current_user_id])
 
     return project
@@ -139,8 +140,9 @@ def delete_project(current_user_id: int, id_project: int) -> Dict:
     required_own_project(current_user_id, project)
     older_project_title = project.title
     older_project_id = project.id
-    owner_user_name = project.owner.username
-    members_id = [user.id for user in project.coaches] + [user.id for user in project.participants]
+    owner_username = project.owner.username
+    owner_id = project.owner_id
+    members_id = project.get_id_members()
 
     try:
         db.session.delete(project)
@@ -155,11 +157,11 @@ def delete_project(current_user_id: int, id_project: int) -> Dict:
         # Notify
         data = dict(
             type=TYPE_NOTIFICATION_DELETE_PROJECT,
-            message=f"The project '{older_project_title}' was removed by '@{owner_user_name}'.",
-            data=dict(project_id=older_project_id),
+            message=f"The project '{older_project_title}' was removed by '@{owner_username}'.",
+            data=dict(project_id=older_project_id, project_title=older_project_title),
         )
-        for user_id in members_id:
-            notify_one_member_in_project(user_id=user_id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT)
+        notify_all_member_in_project(users_id=members_id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
+                                     exclude_users_id=[owner_id])
 
     return dict(message='Your project was successfully removed.')
 
@@ -175,12 +177,13 @@ def invite_participant_into_project(current_user_id: int, id_project: int, data:
     """
 
     project = get_project_item(id_project)
-    user = get_a_user(data.get('participant'))
 
     required_member_in_project(user_id=current_user_id, project=project)
 
+    participant = get_a_user(data.get('participant'))
+
     # check new user exist project ou non
-    if user.id == project.owner_id or user in project.participants or user in project.coaches:
+    if participant.id in project.get_id_members():
         e = BadRequest()
         e.data = dict(
             errors=dict(participant="You can't add an existing project member."),
@@ -193,21 +196,22 @@ def invite_participant_into_project(current_user_id: int, id_project: int, data:
     # Notify to new participant
     data = dict(
         type=TYPE_NOTIFICATION_ADD_INTO_PROJECT,
-        message=f"You was added into the project '{project.title}'.",
+        message=f"You was invited into the project '{project.title}'.",
         data=marshal(project, project_item)
     )
-    notify_one_member_in_project(user_id=user.id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT)
+    notify_one_member_in_project(user_id=participant.id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT)
 
     # Notify to other members
     data = dict(
         type=TYPE_NOTIFICATION_ADD_INTO_PROJECT,
-        message=f"The new participant '@{user.username}' was added into the project '{project.title}'.",
-        data=marshal(user, user_item)
+        message=f"The new participant '@{participant.username}' was added into the project '{project.title}'.",
+        data=marshal(participant, user_item)
     )
-    notify_all_member_in_project(project=project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
-                                 exclude_users_id=[current_user_id, user.id])
+    notify_all_member_in_project(users_id=project.get_id_members(), data=data,
+                                 type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
+                                 exclude_users_id=[current_user_id, participant.id])
 
-    return user
+    return participant
 
 
 def leave_from_project(current_user_id: int, id_project: int) -> Dict:
@@ -250,9 +254,10 @@ def leave_from_project(current_user_id: int, id_project: int) -> Dict:
         data = dict(
             type=TYPE_NOTIFICATION_EDIT_PROJECT,
             message=f"'@{current_user.username}' left the project'{project.title}'.",
-            data=dict(user_id=current_user_id)
+            data=dict(user_id=current_user_id, project_id=project.id, project_title=project.title)
         )
-        notify_all_member_in_project(project=project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
+        notify_all_member_in_project(users_id=project.get_id_members(), data=data,
+                                     type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
                                      exclude_users_id=[current_user_id])
 
     return dict(message='You left the project.')
@@ -307,7 +312,7 @@ def designate_coach_into_project(current_user_id: int, id_project: int, data: Di
         data = dict(
             type=TYPE_NOTIFICATION_EDIT_PROJECT,
             message=f"You was designated new coach in the project '{project.title}'.",
-            data=dict(project_id=project.id),
+            data=dict(project_id=project.id, project_title=project.title),
         )
         notify_one_member_in_project(user_id=user.id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT)
 
@@ -315,9 +320,10 @@ def designate_coach_into_project(current_user_id: int, id_project: int, data: Di
         data = dict(
             type=TYPE_NOTIFICATION_EDIT_PROJECT,
             message=f"'@{user.username}' was designated new coach in the project '{project.title}'.",
-            data=dict(user_id=user.id)
+            data=dict(user_id=user.id, project_id=project.id, project_title=project.title)
         )
-        notify_all_member_in_project(project=project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
+        notify_all_member_in_project(users_id=project.get_id_members(), data=data,
+                                     type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
                                      exclude_users_id=[current_user_id, user.id])
 
     return dict(message='You designated a new coach.')
@@ -364,7 +370,7 @@ def withdraw_coach_in_project(current_user_id: int, id_project: int, data: Dict)
         data = dict(
             type=TYPE_NOTIFICATION_EDIT_PROJECT,
             message=f"You was withdrawn from coach in the project '{project.title}'.",
-            data=dict(project_id=project.id),
+            data=dict(project_id=project.id, project_title=project.title),
         )
         notify_one_member_in_project(user_id=user.id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT)
 
@@ -372,9 +378,10 @@ def withdraw_coach_in_project(current_user_id: int, id_project: int, data: Dict)
         data = dict(
             type=TYPE_NOTIFICATION_EDIT_PROJECT,
             message=f"'@{user.username}' was withdrew from coach, he will be a participant the project'{project.title}'.",
-            data=dict(user_id=user.id)
+            data=dict(user_id=user.id, project_id=project.id, project_title=project.title)
         )
-        notify_all_member_in_project(project=project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
+        notify_all_member_in_project(users_id=project.get_id_members(), data=data,
+                                     type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
                                      exclude_users_id=[current_user_id, user.id])
 
     return dict(message='You withdrew a coach. He will be a participant.')
@@ -425,7 +432,7 @@ def remove_participant_in_project(current_user_id: int, id_project: int, data: D
         data = dict(
             type=TYPE_NOTIFICATION_EDIT_PROJECT,
             message=f"You was removed in the project '{project.title}'.",
-            data=dict(project_id=project.id),
+            data=dict(project_id=project.id, project_title=project.title),
         )
         notify_one_member_in_project(user_id=participant.id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT)
 
@@ -433,9 +440,10 @@ def remove_participant_in_project(current_user_id: int, id_project: int, data: D
         data = dict(
             type=TYPE_NOTIFICATION_EDIT_PROJECT,
             message=f"'@{participant.username}' was removed in the project '{project.title}'.",
-            data=dict(user_id=participant.id)
+            data=dict(user_id=participant.id, project_id=project.id, project_title=project.title)
         )
-        notify_all_member_in_project(project=project, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
+        notify_all_member_in_project(users_id=project.get_id_members(), data=data,
+                                     type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
                                      exclude_users_id=[current_user_id, participant.id])
 
     return dict(message='You removed a participant.')
@@ -513,22 +521,14 @@ def is_participant(user_id: int, project: Project) -> bool:
     return any(user_id == user.id for user in project.participants)
 
 
-def notify_all_member_in_project(project: Project, data, type_publish: str = None,
+def notify_all_member_in_project(users_id: List[int], data, type_publish: str = None,
                                  exclude_users_id: List[int] = None) -> None:
-    # Owner
-    notify_one_member_in_project(project.owner_id, data, type_publish, exclude_users_id)
-
-    # Coaches
-    for coach in project.coaches:
-        notify_one_member_in_project(coach.id, data, type_publish, exclude_users_id)
-
-    # Participants
-    for participant in project.participants:
-        notify_one_member_in_project(participant.id, data, type_publish, exclude_users_id)
+    if exclude_users_id:
+        users_id = list(set(users_id) - set(exclude_users_id))
+    for user_id in users_id:
+        notify_one_member_in_project(user_id, data, type_publish)
 
 
-def notify_one_member_in_project(user_id: int, data, type_publish: str = None,
-                                 exclude_users_id: List[int] = None) -> None:
-    if not exclude_users_id or user_id not in exclude_users_id:
-        channel = get_channel_stream(user_id)
-        publish(channel, data, type_publish)
+def notify_one_member_in_project(user_id: int, data, type_publish: str = None) -> None:
+    channel = get_channel_stream(user_id)
+    publish(channel, data, type_publish)

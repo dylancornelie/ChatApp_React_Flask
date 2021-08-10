@@ -101,10 +101,11 @@ def publish(channel: str, data, type: str = None, id: int = None, retry: int = N
         Defaults to "sse".
     """
     # If channel exist, we will send notification
-    # if redis.get(channel):
-    message = Message(data, type=type, id=id, retry=retry)
-    msg_json = json.dumps(message.to_dict())
-    redis.publish(channel, msg_json)
+    channel_sse = f'sse:{channel}'
+    if redis.get(channel_sse):
+        message = Message(data, type=type, id=id, retry=retry)
+        msg_json = json.dumps(message.to_dict())
+        redis.publish(channel_sse, msg_json)
 
 
 def messages(channel: str = 'sse'):
@@ -115,7 +116,7 @@ def messages(channel: str = 'sse'):
     pubsub.subscribe(channel)
 
     # Mark existence channel
-    # redis.setnx(channel, 1)
+    redis.set(channel, 1)
 
     try:
         for pubsub_message in pubsub.listen():
@@ -127,7 +128,7 @@ def messages(channel: str = 'sse'):
             pubsub.unsubscribe(channel)
 
             # Delete the mark when finish
-            # redis.delete(channel)
+            redis.delete(channel)
 
         except ConnectionError as e:
             current_app.logger.error(str(e), exc_info=True)
@@ -137,10 +138,11 @@ def stream(channel: str = 'sse'):
     """
     A view function that streams server-sent events.
     """
+    channel_sse = f'sse:{channel}'
 
     @stream_with_context
     def generator():
-        for message in messages(channel=channel):
+        for message in messages(channel=channel_sse):
             yield str(message)
 
     return Response(
