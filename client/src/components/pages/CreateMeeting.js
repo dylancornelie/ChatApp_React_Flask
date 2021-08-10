@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {useDispatch, useSelector} from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux';
 import Banner from '../utils/Banner';
 import HeaderWithArrow from '../utils/HeaderWithArrow';
 import { useHistory } from 'react-router';
@@ -7,24 +7,24 @@ import { tokenIsEmpty, tokenIsValid } from '../../utils/utils';
 import { createMeeting } from '../../actions/user.action';
 
 const CreateMeeting = () => {
-  const history = useHistory();
   const dispatch = useDispatch();
-  const userState = useSelector(state => state.userReducer)
+  const userState = useSelector((state) => state.userReducer);
+  const history = useHistory();
   const [meetingName, setMeetingName] = useState('');
 
-  useEffect(()=> {
-    if (tokenIsEmpty()|| !tokenIsValid()) history.push('/');
-  })
+  useEffect(() => {
+    if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
+  });
 
   const handleCreateMeeting = (e) => {
     e.preventDefault();
     dispatch(createMeeting(meetingName));
+    setMeetingName('');
   };
 
   const leftIconAction = () => {
     history.push('/home');
   };
-
 
   return (
     <>

@@ -11,10 +11,9 @@ import Banner from '../utils/Banner';
 import HeaderWithArrow from '../utils/HeaderWithArrow';
 
 const MyAccount = () => {
-  const history = useHistory();
   const dispatch = useDispatch();
   const userStates = useSelector((state) => state.userReducer);
-  const user = userStates.user;
+  const history = useHistory();
   const [firstName, setFirstName] = useState(userStates.user.firstName);
   const [lastName, setLastName] = useState(userStates.user.lastName);
 
@@ -24,7 +23,7 @@ const MyAccount = () => {
   }, [userStates.user, dispatch, history]);
 
   const handleChanges = () => {
-    dispatch(accountDataChange(user.email, user.login, firstName, lastName));
+    dispatch(accountDataChange(userStates.user.email, userStates.user.login, firstName, lastName));
     history.push('/home');
   };
 

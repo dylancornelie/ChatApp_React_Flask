@@ -21,7 +21,7 @@ const App = () => {
       );
 
       notificationSource.addEventListener('action_project', (event) => {
-        //console.log(JSON.parse(event.data));
+        console.log(JSON.parse(event.data));
         const data = JSON.parse(event.data);
 
         dispatch(getMeetings());
@@ -67,7 +67,7 @@ const App = () => {
         Notification.requestPermission((permission) => {
           if (permission === 'granted' && !tokenIsEmpty()) {
             handleNotification();
-          } else console.log('Notifications are disabled');
+          } else console.log('Notifications are disabled or you are not logged in');
         });
       }
     } else console.log('Notifications are not supported by your browser');

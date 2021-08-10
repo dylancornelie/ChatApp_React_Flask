@@ -17,14 +17,15 @@ import {
 } from '../../actions/chat.action';
 
 const Chat = () => {
+  const dispatch = useDispatch();
   const chatStates = useSelector((state) => state.chatReducer);
   const userStates = useSelector((state) => state.userReducer);
-  const dispatch = useDispatch();
   const history = useHistory();
   const socket = useRef();
 
   useEffect(() => {
     if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
+
     if (!isEmpty(chatStates.meeting)) {
       const meetingId = chatStates.meeting.id;
       const refreshMeeting = userStates.meetings.find(
@@ -41,6 +42,7 @@ const Chat = () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
+
     if (!isEmpty(socket.current)) {
       socket.current.on('connect', () =>
         console.log(
@@ -64,6 +66,10 @@ const Chat = () => {
       socket.current.emit('join_project', {
         project_id: chatStates.meeting.id,
       });
+
+      socket.current.on('disconnect', () =>
+        console.log('Socket successfully disconnected')
+      );
     }
 
     return () => {
@@ -71,9 +77,6 @@ const Chat = () => {
         socket.current.emit('leave_project', {
           project_id: chatStates.meeting.id,
         });
-        socket.current.on('disconnect', () =>
-          console.log('Socket successfully disconnected')
-        );
         socket.current.disconnect();
       }
     };

@@ -1,6 +1,6 @@
 import React from 'react';
-import { addAnchorTag, fileIsImage, isEmpty } from '../../utils/utils';
 import parser from 'html-react-parser';
+import { addAnchorTag, fileIsImage, isEmpty } from '../../utils/utils';
 
 const Message = ({ message, position }) => {
   return (
@@ -40,7 +40,7 @@ const Message = ({ message, position }) => {
         )}
         {!isEmpty(message.content) && (
           <p className='message-content'>
-            {parser(addAnchorTag(message.content.toString()))}
+            {parser(addAnchorTag(message.content))}
           </p>
         )}
         {!isEmpty(message.file_name) && !fileIsImage(message.file_name) && (

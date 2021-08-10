@@ -26,7 +26,7 @@ const SignIn = () => {
       <Banner title='Sign in into your account' />
       <form className='signin-form-container' onSubmit={handleSignIn}>
         <input
-          type='text'
+          type='email'
           autoComplete='email'
           placeholder='email'
           value={email}

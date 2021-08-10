@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import { ImArrowLeft2 } from 'react-icons/im';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { BsArrowRepeat } from 'react-icons/bs';
-import { useDispatch, useSelector } from 'react-redux';
 import {
   showParticipants,
   showPreparedMessage,

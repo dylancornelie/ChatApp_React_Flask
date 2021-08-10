@@ -17,6 +17,37 @@ export const signUpUser = (
   firstName,
   lastName
 ) => {
+  if (repeatPassword !== password)
+    return {
+      type: SIGN_UP_USER,
+      payload: {
+        signUpError: 'Passwords do not match',
+      },
+    };
+  //8 character at least, 1 uppercase, 1 lowercase, 1 digit
+  const passwordRegExp = new RegExp(
+    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/
+  );
+  if (!passwordRegExp.test(password))
+    return {
+      type: SIGN_UP_USER,
+      payload: {
+        signUpError:
+          'Password must at least contains 8 characters, 1 uppercase, 1 lowercase & 1 digit',
+      },
+    };
+  //Check if is a valid email address
+  const emailRegExp = new RegExp(
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  );
+  if (!emailRegExp.test(email))
+    return {
+      type: SIGN_UP_USER,
+      payload: {
+        signUpError: 'Invalid mail address',
+      },
+    };
+
   return (dispatch) => {
     axios({
       method: 'POST',
@@ -179,12 +210,12 @@ export const accountDataChange = (email, login, firstName, lastName) => {
         last_name: lastName,
       },
     })
-      .then((response) => {
-        return dispatch({
+      .then((response) =>
+        dispatch({
           type: ACCOUNT_DATA_CHANGE,
-          payload: response.data,
-        });
-      })
+          payload: { firstName, lastName },
+        })
+      )
       .catch((err) => console.error(err));
 };
 

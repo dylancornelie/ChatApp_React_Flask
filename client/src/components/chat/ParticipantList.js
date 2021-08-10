@@ -53,13 +53,23 @@ const ParticipantList = () => {
           onClick={() => dispatch(showAddParticipant())}
         />
       </div>
+      <ParticipantItem
+        key={chatStates.meeting.owner.id}
+        user={chatStates.meeting.owner}
+        isCoach={true}
+        isOwner={true}
+      />
       {chatStates.meeting.coaches.map((coach) => (
         <ParticipantItem key={coach.id} user={coach} isCoach={true} />
       ))}
       {chatStates.meeting.participants.map((participant) => (
-        <ParticipantItem key={participant.id} user={participant} isCoach={false} />
+        <ParticipantItem
+          key={participant.id}
+          user={participant}
+          isCoach={false}
+        />
       ))}
-          </div>
+    </div>
   );
 };
 

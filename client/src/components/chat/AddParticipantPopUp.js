@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addParticipant } from '../../actions/chat.action';
 import QrReader from 'react-qr-reader';
+import { addParticipant } from '../../actions/chat.action';
 import { isEmpty } from '../../utils/utils';
 
 const AddParticipantPopUp = ({ outsideClickAction, meetingId }) => {
   const dispatch = useDispatch();
   const userStates = useSelector((state) => state.userReducer);
-
-  const [showQrCode, setShowQrCode] = useState(false);
+  const [flashQrCode, setFlashQrCode] = useState(false);
   const [addByLogin, setAddByLogin] = useState(false);
   const [login, setLogin] = useState('');
 
@@ -18,14 +17,11 @@ const AddParticipantPopUp = ({ outsideClickAction, meetingId }) => {
 
   return (
     <div className='context-menu-backdrop' onClick={() => outsideClickAction()}>
-      {showQrCode ? (
+      {flashQrCode ? (
         <QrReader
           delay={300}
           onScan={(data) => {
-            if (!isEmpty(data)) {
-              console.log(meetingId, data);
-              dispatch(addParticipant(meetingId, data));
-            }
+            if (!isEmpty(data)) dispatch(addParticipant(meetingId, data));
           }}
           onError={console.error}
           style={{ width: '50%' }}
@@ -63,7 +59,7 @@ const AddParticipantPopUp = ({ outsideClickAction, meetingId }) => {
             >
               <button
                 className='context-menu-button'
-                onClick={() => setShowQrCode(!showQrCode)}
+                onClick={() => setFlashQrCode(!flashQrCode)}
               >
                 Scan QR Codes
               </button>

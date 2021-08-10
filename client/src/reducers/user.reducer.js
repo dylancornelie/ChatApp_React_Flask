@@ -62,11 +62,8 @@ export default function userReducer(state = initialState, action) {
       return {
         ...state,
         user: {
-          id: action.payload.id,
-          email: action.payload.email,
-          login: action.payload.username,
-          firstName: action.payload.first_name,
-          lastName: action.payload.last_name,
+          firstName: action.payload.firstName,
+          lastName: action.payload.lastName,
         },
       };
     case DISCONNECT_USER:

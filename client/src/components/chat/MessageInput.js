@@ -43,25 +43,33 @@ const MessageInput = ({ socket }) => {
       fileReader.readAsDataURL(file[0]);
       fileReader.onload = () => {
         if (!isEmpty(fileReader.result))
-          socket.emit('send_message', {
-            project_id: chatStates.meeting.id,
-            sender_id: userStates.user.id,
-            content: message,
-            receiver_id: isEmpty(chatStates.messageReceiver)
-              ? 0
-              : chatStates.messageReceiver.id,
-            file_name: file[0].name,
-            file_base64: fileReader.result,
-          });
+          socket.emit(
+            'send_message',
+            {
+              project_id: chatStates.meeting.id,
+              sender_id: userStates.user.id,
+              content: message,
+              receiver_id: isEmpty(chatStates.messageReceiver)
+                ? 0
+                : chatStates.messageReceiver.id,
+              file_name: file[0].name,
+              file_base64: fileReader.result,
+            },
+            (data) => dispatch(sendMessage(data))
+          );
         else if (!isEmpty(message))
-          socket.emit('send_message', {
-            project_id: chatStates.meeting.id,
-            sender_id: userStates.user.id,
-            content: message,
-            receiver_id: isEmpty(chatStates.messageReceiver)
-              ? 0
-              : chatStates.messageReceiver.id,
-          });
+          socket.emit(
+            'send_message',
+            {
+              project_id: chatStates.meeting.id,
+              sender_id: userStates.user.id,
+              content: message,
+              receiver_id: isEmpty(chatStates.messageReceiver)
+                ? 0
+                : chatStates.messageReceiver.id,
+            },
+            (data) => dispatch(sendMessage(data))
+          );
       };
     }
     setFile(null);
@@ -109,7 +117,7 @@ const MessageInput = ({ socket }) => {
           </div>
           <div className='messageInput-infobox' style={{ top: '-62px' }}>
             <p className='messageInput-infobox-message'>
-              This message will be sent to {chatStates.messageReceiver}
+              This message will be sent to {`${chatStates.messageReceiver.first_name} ${chatStates.messageReceiver.last_name}`}
             </p>
             <IoAdd
               className='messageInput-infobox-logo'

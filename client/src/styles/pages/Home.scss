@@ -32,7 +32,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding:1rem 0;
+  padding: 1rem 0;
   border-top: 3px solid $primary-color;
   @media (min-width: $breakpoint-tablet) {
     flex-direction: row;
@@ -44,17 +44,17 @@
     border: none;
     border-radius: 50px;
     height: 3rem;
-    background-color: $primary-color;
+    color: $primary-color;
+    background-color: $secondary-color;
     font-size: 1.7rem;
-    margin:1rem 0;
-    color: $secondary-color;
+    margin: 1rem 0;
     max-width: 37.5rem;
-    width:90%;
+    width: 90%;
     cursor: pointer;
 
     &:hover {
-      transform:scale(1.1);
+      color: $secondary-color;
+      background-color: $primary-color;
     }
-
   }
 }

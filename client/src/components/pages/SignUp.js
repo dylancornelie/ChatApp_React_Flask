@@ -33,7 +33,7 @@ const SignUp = () => {
       <form className='signin-form-container' onSubmit={handleSignUp}>
         <div className='signup-grid-form'>
           <input
-            type='text'
+            type='email'
             autoComplete='email'
             placeholder='email'
             value={email}

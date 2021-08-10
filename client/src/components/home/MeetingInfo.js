@@ -11,7 +11,7 @@ import AddParticipantPopUp from '../chat/AddParticipantPopUp';
 
 const MeetingInfo = ({ meeting }) => {
   const history = useHistory();
-  const userState = useSelector((state) => state.userReducer);
+  const userStates = useSelector((state) => state.userReducer);
   const dispatch = useDispatch();
   const [active, setActive] = useState(false);
   const [addParticipant, setAddParticipant] = useState(false);
@@ -32,7 +32,7 @@ const MeetingInfo = ({ meeting }) => {
             return 0;
           })
           .map((participant) => {
-            if (participant.id !== userState.user.id)
+            if (participant.id !== userStates.user.id)
               return (
                 <p
                   key={participant.id}
@@ -57,7 +57,7 @@ const MeetingInfo = ({ meeting }) => {
         <button onClick={() => setAddParticipant(!addParticipant)}>
           Add participant
         </button>
-        {meeting.owner.id === userState.user.id && (
+        {meeting.owner.id === userStates.user.id && (
           <button
             onClick={() => dispatch(removeParticipant(meeting.id, active))}
           >
@@ -68,12 +68,12 @@ const MeetingInfo = ({ meeting }) => {
         <button
           className='red-button'
           onClick={
-            meeting.owner.id === userState.user.id
+            meeting.owner.id === userStates.user.id
               ? () => dispatch(deleteMeeting(meeting.id))
               : () => dispatch(leaveMeeting(meeting.id))
           }
         >
-          {meeting.owner.id === userState.user.id
+          {meeting.owner.id === userStates.user.id
             ? 'Delete meeting'
             : 'Quit meeting'}
         </button>

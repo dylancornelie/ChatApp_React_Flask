@@ -19,9 +19,6 @@ const ChatContextMenu = () => {
     >
       <div
         className='context-menu-button-container'
-        onClick={(e) => {
-          //e.stopPropagation();
-        }}
       >
         <button
           className='context-menu-button'
@@ -29,7 +26,8 @@ const ChatContextMenu = () => {
         >
           Send a private message
         </button>
-        {!chatStates.targetedUserIsCoach ? (
+        {!chatStates.targetedUserIsCoach &&
+        chatStates.targetedUser.id !== chatStates.meeting.owner.id ? (
           <button
             className='context-menu-button'
             onClick={() =>
@@ -41,16 +39,21 @@ const ChatContextMenu = () => {
             Designate coach
           </button>
         ) : (
-          <button
-            className='context-menu-button'
-            onClick={() =>
-              dispatch(
-                removePrivileges(chatStates.meeting.id, chatStates.targetedUser)
-              )
-            }
-          >
-            Remove privileges
-          </button>
+          chatStates.targetedUser.id !== chatStates.meeting.owner.id && (
+            <button
+              className='context-menu-button'
+              onClick={() =>
+                dispatch(
+                  removePrivileges(
+                    chatStates.meeting.id,
+                    chatStates.targetedUser
+                  )
+                )
+              }
+            >
+              Remove privileges
+            </button>
+          )
         )}
         {!chatStates.targetedUserIsCoach && (
           <button

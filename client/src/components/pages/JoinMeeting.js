@@ -1,16 +1,16 @@
 import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import QRCode from 'qrcode.react';
 import Banner from '../utils/Banner';
 import HeaderWithArrow from '../utils/HeaderWithArrow';
 import { isEmpty, tokenIsEmpty, tokenIsValid } from '../../utils/utils';
-import { useDispatch, useSelector } from 'react-redux';
 import { getUser } from '../../actions/user.action';
 
 const JoinMeeting = () => {
-  const history = useHistory();
   const dispatch = useDispatch();
   const userStates = useSelector((state) => state.userReducer);
+  const history = useHistory();
 
   const viewWidth = Math.max(
     document.documentElement.clientWidth || 0,

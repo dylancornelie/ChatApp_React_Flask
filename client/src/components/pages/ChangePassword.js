@@ -7,8 +7,8 @@ import axios from 'axios';
 import { tokenIsEmpty, tokenIsValid } from '../../utils/utils';
 
 const ChangePassword = () => {
-  const history = useHistory();
   const userStates = useSelector((state) => state.userReducer);
+  const history = useHistory();
   const [password, setPassword] = useState('');
   const [repeatNewPassword, setRepeatNewPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -19,7 +19,7 @@ const ChangePassword = () => {
 
   const handleChangePassword = (e) => {
     e.preventDefault();
-    console.log('saviing new password...');
+    console.log('TO DO VERIFICATION PASSWORD')
     axios({
       method: 'PUT',
       url: `${process.env.REACT_APP_API_URL}/api/v1/users/me/reset-password`,
@@ -49,10 +49,18 @@ const ChangePassword = () => {
       <div className='signin-page'>
         <Banner title='Manage your account' />
         <form className='signin-form-container' onSubmit={handleChangePassword}>
+        <input
+          type='email'
+          autoComplete='email'
+          value={userStates.user.email}
+          readOnly
+          hidden          
+        />
           <input
             type='password'
             required
             placeholder='old password'
+            autoComplete='current-password'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -60,6 +68,7 @@ const ChangePassword = () => {
             type='password'
             required
             placeholder='repeat new password'
+            autoComplete='new-password'
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
           />
@@ -67,6 +76,7 @@ const ChangePassword = () => {
             type='password'
             required
             placeholder='new password'
+            autoComplete='new-password'
             value={repeatNewPassword}
             onChange={(e) => setRepeatNewPassword(e.target.value)}
           />

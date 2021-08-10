@@ -15,6 +15,7 @@ const MessageList = () => {
   const dispatch = useDispatch();
   const messageEnd = useRef(null);
   const [loadMessage, setLoadMessage] = useState(true);
+  
   const messagesLength = isEmpty(chatStates.messages)
     ? 0
     : chatStates.messages.length;
