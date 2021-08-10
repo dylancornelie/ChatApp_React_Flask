@@ -31,7 +31,7 @@ class Message(db.Model):
                                foreign_keys=[receiver_id])
 
     project_id = db.Column(db.Integer, db.ForeignKey('project.id'), nullable=False)
-    project = db.relationship('Project', backref=db.backref('message_project', lazy='dynamic'))
+    project = db.relationship('Project', backref=db.backref('message_project', lazy='dynamic', cascade="all, delete-orphan"))
 
     @property
     def created_at(self):
