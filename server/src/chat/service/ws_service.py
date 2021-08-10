@@ -59,9 +59,9 @@ def user_join_into_project(room: str) -> List:
     )
 
 
-def user_leave_from_project(room: str) -> Dict:
+def user_leave_from_project(room: str, user_id: int = None) -> Dict:
     data = dict(
-        user_id=get_user_id_by_sid(),
+        user_id=user_id if user_id else get_user_id_by_sid(),
         sid=request.sid,
         room=room
     )

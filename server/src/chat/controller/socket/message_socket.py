@@ -59,5 +59,5 @@ class WsMessageNamespace(Namespace):
     def on_disconnect(self):
         data = delete_user_id_by_sid()
         if data.get('room'):
-            user_leave_from_project(data.get('room'))
+            user_leave_from_project(data.get('room'), data.get('user_id'))
             self.emit('offline', data=dict(user_id=data.get('user_id')), room=data.get('room'), include_self=False)
