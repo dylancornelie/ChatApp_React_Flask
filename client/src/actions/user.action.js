@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { emailIsValid, passwordIsValid } from '../utils/utils';
 
 export const SIGN_UP_USER = 'SIGN_UP_USER';
 export const SIGN_IN_USER = 'SIGN_IN_USER';
@@ -8,6 +9,7 @@ export const GET_USER = 'GET_USER';
 export const ACCOUNT_DATA_CHANGE = 'ACCOUNT_DATA_CHANGE';
 export const CREATE_MEETING = 'CREATE_MEETING';
 export const GET_MEETINGS = 'GET_MEETINGS';
+export const CHANGE_PASSWORD_ERROR = 'CHANGE_PASSWORD_ERROR';
 
 export const signUpUser = (
   email,
@@ -24,11 +26,8 @@ export const signUpUser = (
         signUpError: 'Passwords do not match',
       },
     };
-  //8 character at least, 1 uppercase, 1 lowercase, 1 digit
-  const passwordRegExp = new RegExp(
-    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/
-  );
-  if (!passwordRegExp.test(password))
+
+  if (!passwordIsValid(password))
     return {
       type: SIGN_UP_USER,
       payload: {
@@ -36,11 +35,8 @@ export const signUpUser = (
           'Password must at least contains 8 characters, 1 uppercase, 1 lowercase & 1 digit',
       },
     };
-  //Check if is a valid email address
-  const emailRegExp = new RegExp(
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-  );
-  if (!emailRegExp.test(email))
+
+  if (!emailIsValid(email))
     return {
       type: SIGN_UP_USER,
       payload: {
@@ -270,3 +266,8 @@ export const getMeetings = () => {
       .catch((err) => console.error(err));
   };
 };
+
+export const changePasswordError = (errorMessage) => ({
+  type: CHANGE_PASSWORD_ERROR,
+  payload: { errorMessage },
+});

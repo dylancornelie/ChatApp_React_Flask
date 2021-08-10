@@ -67,7 +67,22 @@ export const tokenIsValid = () => {
 
 export const fileIsImage = (fileName) => {
   const regExp = /\.jpg$|\.jpeg$|\.png$|\.gif$/g;
-  if (fileName.match(regExp))
-    return true;
-  return false
-}
+  if (fileName.match(regExp)) return true;
+  return false;
+};
+
+export const passwordIsValid = (password) => {
+  //8 character at least, 1 uppercase, 1 lowercase, 1 digit
+  const passwordRegExp = new RegExp(
+    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/
+  );
+  return passwordRegExp.test(password);
+};
+
+export const emailIsValid = (email) => {
+  const emailRegExp = new RegExp(
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+  );
+
+  return emailRegExp.test(email);
+};

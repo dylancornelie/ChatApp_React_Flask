@@ -14,16 +14,27 @@ const MyAccount = () => {
   const dispatch = useDispatch();
   const userStates = useSelector((state) => state.userReducer);
   const history = useHistory();
-  const [firstName, setFirstName] = useState(userStates.user.firstName);
-  const [lastName, setLastName] = useState(userStates.user.lastName);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
 
   useEffect(() => {
-    if (tokenIsEmpty()|| !tokenIsValid()) history.push('/');
+    if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
     if (isEmpty(userStates.user)) dispatch(getUser());
+    else {
+      setFirstName(userStates.user.firstName);
+      setLastName(userStates.user.lastName);
+    }
   }, [userStates.user, dispatch, history]);
 
   const handleChanges = () => {
-    dispatch(accountDataChange(userStates.user.email, userStates.user.login, firstName, lastName));
+    dispatch(
+      accountDataChange(
+        userStates.user.email,
+        userStates.user.login,
+        firstName,
+        lastName
+      )
+    );
     history.push('/home');
   };
 

@@ -1,25 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
-import {  useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Banner from '../utils/Banner';
 import HeaderWithArrow from '../utils/HeaderWithArrow';
 import axios from 'axios';
-import { tokenIsEmpty, tokenIsValid } from '../../utils/utils';
+import { passwordIsValid, tokenIsEmpty, tokenIsValid } from '../../utils/utils';
+import { changePasswordError } from '../../actions/user.action';
 
 const ChangePassword = () => {
+  const dispatch = useDispatch();
   const userStates = useSelector((state) => state.userReducer);
   const history = useHistory();
   const [password, setPassword] = useState('');
   const [repeatNewPassword, setRepeatNewPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
 
-  useEffect(()=> {
-    if (tokenIsEmpty()|| !tokenIsValid()) history.push('/');
-  })
+  useEffect(() => {
+    if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
+  });
 
   const handleChangePassword = (e) => {
     e.preventDefault();
-    console.log('TO DO VERIFICATION PASSWORD')
+
+    if (repeatNewPassword !== newPassword)
+      return dispatch(changePasswordError('Passwords do not match'));
+
+    if (!passwordIsValid(password))
+      return dispatch(
+        changePasswordError(
+          'Password must at least contains 8 characters, 1 uppercase, 1 lowercase & 1 digit'
+        )
+      );
+
     axios({
       method: 'PUT',
       url: `${process.env.REACT_APP_API_URL}/api/v1/users/me/reset-password`,
@@ -33,10 +45,10 @@ const ChangePassword = () => {
       },
     })
       .then(() => {
-
+        dispatch(changePasswordError('Password successfully changed'));
         history.push('/home');
       })
-      .catch((err) => console.error(err));
+      .catch(() => dispatch(changePasswordError('Wrong password')));
   };
 
   const leftIconAction = () => {
@@ -49,13 +61,13 @@ const ChangePassword = () => {
       <div className='signin-page'>
         <Banner title='Manage your account' />
         <form className='signin-form-container' onSubmit={handleChangePassword}>
-        <input
-          type='email'
-          autoComplete='email'
-          value={userStates.user.email}
-          readOnly
-          hidden          
-        />
+          <input
+            type='email'
+            autoComplete='email'
+            value={userStates.user.email}
+            readOnly
+            hidden
+          />
           <input
             type='password'
             required
@@ -80,7 +92,7 @@ const ChangePassword = () => {
             value={repeatNewPassword}
             onChange={(e) => setRepeatNewPassword(e.target.value)}
           />
-          <button>Apply changes</button>
+          <button>Change password</button>
           <p className='signin-form-infobox'>
             {userStates.changePasswordError}
           </p>

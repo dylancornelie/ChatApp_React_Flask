@@ -6,6 +6,7 @@ import {
 } from '../actions/chat.action';
 import {
   ACCOUNT_DATA_CHANGE,
+  CHANGE_PASSWORD_ERROR,
   CREATE_MEETING,
   DISCONNECT_USER,
   GET_MEETINGS,
@@ -118,6 +119,8 @@ export default function userReducer(state = initialState, action) {
       return {
         ...state,
       };
+    case CHANGE_PASSWORD_ERROR:
+      return { ...state, changePasswordError: action.payload.errorMessage };
     default:
       return { ...state };
   }
