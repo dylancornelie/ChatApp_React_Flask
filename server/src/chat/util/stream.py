@@ -13,7 +13,7 @@ class Message(object):
     Data that is published as a server-sent event.
     """
 
-    def __init__(self, data, type=None, id=None, retry=None):
+    def __init__(self, data, type=None, id=None, retry=30000):
         """
         Create a server-sent event.
         :param data: The event data. If it is not a string, it will be
@@ -22,7 +22,7 @@ class Message(object):
         :param type: An optional event type.
         :param id: An optional event ID.
         :param retry: An optional integer, to specify the reconnect time for
-            disconnected clients of this stream.
+            disconnected clients of this stream. Default: after 30s
         """
         self.data = data
         self.type = type
@@ -85,7 +85,7 @@ class Message(object):
         )
 
 
-def publish(channel: str, data, type: str = None, id: int = None, retry: int = None) -> None:
+def publish(channel: str, data, type: str = None, id: int = None, retry: int = 30000) -> None:
     """
     Publish data as a server-sent event.
 
@@ -94,7 +94,7 @@ def publish(channel: str, data, type: str = None, id: int = None, retry: int = N
     :param type: An optional event type.
     :param id: An optional event ID.
     :param retry: An optional integer, to specify the reconnect time for
-        disconnected clients of this stream.
+        disconnected clients of this stream. Default: after 30s
     :param channel: If you want to direct different events to different
         clients, you may specify a channel for this event to go to.
         Only clients listening to the same channel will receive this event.
