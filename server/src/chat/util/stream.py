@@ -101,10 +101,10 @@ def publish(channel: str, data, type: str = None, id: int = None, retry: int = N
         Defaults to "sse".
     """
     # If channel exist, we will send notification
-    if redis.get(channel):
-        message = Message(data, type=type, id=id, retry=retry)
-        msg_json = json.dumps(message.to_dict())
-        redis.publish(channel, msg_json)
+    # if redis.get(channel):
+    message = Message(data, type=type, id=id, retry=retry)
+    msg_json = json.dumps(message.to_dict())
+    redis.publish(channel, msg_json)
 
 
 def messages(channel: str = 'sse'):
@@ -115,7 +115,7 @@ def messages(channel: str = 'sse'):
     pubsub.subscribe(channel)
 
     # Mark existence channel
-    redis.setnx(channel, 1)
+    # redis.setnx(channel, 1)
 
     try:
         for pubsub_message in pubsub.listen():
@@ -127,7 +127,7 @@ def messages(channel: str = 'sse'):
             pubsub.unsubscribe(channel)
 
             # Delete the mark when finish
-            redis.delete(channel)
+            # redis.delete(channel)
 
         except ConnectionError as e:
             current_app.logger.error(str(e), exc_info=True)
