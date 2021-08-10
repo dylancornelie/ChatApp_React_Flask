@@ -101,11 +101,10 @@ def publish(channel: str, data, type: str = None, id: int = None, retry: int = N
         Defaults to "sse".
     """
     # If channel exist, we will send notification
-    channel_sse = f'sse:{channel}'
-    if redis.get(channel_sse):
+    if redis.get(channel):
         message = Message(data, type=type, id=id, retry=retry)
         msg_json = json.dumps(message.to_dict())
-        redis.publish(channel_sse, msg_json)
+        redis.publish(channel, msg_json)
 
 
 def messages(channel: str = 'sse'):
@@ -141,7 +140,7 @@ def stream(channel: str = 'sse'):
 
     @stream_with_context
     def generator():
-        for message in messages(channel=f'sse:{channel}'):
+        for message in messages(channel=channel):
             yield str(message)
 
     return Response(
