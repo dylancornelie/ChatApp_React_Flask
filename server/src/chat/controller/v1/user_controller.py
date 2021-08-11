@@ -1,14 +1,14 @@
 """API endpoint definitions for /users namespace."""
 from http import HTTPStatus
 
-from flask import request
+from flask import request, current_app
 from flask_restx import Resource
 
 from src.chat.dto.auth_dto import auth_resp
 from src.chat.dto.user_dto import (api, user_item, user_list, user_post, user_params, user_put, user_password,
-                                   user_forget_password)
+                                   user_forget_password, subscription_info)
 from src.chat.service.user_service import (save_new_user, get_all_users, get_a_user, update_a_user,
-                                           update_a_user_password, update_forget_password, get_channel_stream)
+                                           update_a_user_password, update_forget_password, sub_user_channel)
 from src.chat.util.decorator import token_required, decode_auth_token
 from src.chat.util.stream import stream
 
@@ -107,5 +107,18 @@ class Me_Forget_Password(Resource):
 class Stream(Resource):
     def get(self, token: str):
         user_id = decode_auth_token(token)
-        channel = get_channel_stream(user_id)
+        channel = sub_user_channel(user_id)
         return stream(channel)
+
+
+@api.route('/subscription')
+class PubSub(Resource):
+    @token_required
+    def get(self):
+        return dict(public_key=current_app.config['VAPID_PUBLIC_KEY'])
+
+    @api.expect(subscription_info, validate=True)
+    @token_required
+    def post(self):
+        data = request.json
+        return data

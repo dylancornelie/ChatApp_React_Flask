@@ -4,6 +4,7 @@ import json
 from collections import OrderedDict
 
 from flask import stream_with_context, Response, current_app
+from pywebpush import webpush, WebPushException
 
 from src.chat import redis
 
@@ -87,7 +88,7 @@ class Message(object):
 
 def publish(channel: str, data, type: str = None, id: int = None, retry: int = 30000) -> None:
     """
-    Publish data as a server-sent event.
+    Publish data as a server-sent event or as a webpush.
 
     :param data: The event data. If it is not a string, it will be
         serialized to JSON using the Flask application's.
@@ -101,11 +102,14 @@ def publish(channel: str, data, type: str = None, id: int = None, retry: int = 3
         Defaults to "sse".
     """
     # If channel exist, we will send notification
-    channel_sse = f'sse:{channel}'
+    channel_sse = sub_sse(channel)
+    channel_webpush = sub_webpush(channel)
     if redis.get(channel_sse):
         message = Message(data, type=type, id=id, retry=retry)
         msg_json = json.dumps(message.to_dict())
         redis.publish(channel_sse, msg_json)
+    elif redis.get(channel_webpush):
+        trigger_push_notifications_for_subscriptions(channel_webpush, data, type)
 
 
 def messages(channel: str = 'sse'):
@@ -138,7 +142,7 @@ def stream(channel: str = 'sse'):
     """
     A view function that streams server-sent events.
     """
-    channel_sse = f'sse:{channel}'
+    channel_sse = sub_sse(channel)
 
     @stream_with_context
     def generator():
@@ -149,3 +153,33 @@ def stream(channel: str = 'sse'):
         generator(),
         mimetype='text/event-stream',
     )
+
+
+def trigger_push_notifications_for_subscriptions(channel: str, data, type: str = None) -> None:
+    try:
+        sub_val = redis.get(channel)
+        if isinstance(sub_val, bytes): sub_val = sub_val.decode('utf-8')
+        webpush(
+            subscription_info=json.loads(sub_val),
+            data=json.dumps(dict(type=type, data=data)),
+            vapid_private_key=current_app.config['VAPID_PRIVATE_KEY'],
+            vapid_claims=current_app.config['VAPID_CLAIMS']
+        )
+    except WebPushException as e:
+        current_app.logger.error(str(e), exc_info=True)
+
+
+def sub_sse(channel: str) -> str:
+    if 'webpush:' in channel:
+        raise Exception("'webpush' is not in the sse channel.")
+    if 'sse:' in channel:
+        return channel
+    return f'sse:{channel}'
+
+
+def sub_webpush(channel: str) -> str:
+    if 'sse:' in channel:
+        raise Exception("'sse' is not in the webpush channel.")
+    if 'webpush:' in channel:
+        return channel
+    return f'webpush:{channel}'

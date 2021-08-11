@@ -1,4 +1,5 @@
 """Service logic for user """
+import json
 import random
 import string
 from http import HTTPStatus
@@ -8,12 +9,13 @@ from flask import current_app
 from flask_mailman import EmailMessage
 from werkzeug.exceptions import Conflict, InternalServerError, BadRequest
 
-from src.chat import db
+from src.chat import db, redis
 from src.chat.model.pagination import Pagination
 from src.chat.model.user import User
 from src.chat.service import save_data
 from src.chat.service.auth_service import generate_token
 from src.chat.util.pagination import paginate
+from src.chat.util.stream import sub_webpush
 
 
 def save_new_user(data: Dict[str, str]) -> Tuple[Dict[str, str], int]:
@@ -118,5 +120,11 @@ def update_forget_password(email: str) -> Dict:
     return dict(message=f'Your new password was successfully sent your email {email}.')
 
 
-def get_channel_stream(user_id: int) -> str:
+def sub_user_channel(user_id: int) -> str:
     return f"sub:user:{user_id}"
+
+
+def store_data_subscription_webpub(data: Dict, user_id: int) -> Dict:
+    channel = sub_webpush(sub_user_channel(user_id))
+    redis.set(channel, json.dumps(data))
+    return dict(message='Stored the key')

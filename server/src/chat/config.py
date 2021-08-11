@@ -1,53 +1,60 @@
 """Config settings for for development, testing and production environments."""
 
-import os
+from os import path, getenv
 
 # uncomment the line below for postgres database url from environment variable
-postgres_local_base = os.getenv('DATABASE_URL', '')
+postgres_local_base = getenv('DATABASE_URL', '')
 
-basedir = os.path.abspath(os.path.dirname(__file__))
+basedir = path.abspath(path.dirname(__file__))
 
 
 class Config:
-    APPLICATION = os.getenv('APPLICATION')
+    APPLICATION = getenv('APPLICATION')
 
-    SECRET_KEY = os.getenv('SECRET_KEY', 'my_secret_key')
+    SECRET_KEY = getenv('SECRET_KEY', 'my_secret_key')
     DEBUG = False
     RESTX_ERROR_404_HELP = False
     RESTX_MASK_SWAGGER = False
-    TOKEN_EXPIRE_HOURS = int(os.getenv('TOKEN_EXPIRE_HOURS', '0'))
-    TOKEN_EXPIRE_MINUTES = int(os.getenv('TOKEN_EXPIRE_MINUTES', '0'))
+    TOKEN_EXPIRE_HOURS = int(getenv('TOKEN_EXPIRE_HOURS', '0'))
+    TOKEN_EXPIRE_MINUTES = int(getenv('TOKEN_EXPIRE_MINUTES', '0'))
 
     # Flask Mail
-    MAIL_SERVER = os.getenv('MAIL_SERVER', 'localhost')
-    MAIL_PORT = int(os.getenv('MAIL_PORT', 25))
-    MAIL_USE_TLS = os.getenv('MAIL_USE_TLS', 'false').lower() in ('true', '1', 't')
-    MAIL_USE_SSL = os.getenv('MAIL_USE_SSL', 'false').lower() in ('true', '1', 't')
-    MAIL_USERNAME = os.getenv('MAIL_USERNAME', None)
-    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD', None)
-    MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER', 'Chat Server')
+    MAIL_SERVER = getenv('MAIL_SERVER', 'localhost')
+    MAIL_PORT = int(getenv('MAIL_PORT', 25))
+    MAIL_USE_TLS = getenv('MAIL_USE_TLS', 'false').lower() in ('true', '1', 't')
+    MAIL_USE_SSL = getenv('MAIL_USE_SSL', 'false').lower() in ('true', '1', 't')
+    MAIL_USERNAME = getenv('MAIL_USERNAME', None)
+    MAIL_PASSWORD = getenv('MAIL_PASSWORD', None)
+    MAIL_DEFAULT_SENDER = getenv('MAIL_DEFAULT_SENDER', 'Chat Server')
 
     # Redis
-    REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
+    REDIS_URL = getenv('REDIS_URL', 'redis://localhost:6379/0')
 
     # File upload
-    UPLOAD_FOLDER = os.path.join(basedir, '../..', 'public', 'files')
+    UPLOAD_FOLDER = path.join(basedir, '../..', 'public', 'files')
     ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'doc'}
+
+    # Vapid
+    VAPID_PRIVATE_KEY = getenv('VAPID_PRIVATE_KEY')
+    VAPID_PUBLIC_KEY = getenv('VAPID_PUBLIC_KEY')
+    VAPID_CLAIMS = dict(
+        sub='mailto:' + getenv('VAPID_CLAIMS_SUB', 'test@test.com')
+    )
 
 
 class DevelopmentConfig(Config):
     # uncomment the line below to use postgres
     # SQLALCHEMY_DATABASE_URI = postgres_local_base
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, '../../flask_chat_main.db')
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + path.join(basedir, '../../flask_chat_main.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    TOKEN_EXPIRE_MINUTES = int(os.getenv('TOKEN_EXPIRE_MINUTES', '15'))
+    TOKEN_EXPIRE_MINUTES = int(getenv('TOKEN_EXPIRE_MINUTES', '15'))
 
 
 class TestingConfig(Config):
     DEBUG = True
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, '../../flask_chat_test.db')
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + path.join(basedir, '../../flask_chat_test.db')
     PRESERVE_CONTEXT_ON_EXCEPTION = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

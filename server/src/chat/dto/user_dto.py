@@ -85,3 +85,12 @@ user_list = api.model('User_List', model=list_model(user_item))
 user_params = params.copy()
 user_params['filter_by'] = {'in': 'query', 'description': 'The filter for email, first name, last name, ou username',
                             'type': 'string'}
+
+subscription_info = api.model('Subscription_info', {
+    'endpoint': fields.String(required=True),
+    'expirationTime': fields.Integer,
+    'keys': fields.Nested(api.model('Subscription_info_keys', {
+        'p256dh': fields.String(required=True),
+        'auth': fields.String(required=True)
+    }))
+})

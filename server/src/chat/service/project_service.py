@@ -14,7 +14,7 @@ from src.chat.model.pagination import Pagination
 from src.chat.model.project import Project, user_coaches_to_project, user_participates_of_project
 from src.chat.model.user import User
 from src.chat.service import save_data, insert_data, delete_data, delete_folder_and_content
-from src.chat.service.user_service import get_a_user, get_channel_stream
+from src.chat.service.user_service import get_a_user, sub_user_channel
 from src.chat.util.constant import *
 from src.chat.util.pagination import paginate
 from src.chat.util.stream import publish
@@ -523,5 +523,5 @@ def notify_all_member_in_project(users_id: List[int], data, type_publish: str = 
 
 
 def notify_one_member_in_project(user_id: int, data, type_publish: str = None) -> None:
-    channel = get_channel_stream(user_id)
+    channel = sub_user_channel(user_id)
     publish(channel, data, type_publish)

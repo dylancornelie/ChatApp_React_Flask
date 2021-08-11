@@ -69,7 +69,7 @@ sse.addEventListener(event, (event) => {
 1. Data of the event `action_project`
     1. Schema
         ````typescript
-        type object = {
+        type data = {
           type: string;
           message: string;
           data?: object;
@@ -99,7 +99,7 @@ sse.addEventListener(event, (event) => {
                 project_title: str; // new project title
               }
               ````
-            - _'@{current_user.username}' left the project'{project.title}'._ => data: 
+            - _'@{current_user.username}' left the project'{project.title}'._ => data:
               ````typescript
               {
                 user_id: int; // user left id
@@ -108,7 +108,7 @@ sse.addEventListener(event, (event) => {
               }
               ````
             - _You was designated new coach in the project '{project.title}'._ =>
-              data: 
+              data:
               ```typescript
               {
                 project_id: int; // project id for our new coach
@@ -116,7 +116,7 @@ sse.addEventListener(event, (event) => {
               }
               ```
             - _'@{user.username}' was designated new coach in the project '{project.title}'._ =>
-              data: 
+              data:
               ````typescript
               {
                 user_id: int; // new coach id
@@ -125,7 +125,7 @@ sse.addEventListener(event, (event) => {
               }
               ````
             - _You was withdrawn from coach in the project '{project.title}'._ =>
-              data: 
+              data:
               ````typescript
               {
                 project_id: int; // project id for be withdrawn
@@ -133,7 +133,7 @@ sse.addEventListener(event, (event) => {
               }
               ````
             - _'@{user.username}' was withdrew from coach, he will be a participant the project'{project.title}'._ =>
-              data: 
+              data:
               ````typescript
               {
                 user_id: int; // older coach id
@@ -141,7 +141,7 @@ sse.addEventListener(event, (event) => {
                 project_title: str;
               }
               ````
-            - _You was removed in the project '{project.title}'._ => data: 
+            - _You was removed in the project '{project.title}'._ => data:
               ````typescript
               {
                 project_id: int; // project id for be removed
@@ -149,7 +149,7 @@ sse.addEventListener(event, (event) => {
               }
               ````
             - _'@{participant.username}' was removed in the project '{project.title}'._ =>
-              data: 
+              data:
               ````typescript
               {
                 user_id: int; // older_participant_id
@@ -172,15 +172,42 @@ sse.addEventListener(event, (event) => {
             - _'@{message.sender.username}' sent a new message._ => data: `{project_title: project.title}`
             - _'@{message.sender.username}' sent you a new private message._ => data: `{project_title: project.title}`
 
+## Webpush
+
+### Document
+Webpush only works when activated by **client** and for *offline user* (He not connect the app. The notification will show in OS)
+
+The **Push Subscription json generated** will be stored in **redis**. So when restart the redis, it will be lost. Must *remove* the **Service Worker** in browser before the test. 
+
+- [doc1](https://techonometrics.com/posts/web-push-notifications-basic-functionality-using-flask-backend/)
+- [doc2](https://raturi.in/blog/webpush-notification-using-python-and-flask/)
+- get key public and private [here](https://web-push-codelab.glitch.me)
+
+### Schema data:
+The schema is similar to *SSE*
+````typescript
+type schema = {
+    type: str;
+    data: {
+        type: str;
+        message: str;
+        data?: object;
+    }
+}
+````
+
 # SocketIo
 
-## Install
+#
+# Install
 
-`yarn add socket.io-client`
+    `yarn add socket.io-client`
 
-## Connect
+#
+# Connect
 
-````js
+    ````
+js
 const socket = socketIOClient('/ws/messages', {
     extraHeaders: {
         Authorization: "Bearer authorization_token_here"
