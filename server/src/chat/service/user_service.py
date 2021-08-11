@@ -128,3 +128,9 @@ def store_data_subscription_webpub(data: Dict, user_id: int) -> Dict:
     channel = sub_webpush(sub_user_channel(user_id))
     redis.set(channel, json.dumps(data))
     return dict(message='Stored the key')
+
+
+def unsubscription_data_subscription_webpub(user_id: int) -> Dict:
+    channel = sub_webpush(sub_user_channel(user_id))
+    redis.delete(channel)
+    return dict(message='Stored the key')

@@ -8,7 +8,8 @@ from src.chat.dto.auth_dto import auth_resp
 from src.chat.dto.user_dto import (api, user_item, user_list, user_post, user_params, user_put, user_password,
                                    user_forget_password, subscription_info)
 from src.chat.service.user_service import (save_new_user, get_all_users, get_a_user, update_a_user,
-                                           update_a_user_password, update_forget_password, sub_user_channel)
+                                           update_a_user_password, update_forget_password, sub_user_channel,
+                                           store_data_subscription_webpub, unsubscription_data_subscription_webpub)
 from src.chat.util.decorator import token_required, decode_auth_token
 from src.chat.util.stream import stream
 
@@ -116,11 +117,19 @@ class PubSub(Resource):
     @api.doc('Get public key', security='Bearer')
     @token_required
     def get(self):
+        """Get the public key for Service Worker"""
         return dict(public_key=current_app.config['VAPID_PUBLIC_KEY'])
 
     @api.doc('Store client key', security='Bearer')
     @api.expect(subscription_info, validate=True)
     @token_required
     def post(self):
+        """Store the key of Service Worker"""
         data = request.json
-        return data
+        return store_data_subscription_webpub(data, self.post.current_user_id)
+
+    @api.doc('Unsubscription client key', security='Bearer')
+    @token_required
+    def delete(self):
+        """Unsubscription the key of Service Worker"""
+        return unsubscription_data_subscription_webpub(self.post.current_user_id)
