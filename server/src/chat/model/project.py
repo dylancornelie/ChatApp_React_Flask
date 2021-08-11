@@ -1,4 +1,7 @@
 """Class definition for Project model."""
+from os import path
+
+from flask import current_app
 
 from src.chat import db
 
@@ -37,6 +40,9 @@ class Project(db.Model):
 
     def get_id_members(self):
         return [self.owner_id] + [user.id for user in self.coaches] + [user.id for user in self.participants]
+
+    def get_dir_img(self):
+        return path.join(current_app.config['UPLOAD_FOLDER'], 'projects', f'id_{self.id}')
 
     def __repr__(self):
         return "<Project '{}'>".format(self.title)

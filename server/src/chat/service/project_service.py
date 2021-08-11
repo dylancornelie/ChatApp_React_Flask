@@ -13,7 +13,7 @@ from src.chat.dto.project_dto import (
 from src.chat.model.pagination import Pagination
 from src.chat.model.project import Project, user_coaches_to_project, user_participates_of_project
 from src.chat.model.user import User
-from src.chat.service import save_data, insert_data
+from src.chat.service import save_data, insert_data, delete_data, delete_folder_and_content
 from src.chat.service.user_service import get_a_user, get_channel_stream
 from src.chat.util.constant import *
 from src.chat.util.pagination import paginate
@@ -144,24 +144,17 @@ def delete_project(current_user_id: int, id_project: int) -> Dict:
     owner_id = project.owner_id
     members_id = project.get_id_members()
 
-    try:
-        db.session.delete(project)
-        db.session.commit()
+    delete_data(project)
+    delete_folder_and_content(project.get_dir_img())
 
-    except Exception as e:
-        db.session.rollback()
-        current_app.logger.error(str(e), exc_info=True)
-        raise InternalServerError("The server encountered an internal error and was unable to delete your data.")
-
-    else:
-        # Notify
-        data = dict(
-            type=TYPE_NOTIFICATION_DELETE_PROJECT,
-            message=f"The project '{older_project_title}' was removed by '@{owner_username}'.",
-            data=dict(project_id=older_project_id, project_title=older_project_title),
-        )
-        notify_all_member_in_project(users_id=members_id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
-                                     exclude_users_id=[owner_id])
+    # Notify
+    data = dict(
+        type=TYPE_NOTIFICATION_DELETE_PROJECT,
+        message=f"The project '{older_project_title}' was removed by '@{owner_username}'.",
+        data=dict(project_id=older_project_id, project_title=older_project_title),
+    )
+    notify_all_member_in_project(users_id=members_id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
+                                 exclude_users_id=[owner_id])
 
     return dict(message='Your project was successfully removed.')
 

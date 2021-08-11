@@ -1,7 +1,7 @@
 """Class definition for Message model."""
-import os
-import pathlib
 from base64 import b64decode, b64encode
+from os import path
+from pathlib import Path
 from uuid import uuid4
 
 from flask import current_app
@@ -78,13 +78,13 @@ class Message(db.Model):
             fh.write(b64decode(data[1]))
 
     def _get_patch(self) -> str:
-        return os.path.join(current_app.config['UPLOAD_FOLDER'], 'projects', f'id_{self.project_id}')
+        return path.join(current_app.config['UPLOAD_FOLDER'], 'projects', f'id_{self.project_id}')
 
     def _get_file_patch(self) -> str:
-        return os.path.join(self._get_patch(), self._file_name)
+        return path.join(self._get_patch(), self._file_name)
 
     def _create_folder_patch(self):
-        path = pathlib.Path(self._get_patch())
+        path = Path(self._get_patch())
         path.mkdir(parents=True, exist_ok=True)
 
     def __repr__(self):
