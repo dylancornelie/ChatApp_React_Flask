@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getMeetings, refreshToken } from './actions/user.action';
@@ -25,8 +26,9 @@ const App = () => {
         const data = JSON.parse(event.data);
 
         dispatch(getMeetings());
-        new Notification(data.message, {
-          icon: '../image/logo72.png',
+        new Notification('Tx Chat', {
+          body:data.message,
+          icon: '../image/logo192.png',
           vibrate: [200, 100, 200],
           renotify: true,
           tag: 'txChatProject',
@@ -39,15 +41,61 @@ const App = () => {
         console.log(JSON.parse(event.data));
         const data = JSON.parse(event.data);
 
-        new Notification(data.message, {
-          icon: '../image/logo72.png',
+        new Notification('Tx Chat', {
+          body:data.message,
+          icon: '../image/logo192.png',
           vibrate: [200, 100, 200],
           renotify: true,
           tag: 'txChatMessage',
           badge: '../image/logo72.png',
           lang: 'EN',
         });
-    })
+      });
+    };
+
+    const handlePushNotification = () => {
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.pushManager.getSubscription().then((subscription) => {
+          if (subscription === null) {
+            console.info('Subscribing to push service...');
+            axios({
+              method: 'GET',
+              url: `${process.env.REACT_APP_API_URL}/api/v1/users/subscription`,
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+              },
+            }).then((response) => {
+              const publicKey = response.data.public_key;
+              console.log(publicKey);
+              registration.pushManager
+                .subscribe({
+                  userVisibleOnly: true,
+                  applicationServerKey: publicKey,
+                })
+                .then((subscription) => {
+                  if (subscription) {
+                    axios({
+                      method: 'POST',
+                      url: `${process.env.REACT_APP_API_URL}/api/v1/users/subscription`,
+                      headers: {
+                        Authorization: `Bearer ${localStorage.getItem(
+                          'token'
+                        )}`,
+                      },
+                      data: {
+                        ...JSON.parse(JSON.stringify(subscription)),
+                        expirationTime: 0,
+                      },
+                    }).then((response) => {
+                      console.info('Subscription to push service complete');
+                      console.log(response);
+                    });
+                  } else console.info('Subscription to push service failed');
+                });
+            });
+          } else console.log('User is already subscribed to push service');
+        });
+      });
     };
 
     if (!tokenIsEmpty() && tokenIsValid()) {
@@ -74,6 +122,7 @@ const App = () => {
     if ('Notification' in window) {
       if (Notification.permission === 'granted' && !tokenIsEmpty()) {
         handleNotification();
+        handlePushNotification();
       } else if (
         Notification.permission !== 'denied' ||
         Notification.permission === 'default'
@@ -81,7 +130,9 @@ const App = () => {
         Notification.requestPermission((permission) => {
           if (permission === 'granted' && !tokenIsEmpty()) {
             handleNotification();
-          } else console.log('Notifications are disabled or you are not logged in');
+            handlePushNotification();
+          } else
+            console.log('Notifications are disabled or you are not logged in');
         });
       }
     } else console.log('Notifications are not supported by your browser');

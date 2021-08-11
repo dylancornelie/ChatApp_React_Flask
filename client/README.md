@@ -14,7 +14,7 @@ Une fois cela effectué, il suffit de lancer la commande : ``yarn start``.
 
 Pour obtenir la version de production, il suffit de lancer la commande : ``yarn run build`` dans le dossier client. Un dossier build va se créer avec la version de production de notre application.
 
-***Avant de build la version de production, s'assurer que l'adresse du serveur de l'API est bien renseignée dans le fichier ``.env`` et décommenter l'import du script app.js dans le fichier index.html.***
+***Avant de build la version de production, s'assurer que l'adresse du serveur de l'API est bien renseignée dans le fichier ``.env``.***
 
 ## Créer une image docker
 
@@ -26,7 +26,7 @@ Lancer la commande : ``docker build -t nomDeMonImage:tagDeMonImage ./Dockerfile.
 
 Pour lancer le conteneur il suffit de lancer la commande : ``docker run -d -p numeroDePortSouhaitee:5000 nomDeMonImage:tagDeMonImage``
 
-***Avant de build la version de production, s'assurer que l'adresse du serveur de l'API est bien renseignée dans le fichier ``.env`` et décommenter l'import du script app.js dans le fichier index.html.***
+***Avant de build la version de production, s'assurer que l'adresse du serveur de l'API est bien renseignée dans le fichier ``.env``.***
 
 ## Crédits
 
