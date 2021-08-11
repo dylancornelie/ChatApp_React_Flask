@@ -113,10 +113,12 @@ class Stream(Resource):
 
 @api.route('/subscription')
 class PubSub(Resource):
+    @api.doc('Get public key', security='Bearer')
     @token_required
     def get(self):
         return dict(public_key=current_app.config['VAPID_PUBLIC_KEY'])
 
+    @api.doc('Store client key', security='Bearer')
     @api.expect(subscription_info, validate=True)
     @token_required
     def post(self):
