@@ -11,8 +11,9 @@ from werkzeug.exceptions import Conflict, InternalServerError, BadRequest
 
 from src.chat import db, redis
 from src.chat.model.pagination import Pagination
+from src.chat.model.push_subscription import PushSubscription
 from src.chat.model.user import User
-from src.chat.service import save_data
+from src.chat.service import save_data, delete_data
 from src.chat.service.auth_service import generate_token
 from src.chat.util.pagination import paginate
 from src.chat.util.stream import sub_webpush
@@ -125,12 +126,31 @@ def sub_user_channel(user_id: int) -> str:
 
 
 def store_data_subscription_webpub(data: Dict, user_id: int) -> Dict:
-    channel = sub_webpush(sub_user_channel(user_id))
-    redis.set(channel, json.dumps(data))
+    push_subscription = PushSubscription(
+        user_id=user_id,
+        subscription_json=json.dumps(data)
+    )
+    save_data(push_subscription)
+
+    channel = sub_webpush(sub_user_channel(push_subscription.user_id))
+    redis.set(channel, push_subscription.subscription_json)
+
     return dict(message="Stored the client's key.")
 
 
 def unsubscription_data_subscription_webpub(user_id: int) -> Dict:
+    push_subscription = PushSubscription.query.filter_by(user_id=user_id) \
+        .first_or_404('Service Worker Key was not found.')
+    delete_data(push_subscription)
+
     channel = sub_webpush(sub_user_channel(user_id))
     redis.delete(channel)
+
     return dict(message="Unsubscribed the client's key.")
+
+
+def transfer_data_subscription_from_db_to_redis() -> None:
+    push_subscriptions = PushSubscription.query.all()
+    for push_subscription in push_subscriptions:
+        channel = sub_webpush(sub_user_channel(push_subscription.user_id))
+        redis.set(channel, json.dumps(push_subscription.subscription_json))

@@ -8,7 +8,8 @@ import click
 from dotenv import load_dotenv
 
 from src.chat import create_app, db, sio, redis
-from src.chat.model import user, token_blacklist, project, message
+from src.chat.model import user, token_blacklist, project, message, push_subscription
+from src.chat.service.user_service import transfer_data_subscription_from_db_to_redis
 
 load_dotenv()  # take environment variables from .env.
 
@@ -23,6 +24,7 @@ def shell():
         'BlacklistedToken': token_blacklist.BlacklistedToken,
         'Project': project.Project,
         'Message': message.Message,
+        'PushSubscription': push_subscription.PushSubscription,
         'redis': redis
     }
 
@@ -101,6 +103,11 @@ def seed(n):
             db.session.add(fake_message)
 
             db.session.commit()
+
+
+@app.before_first_request
+def first_run():
+    transfer_data_subscription_from_db_to_redis()
 
 
 if __name__ == '__main__':

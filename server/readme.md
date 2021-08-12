@@ -175,16 +175,21 @@ sse.addEventListener(event, (event) => {
 ## Webpush
 
 ### Document
-Webpush only works when activated by **client** and for *offline user* (He not connect the app. The notification will show in OS)
 
-The **Push Subscription json generated** will be stored in **redis**. So when restart the redis, it will be lost. Must *remove* the **Service Worker** in browser before the test. 
+Webpush only works when activated by **client** and for *offline user* (He not connect the app. The notification will
+show in OS)
+
+The **Push Subscription json generated** will be stored in **redis and DB**, server will transfer data from DB to redis.
+Must *remove* the **Service Worker** in browser before the test.
 
 - [doc1](https://techonometrics.com/posts/web-push-notifications-basic-functionality-using-flask-backend/)
 - [doc2](https://raturi.in/blog/webpush-notification-using-python-and-flask/)
 - get key public and private [here](https://web-push-codelab.glitch.me)
 
 ### Schema data:
+
 The schema is similar to *SSE*
+
 ````typescript
 type schema = {
     type: str;
@@ -198,16 +203,13 @@ type schema = {
 
 # SocketIo
 
-#
-# Install
+## Install
 
-    `yarn add socket.io-client`
+Add socketio for reactjs: `yarn add socket.io-client`
 
-#
-# Connect
+## Connect
 
-    ````
-js
+````js 
 const socket = socketIOClient('/ws/messages', {
     extraHeaders: {
         Authorization: "Bearer authorization_token_here"
