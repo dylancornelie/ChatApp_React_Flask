@@ -127,11 +127,20 @@ def sub_user_channel(user_id: int) -> str:
 
 
 def store_data_subscription_webpub(data: Dict, user_id: int) -> Dict:
-    push_subscription = PushSubscription(
-        user_id=user_id,
-        subscription_json=json.dumps(data)
-    )
-    save_data(push_subscription)
+    push_subscription = PushSubscription.query.filter_by(user_id=user_id).first()
+    if not push_subscription:
+        save_data(PushSubscription(
+            user_id=user_id,
+            subscription_json=json.dumps(data)
+        ))
+    else:
+        try:
+            push_subscription.subscription_json = json.dumps(data)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            current_app.logger.error(str(e), exc_info=True)
+            raise InternalServerError("The server encountered an internal error and was unable to save your data.")
 
     channel = sub_webpush(sub_user_channel(push_subscription.user_id))
     redis.set(channel, push_subscription.subscription_json)
