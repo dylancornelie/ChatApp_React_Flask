@@ -1,11 +1,7 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-restricted-globals */
-
-// ---------- Use for debug only ---------- //
-/* To modify serviceWorker, modify sw.js in the source folder */
-
 self.addEventListener('push', (event) => {
-  console.log('[Service Worker] : ', event);
+  console.log('[Service Worker] : ', event.data);
 
   const title = 'Tx Chat blablabla';
   const options = {

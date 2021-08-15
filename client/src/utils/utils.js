@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 export const isEmpty = (value) => {
   return (
     value === undefined ||
@@ -85,4 +87,89 @@ export const emailIsValid = (email) => {
   );
 
   return emailRegExp.test(email);
+};
+
+export const supportPushNotification = () => {
+  if (
+    'PushManager' in window &&
+    'Notification' in window &&
+    'serviceWorker' in navigator
+  )
+    return true;
+  else return false;
+};
+
+export const alreadySubscribeToPushNotification = async () => {
+  if (supportPushNotification()) {
+    const swRegistration = await navigator.serviceWorker.ready;
+    const pushSubscription = await swRegistration.pushManager.getSubscription();
+    if (pushSubscription === null) return false;
+    else return true;
+  } else return false;
+};
+
+export const subscribeToPushNotification = async () => {
+  try {
+
+      const swRegistration = await navigator.serviceWorker.ready;
+
+      const responseFetchingPublicKey = await axios({
+        method: 'GET',
+        url: `${process.env.REACT_APP_API_URL}/api/v1/users/subscription`,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+
+      const publicKey = responseFetchingPublicKey.data.public_key;
+      const pushManagerSubscription =
+        await swRegistration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: publicKey,
+        });
+
+
+      await axios({
+        method: 'POST',
+        url: `${process.env.REACT_APP_API_URL}/api/v1/users/subscription`,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        data: {
+          ...JSON.parse(JSON.stringify(pushManagerSubscription)),
+          expirationTime: isEmpty(pushManagerSubscription.expirationTime)
+            ? 0
+            : pushManagerSubscription.expirationTime,
+        },
+      });
+    return true;
+  } catch (err) {
+    const swRegistration = await navigator.serviceWorker.ready;
+    const pushManagerSubscription =
+      await swRegistration.pushManager.getSubscription();
+    await pushManagerSubscription.unsubscribe();
+    console.error(`Error subscribingToPushNotification : ${err}`);
+    return false;
+  }  
+};
+
+export const unsubscribeFromPushNotification = async () => {
+  try {
+    const swRegistration = await navigator.serviceWorker.ready;
+    const pushManagerSubscription =
+      await swRegistration.pushManager.getSubscription();
+    await pushManagerSubscription.unsubscribe();
+
+    await axios({
+      method: 'DELETE',
+      url: `${process.env.REACT_APP_API_URL}/api/v1/users/subscription`,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+    return true;
+  } catch (err) {
+    console.error(`Error unsubscribingFromPushNotification : ${err}`);
+    return false;
+  }
 };

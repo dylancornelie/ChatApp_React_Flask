@@ -11,7 +11,9 @@ import ParticipantList from '../chat/ParticipantList';
 import ChatContextMenu from '../chat/ChatContextMenu';
 import AddParticipantPopUp from '../chat/AddParticipantPopUp';
 import {
+  addUserConnected,
   refreshMeetingData,
+  removeUserConnected,
   sendMessage,
   showAddParticipant,
 } from '../../actions/chat.action';
@@ -59,24 +61,42 @@ const Chat = () => {
       );
 
       socket.current.on('receive_message', (data) => {
-        console.log(`Message received : `, data);
+        //console.log(`Message received : `, data);
         dispatch(sendMessage(data));
       });
 
-      socket.current.emit('join_project', {
-        project_id: chatStates.meeting.id,
-      });
+      socket.current.on('online', (data) =>
+        dispatch(addUserConnected([data.user_id]))
+      );
+
+      socket.current.on('offline', (data) =>
+        dispatch(removeUserConnected(data.user_id))
+      );
+
+      socket.current.emit(
+        'join_project',
+        {
+          project_id: chatStates.meeting.id,
+        },
+        (data) => {
+          if (data) {
+            if (data.length)
+              return dispatch(
+                addUserConnected([...data].map((element) => element.user_id))
+              );
+            else return dispatch(addUserConnected([data.user_id]));
+          }
+        }
+      );
     }
 
     return () => {
       if (!isEmpty(socket.current)) {
-        /*socket.current.on('disconnect', () =>
+        socket.current.on('disconnect', () =>
           console.log('Socket successfully disconnected')
-        );*/
+        );
 
-        socket.current.emit('leave_project', {
-          project_id: chatStates.meeting.id,
-        });
+        socket.current.emit('leave_project');
 
         //socket.current.disconnect();
       }

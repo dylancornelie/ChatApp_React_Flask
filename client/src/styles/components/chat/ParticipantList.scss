@@ -21,6 +21,7 @@
   }
 
   .chat-participant-item {
+    position:relative;
     display: flex;
     height: 90%;
     max-height: 7rem;
@@ -51,4 +52,26 @@
       padding: 3px;
     }
   }
+}
+
+.user-is-connected::after{
+  content:'';
+  width:1.2rem;
+  height:1.2rem;
+  border-radius: 50%;
+  position:absolute;
+  bottom:20px;
+  right: 10px;
+  background-color: green;
+}
+
+.user-is-not-connected::after{
+  content:'';
+  width:1.2rem;
+  height:1.2rem;
+  border-radius: 50%;
+  position:absolute;
+  bottom:20px;
+  right: 10px;
+  background-color: red;
 }

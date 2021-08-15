@@ -18,6 +18,8 @@ export const SHOW_ADD_PARTICIPANT = 'SHOW_ADD_PARTICIPANT';
 export const SET_MESSAGE_RECEIVER = 'SET_MESSAGE_RECEIVER';
 export const SCROLLED_TO_BOTTOM = 'SCROLLED_TO_BOTTOM';
 export const SHOW_PREPARED_MESSAGE = 'SHOW_PREPARED_MESSAGE';
+export const ADD_USER_CONNECTED = 'ADD_USER_CONNECTED';
+export const REMOVE_USER_CONNECTED = 'REMOVE_USER_CONNECTED';
 
 export const addParticipant = (meetingId, login) => {
   return (dispatch) => {
@@ -232,3 +234,7 @@ export const fetchMoreMessages = (urlToNext) => {
 };
 
 export const stopFetchMoreMessage = () => ({ type: STOP_FETCH_MORE_MESSAGES });
+
+export const addUserConnected = (userId) => ({type:ADD_USER_CONNECTED, payload:{userId:[...userId]}})
+
+export const removeUserConnected = (userId) => ({type:REMOVE_USER_CONNECTED, payload:{userId}})

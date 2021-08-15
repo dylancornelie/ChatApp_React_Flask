@@ -6,7 +6,15 @@ import {
   disconnectUser,
   getUser,
 } from '../../actions/user.action';
-import { isEmpty, tokenIsEmpty, tokenIsValid } from '../../utils/utils';
+import {
+  alreadySubscribeToPushNotification,
+  isEmpty,
+  subscribeToPushNotification,
+  supportPushNotification,
+  tokenIsEmpty,
+  tokenIsValid,
+  unsubscribeFromPushNotification,
+} from '../../utils/utils';
 import Banner from '../utils/Banner';
 import HeaderWithArrow from '../utils/HeaderWithArrow';
 
@@ -16,6 +24,7 @@ const MyAccount = () => {
   const history = useHistory();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [isSubscribeToPush, setIsSubscribeToPush] = useState(null);
 
   useEffect(() => {
     if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
@@ -24,7 +33,11 @@ const MyAccount = () => {
       setFirstName(userStates.user.firstName);
       setLastName(userStates.user.lastName);
     }
-  }, [userStates.user, dispatch, history]);
+    const asyncFunction = async () => {
+      setIsSubscribeToPush(await alreadySubscribeToPushNotification());
+    };
+    isSubscribeToPush === null && asyncFunction();
+  }, [userStates.user, dispatch, history, isSubscribeToPush]);
 
   const handleChanges = () => {
     dispatch(
@@ -41,6 +54,16 @@ const MyAccount = () => {
   const handleDisconnect = () => {
     dispatch(disconnectUser());
     history.push('/');
+  };
+
+  const handlePushSubscription = async () => {
+    if (isSubscribeToPush) {
+      const success = await unsubscribeFromPushNotification();
+      if (success) setIsSubscribeToPush(false);
+    } else {
+      const success = await subscribeToPushNotification();
+      if (success) setIsSubscribeToPush(true);
+    }
   };
 
   const leftIconAction = () => {
@@ -78,6 +101,18 @@ const MyAccount = () => {
             onClick={() => history.push('/account/password')}
           >
             Change password
+          </button>
+          <button
+            style={{ marginTop: '3rem' }}
+            onClick={() =>
+              supportPushNotification() && handlePushSubscription()
+            }
+          >
+            {!supportPushNotification()
+              ? `Push notification not supported`
+              : isSubscribeToPush
+              ? `Unsubscribe from push notification`
+              : `Subscribe to push notification`}
           </button>
           <button onClick={handleDisconnect} className='red-button'>
             Discconnect

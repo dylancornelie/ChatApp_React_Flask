@@ -1,6 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { showContextMenu } from '../../actions/chat.action';
+import { isEmpty } from '../../utils/utils';
 
 const ParticipantItem = ({ user, isCoach, isOwner }) => {
   const userStates = useSelector((state) => state.userReducer);
@@ -18,10 +19,10 @@ const ParticipantItem = ({ user, isCoach, isOwner }) => {
   };
 
   return (
-    <div className='chat-participant-item' onClick={handleClick}>
+    <div className={!isEmpty(chatStates.userConnected.find((userConnected) => userConnected === user.id )) ? 'chat-participant-item user-is-connected' : 'chat-participant-item user-is-not-connected'} onClick={handleClick}>
       <img src='./image/avatar.svg' alt='profil pic' />
       <p
-        className='chat-participant-item-name'
+        className='chat-participant-item-name'        
         style={
           isCoach && !isOwner
             ? { textDecoration: 'underline' }

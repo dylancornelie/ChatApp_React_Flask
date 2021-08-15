@@ -15,6 +15,9 @@ const MessageInput = ({ socket }) => {
   const [message, setMessage] = useState('');
   const [file, setFile] = useState(null);
 
+  // Max size = 100Mb
+  const MAX_FILE_SIZE = 1 * Math.pow(10,8) ;
+
   function calcHeight(value) {
     const numberOfLineBreaks = (value.match(/\n/g) || []).length;
     if (numberOfLineBreaks > 5) return 25 + 5 * 20 + 0 + 0;
@@ -38,7 +41,7 @@ const MessageInput = ({ socket }) => {
         },
         (data) => dispatch(sendMessage(data))
       );
-    } else if (!isEmpty(file)) {
+    } else if (!isEmpty(file) && file[0].size <= MAX_FILE_SIZE) {
       const fileReader = new FileReader();
       fileReader.readAsDataURL(file[0]);
       fileReader.onload = () => {
@@ -94,7 +97,7 @@ const MessageInput = ({ socket }) => {
       {!isEmpty(file) && isEmpty(chatStates.messageReceiver) && (
         <div className='messageInput-infobox'>
           <p className='messageInput-infobox-message'>
-            Attached file : {file[0].name}
+            {file[0].size <= MAX_FILE_SIZE ? `Attached file : ${file[0].name}` : `Max file size is 100MB, ${file[0].name} won't be sent`}
           </p>
           <IoAdd
             className='messageInput-infobox-logo'

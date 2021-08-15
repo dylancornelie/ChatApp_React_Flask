@@ -1,10 +1,12 @@
 import {
+  ADD_USER_CONNECTED,
   DESIGNATE_COACH,
   FETCH_MESSAGES,
   FETCH_MORE_MESSAGES,
   JOIN_CHAT,
   REFRESH_MEETING_DATA,
   REMOVE_PRIVILEGES,
+  REMOVE_USER_CONNECTED,
   SCROLLED_TO_BOTTOM,
   SEND_MESSAGE,
   SET_MESSAGE_RECEIVER,
@@ -28,12 +30,13 @@ const initialState = {
   toScroll: true,
   showPreparedMessage: false,
   canFetchMoreMessage: false,
+  userConnected: []
 };
 
 export default function chatReducer(state = initialState, action) {
   switch (action.type) {
     case JOIN_CHAT:
-      return { initialState, meeting: action.payload.meeting };
+      return { initialState, meeting: action.payload.meeting, userConnected:[] };
     case SHOW_PARTICIPANTS:
       return { ...state, showParticipants: !state.showParticipants };
     case SHOW_CONTEXT_MENU:
@@ -93,6 +96,10 @@ export default function chatReducer(state = initialState, action) {
       return { ...state, showPreparedMessage: !state.showPreparedMessage };
     case STOP_FETCH_MORE_MESSAGES:
       return { ...state, canFetchMoreMessage: false };
+    case ADD_USER_CONNECTED:
+      return {...state, userConnected: [...new Set([...state.userConnected, ...action.payload.userId ])]}
+    case REMOVE_USER_CONNECTED:
+      return {...state, userConnected: state.userConnected.filter(user => user !== action.payload.userId)}
     default:
       return { ...state };
   }
