@@ -7,13 +7,11 @@ from flask_restx import marshal
 from werkzeug.exceptions import Conflict, Forbidden, InternalServerError, BadRequest
 
 from src.chat import db
-from src.chat.dto.project_dto import (
-    project_item, user_item
-)
+from src.chat.dto.project_dto import project_item, user_item
 from src.chat.model.pagination import Pagination
 from src.chat.model.project import Project, user_coaches_to_project, user_participates_of_project
 from src.chat.model.user import User
-from src.chat.service import save_data, insert_data, delete_data, delete_folder_and_content
+from src.chat.service import save_data, insert_data, delete_data
 from src.chat.service.user_service import get_a_user, sub_user_channel
 from src.chat.util.constant import *
 from src.chat.util.pagination import paginate
@@ -145,7 +143,6 @@ def delete_project(current_user_id: int, id_project: int) -> Dict:
     members_id = project.get_id_members()
 
     delete_data(project)
-    delete_folder_and_content(project.get_dir_img())
 
     # Notify
     data = dict(
