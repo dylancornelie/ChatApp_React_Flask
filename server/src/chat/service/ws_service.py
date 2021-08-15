@@ -35,10 +35,6 @@ def get_all_user_in_room(room: str) -> List:
     return [_transfer_data(x) for x in redis.smembers(room)]
 
 
-def get_all_user_id_in_room(room: str) -> List:
-    return [dict(user_id=x.get('user_id')) for x in get_all_user_in_room(room)]
-
-
 def user_join_into_project(room: str) -> List:
     data = json.dumps(
         dict(
@@ -51,7 +47,7 @@ def user_join_into_project(room: str) -> List:
     redis.sadd(room, data)
     redis.set(_get_sid_channel(), data)
 
-    return get_all_user_id_in_room(room)
+    return [dict(user_id=x.get('user_id')) for x in get_all_user_in_room(room)]
 
 
 def user_leave_from_project() -> Dict:
