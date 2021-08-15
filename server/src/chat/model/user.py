@@ -13,6 +13,7 @@ class User(db.Model):
     password_hash = db.Column(db.String(100), nullable=False)
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
+    ava = db.Column(db.Text)
 
     @property
     def password(self):

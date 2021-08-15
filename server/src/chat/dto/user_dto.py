@@ -27,6 +27,9 @@ user_post = api.schema_model('User_Post', {
         'last_name': {
             'type': 'string',
         },
+        'ava': {
+            'type': 'string'
+        }
     },
     'type': 'object',
 })
@@ -43,6 +46,9 @@ user_put = api.schema_model('User_Put', {
         'last_name': {
             'type': 'string',
         },
+        'ava': {
+            'type': 'string'
+        }
     },
     'type': 'object',
 })
@@ -78,6 +84,7 @@ user_item = api.model('User_Item', {
     'username': fields.String(description='user username'),
     'first_name': fields.String(description="user's first name"),
     'last_name': fields.String(description="user's last name"),
+    'ava': fields.String(description="user's ava in base64"),
 })
 
 user_list = api.model('User_List', model=list_model(user_item))

@@ -20,14 +20,15 @@ from src.chat.util.stream import sub_webpush
 
 
 def save_new_user(data: Dict[str, str]) -> Tuple[Dict[str, str], int]:
-    user = User.query.filter((User.email == data['email']) | (User.username == data['username'])).first()
+    user = User.query.filter((User.email == data.get('email')) | (User.username == data.get('username'))).first()
     if not user:
         new_user = User(
-            email=data['email'],
-            username=data['username'],
-            password=data['password'],
-            first_name=data['first_name'],
-            last_name=data['last_name']
+            email=data.get('email'),
+            username=data.get('username'),
+            password=data.get('password'),
+            first_name=data.get('first_name'),
+            last_name=data.get('last_name'),
+            ava=data.get('ava', None)
         )
         save_data(new_user)
         return generate_token(user_id=new_user.id, message='Successfully registered.'), HTTPStatus.CREATED
@@ -66,12 +67,12 @@ def update_a_user(id: int, new_data) -> Dict:
         raise InternalServerError("The server encountered an internal error and was unable to save your data.")
 
 
-def update_a_user_password(id: int, data) -> Dict:
+def update_a_user_password(id: int, data: Dict) -> Dict:
     user = get_a_user(id)
     errors = dict()
-    if not user.check_password(data['older_password']):
+    if not user.check_password(data.get('older_password')):
         errors['older_password'] = "'older_password' is not correct"
-    if user.check_password(data['new_password']):
+    if user.check_password(data.get('new_password')):
         errors['new_password'] = "'new_password' must be different from old"
     if len(errors) != 0:
         e = BadRequest()
@@ -82,7 +83,7 @@ def update_a_user_password(id: int, data) -> Dict:
         raise e
 
     try:
-        user.password = data['new_password']
+        user.password = data.get('new_password')
         db.session.commit()
         return dict(message='Your password was successfully changed')
 
