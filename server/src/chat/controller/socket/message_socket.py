@@ -3,9 +3,9 @@ from flask_restx import marshal
 from flask_socketio import Namespace
 
 from src.chat.dto.message_dto import message_item
-from src.chat.service.message_service import save_new_message, valid_input_room, valid_input_message, \
-    notify_new_message_into_members_offline
-from src.chat.service.ws_service import (save_user_id_with_sid, delete_user_id_by_sid, get_user_id_by_sid,
+from src.chat.service.message_service import (save_new_message, valid_input_room, valid_input_message,
+                                              notify_new_message_into_members_offline)
+from src.chat.service.ws_service import (save_user_id_with_sid, get_user_id_by_sid,
                                          user_join_into_project, user_leave_from_project, get_sid_by_user_id_in_room)
 from src.chat.util.decorator import token_required
 
@@ -28,14 +28,13 @@ class WsMessageNamespace(Namespace):
 
         return list_online
 
-    def on_leave_project(self, data):
-        data = valid_input_room(data)
-        self.leave_room(request.sid, data.get('room'))
-
+    def on_leave_project(self):
         # one user leave from project
-        data_leave = user_leave_from_project(data.get('room'))
-        self.emit('offline', data=dict(user_id=data_leave.get('user_id')), room=data_leave.get('room'),
-                  include_self=False)
+        data_leave = user_leave_from_project()
+        if data_leave and data_leave.get('room'):
+            self.leave_room(data_leave.get('sid'), data_leave.get('room'))
+            self.emit('offline', data=dict(user_id=data_leave.get('user_id')), room=data_leave.get('room'),
+                      include_self=False)
 
     def on_send_message(self, data):
         data = valid_input_message(data)
@@ -57,7 +56,4 @@ class WsMessageNamespace(Namespace):
         return message_dto
 
     def on_disconnect(self):
-        data = delete_user_id_by_sid()
-        if data.get('room'):
-            user_leave_from_project(data.get('room'), data.get('user_id'))
-            self.emit('offline', data=dict(user_id=data.get('user_id')), room=data.get('room'), include_self=False)
+        self.on_leave_project()

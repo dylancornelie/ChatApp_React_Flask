@@ -1,6 +1,4 @@
 """Service logic for data """
-from os import path
-from shutil import rmtree
 from flask import current_app
 from werkzeug.exceptions import InternalServerError
 
@@ -36,13 +34,3 @@ def delete_data(data) -> None:
         db.session.rollback()
         current_app.logger.error(str(e), exc_info=True)
         raise InternalServerError("The server encountered an internal error and was unable to delete your data.")
-
-
-def delete_folder_and_content(path_dir: str) -> None:
-    try:
-        if path.isdir(path_dir):
-            rmtree(path_dir)
-
-    except OSError as e:
-        current_app.logger.error(str(e), exc_info=True)
-        raise InternalServerError("The server encountered an internal error and was unable to delete folder.")

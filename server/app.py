@@ -107,6 +107,10 @@ def seed(n):
 
 @app.before_first_request
 def first_run():
+    # Remove all key beforn run
+    if redis.keys():
+        redis.delete(*redis.keys())
+
     transfer_data_subscription_from_db_to_redis()
 
 

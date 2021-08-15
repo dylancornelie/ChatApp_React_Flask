@@ -240,7 +240,7 @@ Schema data of callback (list user online in project) in `join_project`: `array(
 ````js
 socket.emit('join_project', {project_id: int},
     (data) => console.log(data));
-socket.emit('leave_project', {project_id: int});
+socket.emit('leave_project');
 ````
 
 Notify one user join/leave the project
