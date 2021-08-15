@@ -102,14 +102,15 @@ def publish(channel: str, data, type: str = None, id: int = None, retry: int = 3
         Defaults to "sse".
     """
     # If channel exist, we will send notification
-    channel_sse = sub_sse(channel)
-    channel_webpush = sub_webpush(channel)
-    if redis.get(channel_sse):
+    sse_val = redis.get(sub_sse(channel))
+    webpush_val = redis.get(sub_webpush(channel))
+
+    if sse_val:
         message = Message(data, type=type, id=id, retry=retry)
         msg_json = json.dumps(message.to_dict())
-        redis.publish(channel_sse, msg_json)
-    elif redis.get(channel_webpush):
-        trigger_push_notifications_for_subscriptions(channel_webpush, data, type)
+        redis.publish(sse_val, msg_json)
+    elif webpush_val:
+        trigger_push_notifications_for_subscriptions(webpush_val, data, type)
 
 
 def messages(channel: str = 'sse'):
@@ -120,7 +121,7 @@ def messages(channel: str = 'sse'):
     pubsub.subscribe(channel)
 
     # Mark existence channel
-    redis.set(channel, 1)
+    redis.set(channel, channel)
 
     try:
         for pubsub_message in pubsub.listen():
@@ -155,12 +156,12 @@ def stream(channel: str = 'sse'):
     )
 
 
-def trigger_push_notifications_for_subscriptions(channel: str, data, type: str = None) -> None:
+def trigger_push_notifications_for_subscriptions(webpush_val, data, type: str = None) -> None:
     try:
-        sub_val = redis.get(channel)
-        if isinstance(sub_val, bytes): sub_val = sub_val.decode('utf-8')
+        if isinstance(webpush_val, bytes):
+            webpush_val = webpush_val.decode('utf-8')
         webpush(
-            subscription_info=json.loads(sub_val),
+            subscription_info=json.loads(webpush_val),
             data=json.dumps(dict(type=type, data=data)),
             vapid_private_key=current_app.config['VAPID_PRIVATE_KEY'],
             vapid_claims=current_app.config['VAPID_CLAIMS']
