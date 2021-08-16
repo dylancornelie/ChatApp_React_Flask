@@ -20,7 +20,7 @@ const ParticipantItem = ({ user, isCoach, isOwner }) => {
 
   return (
     <div className={!isEmpty(chatStates.userConnected.find((userConnected) => userConnected === user.id )) ? 'chat-participant-item user-is-connected' : 'chat-participant-item user-is-not-connected'} onClick={handleClick}>
-      <img src='./image/avatar.svg' alt='profil pic' />
+      <img src={user.ava ? user.ava : '../image/avatar.svg'} alt='profil pic'  />
       <p
         className='chat-participant-item-name'        
         style={

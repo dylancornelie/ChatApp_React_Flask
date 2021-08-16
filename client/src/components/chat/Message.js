@@ -15,7 +15,7 @@ const Message = ({ message, position }) => {
       {position === 'left' && (
         <img
           className='message-sender-pic'
-          src='./image/avatar.svg'
+          src={message.sender.ava ? message.sender.ava : '../image/avatar.svg'}
           alt='profil pic'
         />
       )}
