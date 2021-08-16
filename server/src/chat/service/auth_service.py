@@ -9,7 +9,7 @@ from werkzeug.exceptions import Unauthorized
 
 from src.chat.model.user import User
 from src.chat.service.blacklist_service import save_token_into_blacklist, check_blacklist
-
+from src.chat.service.user_service import get_a_user
 
 def encode_auth_token(user_id: int, admin: bool = False) -> Tuple[str, int]:
     """
@@ -101,15 +101,15 @@ def logout_user(auth_token: str) -> Dict:
     return response_object
 
 
-def refresh_token(current_user_id: int, admin: bool = False) -> Dict:
+def refresh_token(current_user_id: int) -> Dict:
     """
     Refresh token
 
     :param current_user_id: int
     :return: Dict: Object message JWT
     """
-
-    return generate_token(user_id=current_user_id, message='Successfully refresh token.')
+    user = get_a_user(current_user_id)
+    return generate_token(user_id=user.id, message='Successfully refresh token.', admin=user.admin)
 
 
 def generate_token(user_id: int, message: str, admin: bool = False) -> Dict:
