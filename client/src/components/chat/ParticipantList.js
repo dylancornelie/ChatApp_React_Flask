@@ -41,7 +41,7 @@ const ParticipantList = () => {
       participantList.removeEventListener('mouseleave', setIsDown);
       participantList.removeEventListener('mousedown', mouseDownHandler);
     };
-  });
+  },[]);
 
   return (
     <div className='chat-participant-list'>

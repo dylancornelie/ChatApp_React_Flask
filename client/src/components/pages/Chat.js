@@ -12,7 +12,6 @@ import ChatContextMenu from '../chat/ChatContextMenu';
 import AddParticipantPopUp from '../chat/AddParticipantPopUp';
 import {
   addUserConnected,
-  refreshMeetingData,
   removeUserConnected,
   sendMessage,
   showAddParticipant,
@@ -25,18 +24,14 @@ const Chat = () => {
   const history = useHistory();
   const socket = useRef();
 
-  useEffect(() => {
-    if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
+  
+ useEffect(()=>{
+  if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
+  
+  if (chatStates.removeFromChat || isEmpty(chatStates.meeting)) history.push('/home')
+ },[chatStates.meeting, chatStates.removeFromChat, history])
 
-    if (!isEmpty(chatStates.meeting)) {
-      const meetingId = chatStates.meeting.id;
-      const refreshMeeting = userStates.meetings.find(
-        (meeting) => meeting.id === meetingId
-      );
-      if (!isEmpty(refreshMeeting))
-        dispatch(refreshMeetingData(refreshMeeting));
-      else history.push('/home');
-    } else history.push('/home');
+  useEffect(() => {
 
     if (isEmpty(socket.current) || !socket.current.status)
       socket.current = io(`${process.env.REACT_APP_API_URL}/ws/messages`, {
@@ -95,13 +90,12 @@ const Chat = () => {
         socket.current.on('disconnect', () =>
           console.log('Socket successfully disconnected')
         );
-
         socket.current.emit('leave_project');
 
         //socket.current.disconnect();
       }
     };
-  }, [userStates.meetings, history, chatStates.meeting, dispatch]);
+  }, [chatStates.meeting.id, chatStates.meeting.title, dispatch]);
 
   return (
     <div className='chat-component-container'>

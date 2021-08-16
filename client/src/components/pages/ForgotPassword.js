@@ -11,7 +11,7 @@ const SignIn = () => {
 
   useEffect(() => {
     if (!tokenIsEmpty() && tokenIsValid()) history.push('/home');
-  });
+  },[history]);
 
   const forgotPassword = async (e) => {
     e.preventDefault();

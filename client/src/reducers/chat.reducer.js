@@ -4,7 +4,6 @@ import {
   FETCH_MESSAGES,
   FETCH_MORE_MESSAGES,
   JOIN_CHAT,
-  REFRESH_MEETING_DATA,
   REMOVE_PRIVILEGES,
   REMOVE_USER_CONNECTED,
   SCROLLED_TO_BOTTOM,
@@ -16,6 +15,7 @@ import {
   SHOW_PREPARED_MESSAGE,
   STOP_FETCH_MORE_MESSAGES,
 } from '../actions/chat.action';
+import { REFRESH_MEETINGS } from '../actions/user.action';
 
 const initialState = {
   showParticipants: false,
@@ -30,13 +30,18 @@ const initialState = {
   toScroll: true,
   showPreparedMessage: false,
   canFetchMoreMessage: false,
-  userConnected: []
+  userConnected: [],
+  removeFromChat: false,
 };
 
 export default function chatReducer(state = initialState, action) {
   switch (action.type) {
     case JOIN_CHAT:
-      return { initialState, meeting: action.payload.meeting, userConnected:[] };
+      return {
+        initialState,
+        meeting: action.payload.meeting,
+        userConnected: [],
+      };
     case SHOW_PARTICIPANTS:
       return { ...state, showParticipants: !state.showParticipants };
     case SHOW_CONTEXT_MENU:
@@ -85,8 +90,6 @@ export default function chatReducer(state = initialState, action) {
         canFetchMoreMessage: true,
         hasNext: { ...newHasNext },
       };
-    case REFRESH_MEETING_DATA:
-      return { ...state, meeting: action.payload.newMeetingData };
     case SEND_MESSAGE:
       state.messages.unshift(action.payload.message);
       return { ...state, toScroll: true };
@@ -97,9 +100,30 @@ export default function chatReducer(state = initialState, action) {
     case STOP_FETCH_MORE_MESSAGES:
       return { ...state, canFetchMoreMessage: false };
     case ADD_USER_CONNECTED:
-      return {...state, userConnected: [...new Set([...state.userConnected, ...action.payload.userId ])]}
+      return {
+        ...state,
+        userConnected: [
+          ...new Set([...state.userConnected, ...action.payload.userId]),
+        ],
+      };
     case REMOVE_USER_CONNECTED:
-      return {...state, userConnected: state.userConnected.filter(user => user !== action.payload.userId)}
+      return {
+        ...state,
+        userConnected: state.userConnected.filter(
+          (user) => user !== action.payload.userId
+        ),
+      };
+    case REFRESH_MEETINGS:
+      if (state.meeting) {
+        const newMeeting = action.payload.meetings.find(
+          (meeting) => meeting.id === state.meeting.id
+        );
+        if (newMeeting) state.meeting = newMeeting;
+        else state.removeFromChat = true;
+      }
+      return {
+        ...state,
+      };
     default:
       return { ...state };
   }

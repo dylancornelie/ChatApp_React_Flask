@@ -14,7 +14,7 @@ const CreateMeeting = () => {
 
   useEffect(() => {
     if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
-  });
+  },[history]);
 
   const handleCreateMeeting = (e) => {
     e.preventDefault();

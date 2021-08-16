@@ -14,30 +14,19 @@ const MessageList = () => {
   const userStates = useSelector((state) => state.userReducer);
   const dispatch = useDispatch();
   const messageEnd = useRef(null);
-  const [loadMessage, setLoadMessage] = useState(true);
-  
-  const messagesLength = isEmpty(chatStates.messages)
-    ? 0
-    : chatStates.messages.length;
+  const [messagFetched, setMessagFetched] = useState(false)
 
   useEffect(() => {
-    if (loadMessage && !isEmpty(chatStates.meeting.id)) {
+    if (isEmpty(chatStates.messages) && !messagFetched) {
       dispatch(fetchMessages(chatStates.meeting.id));
-      setLoadMessage(false);
+      setMessagFetched(true);
     }
 
     if (chatStates.toScroll && !isEmpty(chatStates.messages)) {
       scrollToBottom();
       dispatch(scrolledToBottom());
     }
-  }, [
-    chatStates.meeting.id,
-    chatStates.messages,
-    messagesLength,
-    dispatch,
-    loadMessage,
-    chatStates.toScroll,
-  ]);
+  }, [chatStates.meeting.id, chatStates.messages, dispatch, chatStates.toScroll, messagFetched]);
 
   useEffect(() => {
     const messageList = document.querySelector('.message-list');
@@ -56,7 +45,7 @@ const MessageList = () => {
     return () => {
       messageList.removeEventListener('scroll', loadMore);
     };
-  });
+  },[chatStates.canFetchMoreMessage, chatStates.hasNext?.hasNext, chatStates.hasNext?.linkToNext, dispatch]);
 
   const scrollToBottom = () => {
     messageEnd.current.scrollIntoView({

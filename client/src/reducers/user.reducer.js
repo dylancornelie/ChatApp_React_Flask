@@ -11,11 +11,11 @@ import {
   DISCONNECT_USER,
   GET_MEETINGS,
   GET_USER,
+  REFRESH_MEETINGS,
   REFRESH_TOKEN,
   SIGN_IN_USER,
   SIGN_UP_USER,
 } from '../actions/user.action';
-import { isEmpty } from '../utils/utils';
 
 const initialState = {
   signInError: '',
@@ -26,7 +26,6 @@ const initialState = {
   user: {},
   token: '',
   meetings: [],
-  meetingFetched: false,
 };
 
 export default function userReducer(state = initialState, action) {
@@ -73,11 +72,14 @@ export default function userReducer(state = initialState, action) {
       return {
         ...state,
         meetings: action.payload.meetings,
-        meetingFetched: true,
+      };
+    case REFRESH_MEETINGS:
+      return {
+        ...state,
+        meetings: action.payload.meetings,
       };
     case CREATE_MEETING:
-      if (!isEmpty(action.payload.newMeeting))
-        state.meetings.push(action.payload.newMeeting);
+      state.meetings.push(action.payload.newMeeting);
       return {
         ...state,
         createMeetingError: action.payload.createMeetingError,

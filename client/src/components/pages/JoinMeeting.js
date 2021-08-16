@@ -24,8 +24,8 @@ const JoinMeeting = () => {
 
   useEffect(() => {
     if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
-    if (isEmpty(userStates.user) && tokenIsValid()) dispatch(getUser());
-  });
+    if (isEmpty(userStates.user)) dispatch(getUser());
+  },[dispatch, history, userStates.user]);
 
   const handleHeaderArrowClick = () => {
     history.push('/home');

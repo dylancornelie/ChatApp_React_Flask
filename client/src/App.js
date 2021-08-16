@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getMeetings, refreshToken } from './actions/user.action';
+import { refreshMeeting, refreshToken } from './actions/user.action';
 import Routes from './components/routes/Routes';
 import { isEmpty, tokenIsEmpty, tokenIsValid } from './utils/utils';
 
@@ -40,15 +40,18 @@ const App = () => {
         );
       }
 
-      notificationSource.current.addEventListener('error', (event) =>
-        notificationSource.current.close()
-      );
+      notificationSource.current.addEventListener('error', (event) => {
+        console.error('Erreur SSE, disconnected...');
+        notificationSource.current.close();
+        notificationSource.current = null;
+      });
 
       notificationSource.current.addEventListener('action_project', (event) => {
         //console.log(JSON.parse(event.data));
         const data = JSON.parse(event.data);
 
-        dispatch(getMeetings());
+        dispatch(refreshMeeting());
+
         new Notification('Tx Chat', {
           body: data.message,
           icon: '../image/logo192.png',
@@ -74,10 +77,14 @@ const App = () => {
           lang: 'EN',
         });
       });
-    };  
+    };
 
     if ('Notification' in window) {
-      if (Notification.permission === 'granted' && !tokenIsEmpty() && tokenIsValid()) {
+      if (
+        Notification.permission === 'granted' &&
+        !tokenIsEmpty() &&
+        tokenIsValid()
+      ) {
         handleNotification();
       } else if (
         Notification.permission !== 'denied' ||
@@ -86,15 +93,14 @@ const App = () => {
         Notification.requestPermission((permission) => {
           if (permission === 'granted' && !tokenIsEmpty() && tokenIsValid()) {
             handleNotification();
-          } else{
+          } else {
             console.log('Notifications are disabled or you are not logged in');
             if (notificationSource.current !== null)
-             notificationSource.current.close();
+              notificationSource.current.close();
           }
         });
       }
     } else console.log('Notifications are not supported by your browser');
-    
   }, [userStates.token, dispatch]);
 
   return (

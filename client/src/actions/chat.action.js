@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 export const JOIN_CHAT = 'JOIN_CHAT';
-export const REFRESH_MEETING_DATA = 'REFRESH_MEETING_DATA';
 export const ADD_PARTICIPANT = 'ADD_PARTICIPANT';
 export const REMOVE_PARTICIPANT = 'REMOVE_PARTICIPANT';
 export const DELETE_MEETING = 'DELETE_MEETING';
@@ -177,7 +176,7 @@ export const fetchMessages = (meetingId) => {
   return (dispatch) =>
     axios({
       method: 'GET',
-      url: `${process.env.REACT_APP_API_URL}/api/v1/messages/${meetingId}?page=1&per_page=10`,
+      url: `${process.env.REACT_APP_API_URL}/api/v1/messages/${meetingId}?page=1&per_page=30`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
@@ -204,11 +203,6 @@ export const showAddParticipant = () => ({ type: SHOW_ADD_PARTICIPANT });
 export const setMessageReceiver = (receiver) => ({
   type: SET_MESSAGE_RECEIVER,
   payload: { receiver },
-});
-
-export const refreshMeetingData = (newMeetingData) => ({
-  type: REFRESH_MEETING_DATA,
-  payload: { newMeetingData },
 });
 
 export const scrolledToBottom = () => ({ type: SCROLLED_TO_BOTTOM });

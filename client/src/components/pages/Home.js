@@ -3,7 +3,6 @@ import Loader from 'react-loader-spinner';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import { getMeetings, getUser } from '../../actions/user.action';
-// import data from '../../data/meetings.json';
 import { isEmpty, tokenIsEmpty, tokenIsValid } from '../../utils/utils';
 import HomeHeader from '../home/HomeHeader';
 import MeetingElement from '../home/MeetingElement';
@@ -14,22 +13,25 @@ const Home = () => {
   const dispatch = useDispatch();
   const userStates = useSelector((state) => state.userReducer);
   const [moreInfo, setMoreInfo] = useState(null);
-  const [fetchMeeting, setFetchMeeting] = useState(false);
+  const [meetingFetched, setMeetingFetched] = useState(false);
 
   useEffect(() => {
     if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
-    if (isEmpty(userStates.user) && tokenIsValid()) dispatch(getUser());
-    if (!fetchMeeting && isEmpty(userStates.meetings) && tokenIsValid()) {
+    if (isEmpty(userStates.user)) dispatch(getUser());
+  }, [dispatch, history, userStates.user]);
+
+  useEffect(() => {
+    if (isEmpty(userStates.meetings) && !meetingFetched) {
       dispatch(getMeetings());
-      setFetchMeeting(true);
+      setMeetingFetched(true);
     }
-  }, [userStates.user, dispatch, history, userStates.meetings, fetchMeeting]);
+  }, [dispatch, meetingFetched, userStates.meetings]);
 
   return (
     <div className='home-container'>
       <HomeHeader />
       <div className='home-meetingCard-meeting-list'>
-        {userStates.meetingFetched ? (
+        {!isEmpty(userStates.meetings) ? (
           userStates.meetings.map((meeting) => (
             <div
               key={meeting.id}
