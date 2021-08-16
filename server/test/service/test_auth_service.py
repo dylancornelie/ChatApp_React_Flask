@@ -5,7 +5,8 @@ from werkzeug.exceptions import Unauthorized
 
 from src.chat import db
 from src.chat.model.user import User
-from src.chat.service.auth_service import encode_auth_token, decode_auth_token, login_user, logout_user, refresh_token
+from src.chat.service.auth_service import (encode_auth_token, decode_auth_token, login_user, logout_user, refresh_token,
+                                           decode_auth_admin_token)
 from src.chat.service.blacklist_service import save_token_into_blacklist
 from test.base import BaseTestCase
 
@@ -34,10 +35,26 @@ class TestAuthService(BaseTestCase):
 
     def test_decode_auth_token_success(self):
         auth_token, expire_in = encode_auth_token(self.user.id)
-
+        user_id, admin = decode_auth_token(auth_token)
         self.assertIsInstance(auth_token, str)
         self.assertEqual(5, expire_in)
-        self.assertEqual(1, decode_auth_token(auth_token))
+        self.assertEqual(1, user_id)
+        self.assertFalse(admin)
+
+    def test_decode_auth_admin_token_success(self):
+        auth_token, expire_in = encode_auth_token(self.user.id, True)
+        user_id, admin = decode_auth_token(auth_token)
+        self.assertIsInstance(auth_token, str)
+        self.assertEqual(5, expire_in)
+        self.assertEqual(1, user_id)
+        self.assertTrue(admin)
+
+        # decode auth admin token
+        auth_token, expire_in = encode_auth_token(self.user.id, True)
+        user_id = decode_auth_admin_token(auth_token)
+        self.assertIsInstance(auth_token, str)
+        self.assertEqual(5, expire_in)
+        self.assertEqual(1, user_id)
 
     def test_decode_auth_token_in_blacklist(self):
         auth_token, expire_in = encode_auth_token(self.user.id)
@@ -49,6 +66,13 @@ class TestAuthService(BaseTestCase):
         with self.assertRaises(Unauthorized) as unauth:
             decode_auth_token(auth_token)
             self.assertIn('Token was removed.', str(unauth.exception))
+
+    def test_decode_auth_admin_token_not_admin(self):
+        auth_token, expire_in = encode_auth_token(self.user.id)
+
+        with self.assertRaises(Unauthorized) as unauth:
+            decode_auth_admin_token(auth_token)
+            self.assertIn('You are not an administrator.', str(unauth.exception))
 
     @unittest.skip("So slower for test sleep")
     def test_decode_auth_token_expired(self):
