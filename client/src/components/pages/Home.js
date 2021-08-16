@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import { getMeetings, getUser } from '../../actions/user.action';
 import { isEmpty, tokenIsEmpty, tokenIsValid } from '../../utils/utils';
+import AdminPage from '../home/AdminModal';
 import HomeHeader from '../home/HomeHeader';
 import MeetingElement from '../home/MeetingElement';
 import MeetingInfo from '../home/MeetingInfo';
@@ -14,6 +15,7 @@ const Home = () => {
   const userStates = useSelector((state) => state.userReducer);
   const [moreInfo, setMoreInfo] = useState(null);
   const [meetingFetched, setMeetingFetched] = useState(false);
+  const [showAdminModal, setShowAdminModal] = useState(false);
 
   useEffect(() => {
     if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
@@ -84,6 +86,14 @@ const Home = () => {
         <button onClick={() => history.push('/meeting/join')}>
           Join a new meeting
         </button>
+        {userStates?.user?.admin && (
+          <button onClick={() => setShowAdminModal(!showAdminModal)}>
+            Show admin modal
+          </button>
+        )}
+        {showAdminModal && userStates?.user?.admin && (
+          <AdminPage outsideClickAction={() => setShowAdminModal(false)} />
+        )}
       </div>
     </div>
   );

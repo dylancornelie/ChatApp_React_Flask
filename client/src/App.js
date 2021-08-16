@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { refreshMeeting, refreshToken } from './actions/user.action';
+import { getUser, refreshMeeting, refreshToken } from './actions/user.action';
 import Routes from './components/routes/Routes';
 import { isEmpty, tokenIsEmpty, tokenIsValid } from './utils/utils';
 
@@ -77,7 +77,26 @@ const App = () => {
           lang: 'EN',
         });
       });
+   
+      notificationSource.current.addEventListener('action_user', (event) => {
+        console.log(JSON.parse(event.data));
+        const data = JSON.parse(event.data);
+  
+        dispatch(getUser());
+        dispatch(refreshToken());
+  
+        new Notification('Tx Chat', {
+          body: data.message,
+          icon: '../image/logo192.png',
+          vibrate: [200, 100, 200],
+          renotify: true,
+          tag: 'txChatMessage',
+          badge: '../image/logo72.png',
+          lang: 'EN',
+        });
+      });
     };
+
 
     if ('Notification' in window) {
       if (

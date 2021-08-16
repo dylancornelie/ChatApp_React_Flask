@@ -1,3 +1,4 @@
+import { ADMIN_ERROR } from '../actions/admin.action';
 import {
   ADD_PARTICIPANT,
   DELETE_MEETING,
@@ -24,6 +25,7 @@ const initialState = {
   changePasswordError: '',
   createMeetingError: '',
   addByLoginError: '',
+  adminError:'',
   user: {},
   token: '',
   meetings: [],
@@ -124,6 +126,8 @@ export default function userReducer(state = initialState, action) {
       };
     case CHANGE_PASSWORD_ERROR:
       return { ...state, changePasswordError: action.payload.errorMessage };
+    case ADMIN_ERROR:
+      return {...state,adminError:action.payload.adminError}
     default:
       return { ...state };
   }
