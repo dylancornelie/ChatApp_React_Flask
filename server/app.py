@@ -110,6 +110,18 @@ def first_run():
     # Remove all key beforn run
     if redis.keys():
         redis.delete(*redis.keys())
+    # Admin default
+    if not user.User.query.filter_by(username='admin').first():
+        admin = user.User(
+            email='admin@admin.com',
+            username='admin',
+            password='admin',
+            first_name='admin',
+            last_name='admin',
+            admin=True
+        )
+        db.session.add(admin)
+        db.session.commit()
 
     transfer_data_subscription_from_db_to_redis()
 
