@@ -85,6 +85,8 @@ user_item = api.model('User_Item', {
     'first_name': fields.String(description="user's first name"),
     'last_name': fields.String(description="user's last name"),
     'ava': fields.String(description="user's ava in base64"),
+    'admin': fields.Boolean(description="user's role"),
+    'archived': fields.Boolean(description="user archived")
 })
 
 user_list = api.model('User_List', model=list_model(user_item))

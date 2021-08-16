@@ -15,6 +15,9 @@ class User(db.Model):
     last_name = db.Column(db.String(50), nullable=False)
     ava = db.Column(db.Text, nullable=True)
 
+    admin = db.Column(db.Boolean, default=False)
+    archived = db.Column(db.Boolean, default=False)
+
     @property
     def password(self):
         raise AttributeError('password: write-only field')

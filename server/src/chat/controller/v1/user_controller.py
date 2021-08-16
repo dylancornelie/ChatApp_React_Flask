@@ -9,8 +9,9 @@ from src.chat.dto.user_dto import (api, user_item, user_list, user_post, user_pa
                                    user_forget_password, subscription_info)
 from src.chat.service.user_service import (save_new_user, get_all_users, get_a_user, update_a_user,
                                            update_a_user_password, update_forget_password, sub_user_channel,
-                                           store_data_subscription_webpub, unsubscription_data_subscription_webpub)
-from src.chat.util.decorator import token_required, decode_auth_token
+                                           store_data_subscription_webpub, unsubscription_data_subscription_webpub,
+                                           change_user_to_admin, archive_user)
+from src.chat.util.decorator import token_required, decode_auth_token, admin_token_required
 from src.chat.util.stream import stream
 
 
@@ -107,7 +108,7 @@ class Me_Forget_Password(Resource):
 @api.route('/stream/<string:token>')
 class Stream(Resource):
     def get(self, token: str):
-        user_id = decode_auth_token(token)
+        user_id, _ = decode_auth_token(token)
         channel = sub_user_channel(user_id)
         return stream(channel)
 
@@ -133,3 +134,33 @@ class PubSub(Resource):
     def delete(self):
         """Unsubscription the key of Service Worker"""
         return unsubscription_data_subscription_webpub(self.post.current_user_id)
+
+
+@api.route('/admin/<int:user_id>')
+class Admin(Resource):
+    @api.doc("Change user's role to admin", security='Bearer')
+    @admin_token_required
+    def post(self, user_id: int):
+        """Change user's role to admin"""
+        return change_user_to_admin(self.post.current_user_id, user_id)
+
+    @api.doc("Change user's role to normal", security='Bearer')
+    @admin_token_required
+    def delete(self, user_id: int):
+        """Change user's role to normal"""
+        return change_user_to_admin(self.delete.current_user_id, user_id, False)
+
+
+@api.route('/archive/<int:user_id>')
+class Archive(Resource):
+    @api.doc("Archive user", security='Bearer')
+    @admin_token_required
+    def post(self, user_id: int):
+        """Archive user"""
+        return archive_user(self.post.current_user_id, user_id)
+
+    @api.doc("Change user's role to normal", security='Bearer')
+    @admin_token_required
+    def delete(self, user_id: int):
+        """Unarchive user"""
+        return archive_user(self.delete.current_user_id, user_id, False)

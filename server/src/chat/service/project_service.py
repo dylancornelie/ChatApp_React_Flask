@@ -12,10 +12,9 @@ from src.chat.model.pagination import Pagination
 from src.chat.model.project import Project, user_coaches_to_project, user_participates_of_project
 from src.chat.model.user import User
 from src.chat.service import save_data, insert_data, delete_data
-from src.chat.service.user_service import get_a_user, sub_user_channel
+from src.chat.service.user_service import get_a_user, notify_one_user
 from src.chat.util.constant import *
 from src.chat.util.pagination import paginate
-from src.chat.util.stream import publish
 
 
 def save_new_project(current_user_id: int, data: Dict) -> Project:
@@ -189,7 +188,7 @@ def invite_participant_into_project(current_user_id: int, id_project: int, data:
         message=f"You was invited into the project '{project.title}'.",
         data=marshal(project, project_item)
     )
-    notify_one_member_in_project(user_id=participant.id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT)
+    notify_one_user(user_id=participant.id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT)
 
     # Notify to other members
     data = dict(
@@ -304,7 +303,7 @@ def designate_coach_into_project(current_user_id: int, id_project: int, data: Di
             message=f"You was designated new coach in the project '{project.title}'.",
             data=dict(project_id=project.id, project_title=project.title),
         )
-        notify_one_member_in_project(user_id=user.id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT)
+        notify_one_user(user_id=user.id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT)
 
         # Notify to the other members
         data = dict(
@@ -362,7 +361,7 @@ def withdraw_coach_in_project(current_user_id: int, id_project: int, data: Dict)
             message=f"You was withdrawn from coach in the project '{project.title}'.",
             data=dict(project_id=project.id, project_title=project.title),
         )
-        notify_one_member_in_project(user_id=user.id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT)
+        notify_one_user(user_id=user.id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT)
 
         # Notify to the other members
         data = dict(
@@ -424,7 +423,7 @@ def remove_participant_in_project(current_user_id: int, id_project: int, data: D
             message=f"You was removed in the project '{project.title}'.",
             data=dict(project_id=project.id, project_title=project.title),
         )
-        notify_one_member_in_project(user_id=participant.id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT)
+        notify_one_user(user_id=participant.id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT)
 
         # Notify to the other members
         data = dict(
@@ -516,9 +515,4 @@ def notify_all_member_in_project(users_id: List[int], data, type_publish: str = 
     if exclude_users_id:
         users_id = list(set(users_id) - set(exclude_users_id))
     for user_id in users_id:
-        notify_one_member_in_project(user_id, data, type_publish)
-
-
-def notify_one_member_in_project(user_id: int, data, type_publish: str = None) -> None:
-    channel = sub_user_channel(user_id)
-    publish(channel, data, type_publish)
+        notify_one_user(user_id, data, type_publish)

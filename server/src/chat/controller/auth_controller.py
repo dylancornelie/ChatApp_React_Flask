@@ -58,4 +58,4 @@ class RefreshToken(Resource):
     @api.response(int(HTTPStatus.FORBIDDEN), 'Provide a valid auth token.')
     def get(self):
         logout_user(self.get.auth_token)
-        return refresh_token(self.get.current_user_id)
+        return refresh_token(self.get.current_user_id, self.get.current_user_admin)

@@ -172,6 +172,15 @@ sse.addEventListener(event, (event) => {
             - _'@{message.sender.username}' sent a new message._ => data: `{project_title: project.title}`
             - _'@{message.sender.username}' sent you a new private message._ => data: `{project_title: project.title}`
 
+1. Data of the event `action_user`:
+    1. Schema: Same the other event
+    1. Type:
+        - admin_user:
+            - _You become an admin._ => data: `{user_id: int, admin: bool}`
+            - _You become a normal._ => data: `{user_id: int, admin: bool}`
+        - archive_user:
+            - _You was archived._ => data: `{user_id: int, archive: bool}`
+            - To ***unarchive*** => Server will send an email.
 ## Webpush
 
 ### Document
