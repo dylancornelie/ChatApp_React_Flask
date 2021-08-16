@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import {
   accountDataChange,
+  accountPictureChange,
   disconnectUser,
   getUser,
 } from '../../actions/user.action';
@@ -15,7 +16,6 @@ import {
   tokenIsValid,
   unsubscribeFromPushNotification,
 } from '../../utils/utils';
-import Banner from '../utils/Banner';
 import HeaderWithArrow from '../utils/HeaderWithArrow';
 
 const MyAccount = () => {
@@ -25,13 +25,14 @@ const MyAccount = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [isSubscribeToPush, setIsSubscribeToPush] = useState(null);
+  const [file, setFile] = useState(null);
 
   useEffect(() => {
     if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
     if (isEmpty(userStates.user)) dispatch(getUser());
     else {
-      setFirstName(userStates.user.firstName);
-      setLastName(userStates.user.lastName);
+      setFirstName(userStates.user.first_name);
+      setLastName(userStates.user.last_name);
     }
     const asyncFunction = async () => {
       setIsSubscribeToPush(await alreadySubscribeToPushNotification());
@@ -39,16 +40,36 @@ const MyAccount = () => {
     isSubscribeToPush === null && asyncFunction();
   }, [userStates.user, dispatch, history, isSubscribeToPush]);
 
-  const handleChanges = () => {
+  const handleNameChange = () => {
     dispatch(
       accountDataChange(
-        userStates.user.email,
-        userStates.user.login,
+        userStates.user.username,
         firstName,
-        lastName
+        lastName,
+        userStates.user.ava
       )
     );
-    history.push('/home');
+  };
+
+  const handlePictureChange = (e) => {
+    if (e.target.id === 'reset') {
+      dispatch(
+        accountPictureChange(userStates.user.username, firstName, lastName, '')
+      );
+    } else if (!isEmpty(file)) {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file[0]);
+      fileReader.onload = () => {
+        dispatch(
+          accountPictureChange(
+            userStates.user.username,
+            firstName,
+            lastName,
+            fileReader.result
+          )
+        );
+      };
+    }
   };
 
   const handleDisconnect = () => {
@@ -73,10 +94,51 @@ const MyAccount = () => {
   return (
     <>
       <HeaderWithArrow title={'My account'} leftIconAction={leftIconAction} />
-      <div className='signin-page'>
-        <Banner title='Manage your account' />
+        <h1 className='myAccount-header'>Manage your account</h1>
+      <div className='account-page'>
+        <div className='change-profil-form'>
+          {userStates.user.ava ? (
+            <img
+              className='profile-pic'
+              src={userStates.user.ava}
+              alt='profile pic'
+            />
+          ) : (
+            <img
+              className='profile-pic'
+              src='../image/avatar.svg'
+              alt='profile pic'
+            />
+          )}
+          <p className='login-info'>{`Your login : ${userStates.user.username}`}</p>
+
+          <div className='change-picture-button'>
+            <label htmlFor='change-profil-pic' className='change-picture-label'>
+              Select profil picture
+            </label>
+            <input
+              id='change-profil-pic'
+              type='file'
+              accept='.png,.jpg,.jpeg,.gif'
+              style={{ display: 'none' }}
+              onChange={(e) => setFile(e.target.files)}
+            />
+          </div>
+          <button
+            className='change-picture-button'
+            id='reset'
+            onClick={handlePictureChange}
+          >
+            Reset profil picture
+          </button>
+          <button
+            className='change-picture-button'
+            onClick={handlePictureChange}
+          >
+            Apply changes
+          </button>
+        </div>
         <div className='signin-form-container'>
-          <p className='login-info'>{`Your login : ${userStates.user.login}`}</p>
           <label htmlFor='firstName'>First Name</label>
           <input
             id='firstName'
@@ -95,15 +157,19 @@ const MyAccount = () => {
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
           />
-          <button onClick={handleChanges}>Save changes</button>
+          <button onClick={handleNameChange}>Save changes</button>
           <button
             style={{ marginTop: '3rem' }}
             onClick={() => history.push('/account/password')}
           >
             Change password
           </button>
+        </div>
+      </div>
+      <div className='red-button-container'>
           <button
             style={{ marginTop: '3rem' }}
+            className='button-style'
             onClick={() =>
               supportPushNotification() && handlePushSubscription()
             }
@@ -117,8 +183,7 @@ const MyAccount = () => {
           <button onClick={handleDisconnect} className='red-button'>
             Discconnect
           </button>
-        </div>
-      </div>
+          </div>
     </>
   );
 };

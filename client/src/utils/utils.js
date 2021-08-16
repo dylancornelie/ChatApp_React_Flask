@@ -110,38 +110,35 @@ export const alreadySubscribeToPushNotification = async () => {
 
 export const subscribeToPushNotification = async () => {
   try {
+    const swRegistration = await navigator.serviceWorker.ready;
 
-      const swRegistration = await navigator.serviceWorker.ready;
+    const responseFetchingPublicKey = await axios({
+      method: 'GET',
+      url: `${process.env.REACT_APP_API_URL}/api/v1/users/subscription`,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
 
-      const responseFetchingPublicKey = await axios({
-        method: 'GET',
-        url: `${process.env.REACT_APP_API_URL}/api/v1/users/subscription`,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
+    const publicKey = responseFetchingPublicKey.data.public_key;
+    const pushManagerSubscription = await swRegistration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: publicKey,
+    });
 
-      const publicKey = responseFetchingPublicKey.data.public_key;
-      const pushManagerSubscription =
-        await swRegistration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: publicKey,
-        });
-
-
-      await axios({
-        method: 'POST',
-        url: `${process.env.REACT_APP_API_URL}/api/v1/users/subscription`,
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
-        },
-        data: {
-          ...JSON.parse(JSON.stringify(pushManagerSubscription)),
-          expirationTime: isEmpty(pushManagerSubscription.expirationTime)
-            ? 0
-            : pushManagerSubscription.expirationTime,
-        },
-      });
+    await axios({
+      method: 'POST',
+      url: `${process.env.REACT_APP_API_URL}/api/v1/users/subscription`,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+      data: {
+        ...JSON.parse(JSON.stringify(pushManagerSubscription)),
+        expirationTime: isEmpty(pushManagerSubscription.expirationTime)
+          ? 0
+          : pushManagerSubscription.expirationTime,
+      },
+    });
     return true;
   } catch (err) {
     const swRegistration = await navigator.serviceWorker.ready;
@@ -150,7 +147,7 @@ export const subscribeToPushNotification = async () => {
     await pushManagerSubscription.unsubscribe();
     console.error(`Error subscribingToPushNotification : ${err}`);
     return false;
-  }  
+  }
 };
 
 export const unsubscribeFromPushNotification = async () => {
@@ -172,4 +169,18 @@ export const unsubscribeFromPushNotification = async () => {
     console.error(`Error unsubscribingFromPushNotification : ${err}`);
     return false;
   }
+};
+
+export const userAlreadyParticipToMeeting = (userId, meeting) => {
+  if (isEmpty(userId) || isEmpty(meeting)) return false;
+
+  const participants = [
+    meeting.owner,
+    ...meeting.coaches,
+    ...meeting.participants,
+  ];
+
+  if (participants.find((participant) => participant.id === userId))
+    return true;
+  else return false;
 };

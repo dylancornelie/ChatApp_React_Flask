@@ -7,6 +7,7 @@ export const REFRESH_TOKEN = 'REFRESH_TOKEN';
 export const DISCONNECT_USER = 'DISCONNECT_USER';
 export const GET_USER = 'GET_USER';
 export const ACCOUNT_DATA_CHANGE = 'ACCOUNT_DATA_CHANGE';
+export const ACCOUNT_PICTURE_CHANGE = 'ACCOUNT_PICTURE_CHANGE';
 export const CREATE_MEETING = 'CREATE_MEETING';
 export const GET_MEETINGS = 'GET_MEETINGS';
 export const REFRESH_MEETINGS = 'REFRESH_MEETINGS';
@@ -20,30 +21,32 @@ export const signUpUser = (
   firstName,
   lastName
 ) => {
-  if (repeatPassword !== password)
-    return {
-      type: SIGN_UP_USER,
-      payload: {
-        signUpError: 'Passwords do not match',
-      },
-    };
+  if (process.env.NODE_ENV && process.env.NODE_ENV !== 'development') {
+    if (repeatPassword !== password)
+      return {
+        type: SIGN_UP_USER,
+        payload: {
+          signUpError: 'Passwords do not match',
+        },
+      };
 
-  if (!passwordIsValid(password))
-    return {
-      type: SIGN_UP_USER,
-      payload: {
-        signUpError:
-          'Password must at least contains 8 characters, 1 uppercase, 1 lowercase & 1 digit',
-      },
-    };
+    if (!passwordIsValid(password))
+      return {
+        type: SIGN_UP_USER,
+        payload: {
+          signUpError:
+            'Password must at least contains 8 characters, 1 uppercase, 1 lowercase & 1 digit',
+        },
+      };
 
-  if (!emailIsValid(email))
-    return {
-      type: SIGN_UP_USER,
-      payload: {
-        signUpError: 'Invalid mail address',
-      },
-    };
+    if (!emailIsValid(email))
+      return {
+        type: SIGN_UP_USER,
+        payload: {
+          signUpError: 'Invalid mail address',
+        },
+      };
+  }
 
   return (dispatch) => {
     axios({
@@ -180,7 +183,12 @@ export const disconnectUser = () => {
   };
 };
 
-export const accountDataChange = (email, login, firstName, lastName) => {
+export const accountDataChange = (
+  login,
+  firstName,
+  lastName,
+  profilPicture
+) => {
   return (dispatch) =>
     axios({
       method: 'PUT',
@@ -189,16 +197,45 @@ export const accountDataChange = (email, login, firstName, lastName) => {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
       data: {
-        email,
         username: login,
         first_name: firstName,
         last_name: lastName,
+        ava: profilPicture ? profilPicture : '',
       },
     })
       .then((response) =>
         dispatch({
           type: ACCOUNT_DATA_CHANGE,
           payload: { firstName, lastName },
+        })
+      )
+      .catch((err) => console.error(err));
+};
+
+export const accountPictureChange = (
+  login,
+  firstName,
+  lastName,
+  profilPicture
+) => {
+  return (dispatch) =>
+    axios({
+      method: 'PUT',
+      url: `${process.env.REACT_APP_API_URL}/api/v1/users/me`,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+      data: {
+        username: login,
+        first_name: firstName,
+        last_name: lastName,
+        ava: profilPicture ? profilPicture : '',
+      },
+    })
+      .then((response) =>
+        dispatch({
+          type: ACCOUNT_PICTURE_CHANGE,
+          payload: { profilPicture },
         })
       )
       .catch((err) => console.error(err));

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import QrReader from 'react-qr-reader';
 import { addParticipant } from '../../actions/chat.action';
-import { isEmpty } from '../../utils/utils';
+import { isEmpty, userAlreadyParticipToMeeting } from '../../utils/utils';
 
 const AddParticipantPopUp = ({ outsideClickAction, meetingId }) => {
   const dispatch = useDispatch();
@@ -19,9 +19,22 @@ const AddParticipantPopUp = ({ outsideClickAction, meetingId }) => {
     <div className='context-menu-backdrop' onClick={() => outsideClickAction()}>
       {flashQrCode ? (
         <QrReader
-          delay={300}
+          delay={1000}
           onScan={(data) => {
-            if (!isEmpty(data)) dispatch(addParticipant(meetingId, data));
+            if (!isEmpty(data)) {
+              const userData = JSON.parse(data);
+              //console.log(JSON.parse(data));
+              if (
+                !userAlreadyParticipToMeeting(
+                  userData.id,
+                  userStates.meetings.find(
+                    (meeting) => meeting.id === meetingId
+                  )
+                )
+              )
+                dispatch(addParticipant(meetingId, userData.username));
+              else console.log('User already added...')
+            }
           }}
           onError={console.error}
           style={{ width: '50%' }}

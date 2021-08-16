@@ -6,6 +6,7 @@ import {
 } from '../actions/chat.action';
 import {
   ACCOUNT_DATA_CHANGE,
+  ACCOUNT_PICTURE_CHANGE,
   CHANGE_PASSWORD_ERROR,
   CREATE_MEETING,
   DISCONNECT_USER,
@@ -50,21 +51,21 @@ export default function userReducer(state = initialState, action) {
     case GET_USER:
       return {
         ...state,
-        user: {
-          id: action.payload.user.id,
-          email: action.payload.user.email,
-          login: action.payload.user.username,
-          firstName: action.payload.user.first_name,
-          lastName: action.payload.user.last_name,
-        },
+        user: action.payload.user,
       };
     case ACCOUNT_DATA_CHANGE:
       return {
         ...state,
         user: {
-          firstName: action.payload.firstName,
-          lastName: action.payload.lastName,
+          ...state.user,
+          first_name: action.payload.firstName,
+          last_name: action.payload.lastName,
         },
+      };
+    case ACCOUNT_PICTURE_CHANGE:
+      return {
+        ...state,
+        user: { ...state.user, ava: action.payload.profilPicture },
       };
     case DISCONNECT_USER:
       return { initialState };
