@@ -9,7 +9,6 @@ from werkzeug.exceptions import Unauthorized
 
 from src.chat.model.user import User
 from src.chat.service.blacklist_service import save_token_into_blacklist, check_blacklist
-from src.chat.service.user_service import get_a_user
 
 def encode_auth_token(user_id: int, admin: bool = False) -> Tuple[str, int]:
     """
@@ -108,7 +107,7 @@ def refresh_token(current_user_id: int) -> Dict:
     :param current_user_id: int
     :return: Dict: Object message JWT
     """
-    user = get_a_user(current_user_id)
+    user = User.query.filter_by(id=current_user_id).first_or_404('User Not Found')
     return generate_token(user_id=user.id, message='Successfully refresh token.', admin=user.admin)
 
 
