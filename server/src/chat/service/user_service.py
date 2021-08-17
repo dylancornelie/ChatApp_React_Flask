@@ -237,7 +237,10 @@ def archive_user(current_user_id: int, user_id: int, archive: bool = True) -> Di
         notify_one_user(user_id, data, TYPE_NOTIFICATION_ACTION_USER)
 
         # remove channel
-        redis.delete(*redis.scan(match=f'*:{sub_user_channel(user_id)}'))
+        channels = redis.scan(match=f'*:{sub_user_channel(user_id)}')
+        if channels:
+            redis.delete(*channels)
+
         push_subscription = PushSubscription.query.filter_by(user_id=user_id).first()
         if push_subscription:
             delete_data(push_subscription)

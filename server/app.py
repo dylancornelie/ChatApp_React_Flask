@@ -107,9 +107,10 @@ def seed(n):
 
 @app.before_first_request
 def first_run():
-    # Remove all key beforn run
-    if redis.keys():
-        redis.delete(*redis.keys())
+    # Remove all key before run
+    keys = redis.keys()
+    if keys:
+        redis.delete(*keys)
     # Admin default
     if not user.User.query.filter_by(username='admin').first():
         admin = user.User(
