@@ -28,14 +28,19 @@ export const archiveUser = (login) => {
           },
         })
           .then((response) => {
+            console.log('here')
             dispatch({
               type: ARCHIVE_USER,
+            });
+            dispatch({
+              type: ADMIN_ERROR,
+              payload: { adminError: 'User successfully archived' },
             });
           })
           .catch((err) =>
             dispatch({
               type: ADMIN_ERROR,
-              payload: { addByLoginError: 'User already archived' },
+              payload: { adminError: 'User already archived' },
             })
           );
       })
@@ -73,11 +78,15 @@ export const unarchiveUser = (login) => {
             dispatch({
               type: ARCHIVE_USER,
             });
+            dispatch({
+              type: ADMIN_ERROR,
+              payload: { adminError: 'User successfully unarchived' },
+            });
           })
           .catch((err) =>
             dispatch({
               type: ADMIN_ERROR,
-              payload: { addByLoginError: 'User already unarchived' },
+              payload: { adminError: 'User already unarchived' },
             })
           );
       })
@@ -115,11 +124,15 @@ export const promoteUser = (login) => {
             dispatch({
               type: PROMOTE_USER,
             });
+            dispatch({
+              type: ADMIN_ERROR,
+              payload: { adminError: 'User successfully promoted' },
+            });
           })
           .catch((err) =>
             dispatch({
               type: ADMIN_ERROR,
-              payload: { addByLoginError: 'User already promoted' },
+              payload: { adminError: 'User already promoted' },
             })
           );
       })
@@ -156,11 +169,15 @@ export const demoteUser = (login) => {
             dispatch({
               type: PROMOTE_USER,
             });
+            dispatch({
+              type: ADMIN_ERROR,
+              payload: { adminError: 'User successfully demoted' },
+            });
           })
           .catch((err) =>
             dispatch({
               type: ADMIN_ERROR,
-              payload: { addByLoginError: 'User already promoted' },
+              payload: { adminError: 'User already promoted' },
             })
           );
       })
