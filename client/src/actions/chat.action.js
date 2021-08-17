@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 export const JOIN_CHAT = 'JOIN_CHAT';
-export const REFRESH_MEETING_DATA = 'REFRESH_MEETING_DATA';
 export const ADD_PARTICIPANT = 'ADD_PARTICIPANT';
 export const REMOVE_PARTICIPANT = 'REMOVE_PARTICIPANT';
 export const DELETE_MEETING = 'DELETE_MEETING';
@@ -18,6 +17,8 @@ export const SHOW_ADD_PARTICIPANT = 'SHOW_ADD_PARTICIPANT';
 export const SET_MESSAGE_RECEIVER = 'SET_MESSAGE_RECEIVER';
 export const SCROLLED_TO_BOTTOM = 'SCROLLED_TO_BOTTOM';
 export const SHOW_PREPARED_MESSAGE = 'SHOW_PREPARED_MESSAGE';
+export const ADD_USER_CONNECTED = 'ADD_USER_CONNECTED';
+export const REMOVE_USER_CONNECTED = 'REMOVE_USER_CONNECTED';
 
 export const addParticipant = (meetingId, login) => {
   return (dispatch) => {
@@ -175,7 +176,7 @@ export const fetchMessages = (meetingId) => {
   return (dispatch) =>
     axios({
       method: 'GET',
-      url: `${process.env.REACT_APP_API_URL}/api/v1/messages/${meetingId}?page=1&per_page=10`,
+      url: `${process.env.REACT_APP_API_URL}/api/v1/messages/${meetingId}?page=1&per_page=30`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
@@ -204,11 +205,6 @@ export const setMessageReceiver = (receiver) => ({
   payload: { receiver },
 });
 
-export const refreshMeetingData = (newMeetingData) => ({
-  type: REFRESH_MEETING_DATA,
-  payload: { newMeetingData },
-});
-
 export const scrolledToBottom = () => ({ type: SCROLLED_TO_BOTTOM });
 
 export const showPreparedMessage = () => ({ type: SHOW_PREPARED_MESSAGE });
@@ -232,3 +228,7 @@ export const fetchMoreMessages = (urlToNext) => {
 };
 
 export const stopFetchMoreMessage = () => ({ type: STOP_FETCH_MORE_MESSAGES });
+
+export const addUserConnected = (userId) => ({type:ADD_USER_CONNECTED, payload:{userId:[...userId]}})
+
+export const removeUserConnected = (userId) => ({type:REMOVE_USER_CONNECTED, payload:{userId}})

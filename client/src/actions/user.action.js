@@ -7,8 +7,10 @@ export const REFRESH_TOKEN = 'REFRESH_TOKEN';
 export const DISCONNECT_USER = 'DISCONNECT_USER';
 export const GET_USER = 'GET_USER';
 export const ACCOUNT_DATA_CHANGE = 'ACCOUNT_DATA_CHANGE';
+export const ACCOUNT_PICTURE_CHANGE = 'ACCOUNT_PICTURE_CHANGE';
 export const CREATE_MEETING = 'CREATE_MEETING';
 export const GET_MEETINGS = 'GET_MEETINGS';
+export const REFRESH_MEETINGS = 'REFRESH_MEETINGS';
 export const CHANGE_PASSWORD_ERROR = 'CHANGE_PASSWORD_ERROR';
 
 export const signUpUser = (
@@ -19,30 +21,32 @@ export const signUpUser = (
   firstName,
   lastName
 ) => {
-  if (repeatPassword !== password)
-    return {
-      type: SIGN_UP_USER,
-      payload: {
-        signUpError: 'Passwords do not match',
-      },
-    };
+  if (process.env.NODE_ENV && process.env.NODE_ENV !== 'development') {
+    if (repeatPassword !== password)
+      return {
+        type: SIGN_UP_USER,
+        payload: {
+          signUpError: 'Passwords do not match',
+        },
+      };
 
-  if (!passwordIsValid(password))
-    return {
-      type: SIGN_UP_USER,
-      payload: {
-        signUpError:
-          'Password must at least contains 8 characters, 1 uppercase, 1 lowercase & 1 digit',
-      },
-    };
+    if (!passwordIsValid(password))
+      return {
+        type: SIGN_UP_USER,
+        payload: {
+          signUpError:
+            'Password must at least contains 8 characters, 1 uppercase, 1 lowercase & 1 digit',
+        },
+      };
 
-  if (!emailIsValid(email))
-    return {
-      type: SIGN_UP_USER,
-      payload: {
-        signUpError: 'Invalid mail address',
-      },
-    };
+    if (!emailIsValid(email))
+      return {
+        type: SIGN_UP_USER,
+        payload: {
+          signUpError: 'Invalid mail address',
+        },
+      };
+  }
 
   return (dispatch) => {
     axios({
@@ -57,21 +61,19 @@ export const signUpUser = (
       },
     })
       .then((response) => {
-        if (response.status === 201) {
-          localStorage.clear();
-          localStorage.setItem('token', response.data.authorization);
-          localStorage.setItem(
-            'tokenExpiration',
-            Math.floor(Date.now() / 1000) + response.data.token_expires_in
-          );
-          return dispatch({
-            type: SIGN_UP_USER,
-            payload: {
-              signUpError: 'Account created successfully',
-              token: response.data.authorization,
-            },
-          });
-        }
+        localStorage.clear();
+        localStorage.setItem('token', response.data.authorization);
+        localStorage.setItem(
+          'tokenExpiration',
+          Math.floor(Date.now() / 1000) + response.data.token_expires_in
+        );
+        return dispatch({
+          type: SIGN_UP_USER,
+          payload: {
+            signUpError: 'Account created successfully',
+            token: response.data.authorization,
+          },
+        });
       })
       .catch(() => {
         return dispatch({
@@ -95,24 +97,22 @@ export const signInUser = (email, password) => {
       },
     })
       .then((response) => {
-        if (response.status === 200) {
-          localStorage.clear();
-          localStorage.setItem('token', response.data.authorization);
-          localStorage.setItem(
-            'tokenExpiration',
-            Math.floor(Date.now() / 1000) + response.data.token_expires_in
-          );
-          return dispatch({
-            type: SIGN_IN_USER,
-            payload: {
-              signInError: 'Logged in successfully',
-              token: response.data.authorization,
-            },
-          });
-        }
+        localStorage.clear();
+        localStorage.setItem('token', response.data.authorization);
+        localStorage.setItem(
+          'tokenExpiration',
+          Math.floor(Date.now() / 1000) + response.data.token_expires_in
+        );
+        dispatch({
+          type: SIGN_IN_USER,
+          payload: {
+            signInError: 'Logged in successfully',
+            token: response.data.authorization,
+          },
+        });
       })
       .catch(() => {
-        return dispatch({
+        dispatch({
           type: SIGN_IN_USER,
           payload: {
             signInError: 'Email or password incorrect',
@@ -131,21 +131,20 @@ export const refreshToken = () => {
       },
     })
       .then((response) => {
-        if (response.status === 200) {
-          localStorage.clear();
-          localStorage.setItem('token', response.data.authorization);
-          localStorage.setItem(
-            'tokenExpiration',
-            Math.floor(Date.now() / 1000) + response.data.token_expires_in
-          );
-          console.log('refreshing token...');
-          return dispatch({
-            type: REFRESH_TOKEN,
-            payload: { token: response.data.authorization },
-          });
-        }
+        localStorage.clear();
+        localStorage.setItem('token', response.data.authorization);
+        localStorage.setItem(
+          'tokenExpiration',
+          Math.floor(Date.now() / 1000) + response.data.token_expires_in
+        );
+        console.log('refreshing token...');
+        dispatch({
+          type: REFRESH_TOKEN,
+          payload: { token: response.data.authorization },
+        });
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error(err);
         localStorage.clear();
       });
   };
@@ -160,13 +159,10 @@ export const getUser = () => {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
     })
-      .then((response) => {
-        if (response.status === 200)
-          return dispatch({ type: GET_USER, payload: { user: response.data } });
-      })
-      .catch((err) => {
-        console.error(err);
-      });
+      .then((response) =>
+        dispatch({ type: GET_USER, payload: { user: response.data } })
+      )
+      .catch((err) => console.error(err));
   };
 };
 
@@ -180,18 +176,19 @@ export const disconnectUser = () => {
       },
     })
       .then((response) => {
-        if (response.status === 200) {
-          localStorage.clear();
-          dispatch({ type: DISCONNECT_USER });
-        }
+        localStorage.clear();
+        dispatch({ type: DISCONNECT_USER });
       })
-      .catch((err) => {
-        console.error(err);
-      });
+      .catch((err) => console.error(err));
   };
 };
 
-export const accountDataChange = (email, login, firstName, lastName) => {
+export const accountDataChange = (
+  login,
+  firstName,
+  lastName,
+  profilPicture
+) => {
   return (dispatch) =>
     axios({
       method: 'PUT',
@@ -200,10 +197,10 @@ export const accountDataChange = (email, login, firstName, lastName) => {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
       data: {
-        email,
         username: login,
         first_name: firstName,
         last_name: lastName,
+        ava: profilPicture ? profilPicture : '',
       },
     })
       .then((response) =>
@@ -215,8 +212,37 @@ export const accountDataChange = (email, login, firstName, lastName) => {
       .catch((err) => console.error(err));
 };
 
+export const accountPictureChange = (
+  login,
+  firstName,
+  lastName,
+  profilPicture
+) => {
+  return (dispatch) =>
+    axios({
+      method: 'PUT',
+      url: `${process.env.REACT_APP_API_URL}/api/v1/users/me`,
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+      data: {
+        username: login,
+        first_name: firstName,
+        last_name: lastName,
+        ava: profilPicture ? profilPicture : '',
+      },
+    })
+      .then((response) =>
+        dispatch({
+          type: ACCOUNT_PICTURE_CHANGE,
+          payload: { profilPicture },
+        })
+      )
+      .catch((err) => console.error(err));
+};
+
 export const createMeeting = (title) => {
-  return (dispatch) => {
+  return (dispatch) => {    
     axios({
       method: 'POST',
       url: `${process.env.REACT_APP_API_URL}/api/v1/projects/`,
@@ -236,34 +262,84 @@ export const createMeeting = (title) => {
           },
         });
       })
-      .catch(() =>
+      .catch((err) => {
         dispatch({
           type: CREATE_MEETING,
           payload: {
             createMeetingError: 'Meeting name already used',
-            newMeeting: {},
           },
-        })
-      );
+        });
+      });
   };
 };
 
 export const getMeetings = () => {
-  return (dispatch) => {
-    axios({
-      method: 'GET',
-      url: `${process.env.REACT_APP_API_URL}/api/v1/projects/`,
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    })
-      .then((response) => {
-        return dispatch({
-          type: GET_MEETINGS,
-          payload: { meetings: response.data.data },
+  return async (dispatch) => {
+    try {
+      let response = await axios({
+        method: 'GET',
+        url: `${process.env.REACT_APP_API_URL}/api/v1/projects/`,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      let fetchMore = response.data.has_next;
+      let nextLink = response.data.next;
+      let meetings = response.data.data;
+      while (fetchMore) {
+        response = await axios({
+          method: 'GET',
+          url: `${process.env.REACT_APP_API_URL}${nextLink}`,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
         });
-      })
-      .catch((err) => console.error(err));
+        fetchMore = response.data.has_next;
+        nextLink = response.data.next;
+        meetings = [...meetings, ...response.data.data];
+      }
+      return dispatch({
+        type: GET_MEETINGS,
+        payload: { meetings },
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+};
+
+export const refreshMeeting = () => {
+  return async (dispatch) => {
+    try {
+      let response = await axios({
+        method: 'GET',
+        url: `${process.env.REACT_APP_API_URL}/api/v1/projects/`,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      let fetchMore = response.data.has_next;
+      let nextLink = response.data.next;
+      let meetings = response.data.data;
+      while (fetchMore) {
+        response = await axios({
+          method: 'GET',
+          url: `${process.env.REACT_APP_API_URL}${nextLink}`,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        fetchMore = response.data.has_next;
+        nextLink = response.data.next;
+        meetings = [...meetings, ...response.data.data];
+      }
+      return dispatch({
+        type: REFRESH_MEETINGS,
+        payload: { meetings },
+      });
+    } catch (err) {
+      console.error(err);
+    }
   };
 };
 

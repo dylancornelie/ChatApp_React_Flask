@@ -14,9 +14,9 @@ const SignIn = () => {
 
   useEffect(() => {
     if (!tokenIsEmpty() && tokenIsValid()) history.push('/home');
-  });
+  },[history, userStates.token]);
 
-  const handleSignIn = async (e) => {
+  const handleSignIn = (e) => {
     e.preventDefault();
     dispatch(signInUser(email, password));
   };

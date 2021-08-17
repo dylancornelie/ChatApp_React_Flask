@@ -24,8 +24,8 @@ const JoinMeeting = () => {
 
   useEffect(() => {
     if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
-    if (isEmpty(userStates.user) && tokenIsValid()) dispatch(getUser());
-  });
+    if (isEmpty(userStates.user)) dispatch(getUser());
+  }, [dispatch, history, userStates.user]);
 
   const handleHeaderArrowClick = () => {
     history.push('/home');
@@ -41,14 +41,20 @@ const JoinMeeting = () => {
         <Banner title='Show your QR code to join a meeting' />
         <QRCode
           className='qrcode'
-          value={userStates.user.login}
+          value={JSON.stringify({
+            id:userStates.user.id,
+            username: userStates.user.username,
+            email: userStates.user.email,
+            firstName: userStates.user.first_name,
+          lastName: userStates.user.last_name,
+          })}
           size={
             viewWidth * 0.6 > viewHeight * 0.5
               ? viewHeight * 0.5
               : viewWidth * 0.6
           }
           includeMargin={false}
-          style={{margin:'2rem 0 5rem 0'}}
+          style={{ margin: '2rem 0 5rem 0' }}
         />
       </div>
     </>

@@ -17,7 +17,7 @@ const ChangePassword = () => {
 
   useEffect(() => {
     if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
-  });
+  },[history]);
 
   const handleChangePassword = (e) => {
     e.preventDefault();

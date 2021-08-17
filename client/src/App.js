@@ -1,107 +1,15 @@
-import axios from 'axios';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getMeetings, refreshToken } from './actions/user.action';
+import { getUser, refreshMeeting, refreshToken } from './actions/user.action';
 import Routes from './components/routes/Routes';
 import { isEmpty, tokenIsEmpty, tokenIsValid } from './utils/utils';
 
 const App = () => {
   const userStates = useSelector((state) => state.userReducer);
   const dispatch = useDispatch();
+  const notificationSource = useRef(null);
 
   useEffect(() => {
-    const handleNotification = () => {
-      const notificationSource = new EventSource(
-        `${
-          process.env.REACT_APP_API_URL
-        }/api/v1/users/stream/${localStorage.getItem('token')}`
-      );
-
-      notificationSource.addEventListener('error', (event) =>
-        console.error(event)
-      );
-
-      notificationSource.addEventListener('action_project', (event) => {
-        console.log(JSON.parse(event.data));
-        const data = JSON.parse(event.data);
-
-        dispatch(getMeetings());
-        new Notification('Tx Chat', {
-          body: data.message,
-          icon: '../image/logo192.png',
-          vibrate: [200, 100, 200],
-          renotify: true,
-          tag: 'txChatProject',
-          badge: '../image/logo72.png',
-          lang: 'EN',
-        });
-      });
-
-      notificationSource.addEventListener('action_message', (event) => {
-        console.log(JSON.parse(event.data));
-        const data = JSON.parse(event.data);
-
-        new Notification('Tx Chat', {
-          body: data.message,
-          icon: '../image/logo192.png',
-          vibrate: [200, 100, 200],
-          renotify: true,
-          tag: 'txChatMessage',
-          badge: '../image/logo72.png',
-          lang: 'EN',
-        });
-      });
-    };
-
-    const handlePushNotification = () => {
-      if ('PushManager' in window) {
-        navigator.serviceWorker.ready.then((registration) => {
-          registration.pushManager.getSubscription().then((subscription) => {
-            if (subscription === null) {
-              console.info('Subscribing to push service...');
-              axios({
-                method: 'GET',
-                url: `${process.env.REACT_APP_API_URL}/api/v1/users/subscription`,
-                headers: {
-                  Authorization: `Bearer ${localStorage.getItem('token')}`,
-                },
-              }).then((response) => {
-                const publicKey = response.data.public_key;
-                console.log(publicKey);
-                registration.pushManager
-                  .subscribe({
-                    userVisibleOnly: true,
-                    applicationServerKey: publicKey,
-                  })
-                  .then((subscription) => {
-                    if (subscription) {
-                      axios({
-                        method: 'POST',
-                        url: `${process.env.REACT_APP_API_URL}/api/v1/users/subscription`,
-                        headers: {
-                          Authorization: `Bearer ${localStorage.getItem(
-                            'token'
-                          )}`,
-                        },
-                        data: {
-                          ...JSON.parse(JSON.stringify(subscription)),
-                          expirationTime: isEmpty(subscription.expirationTime)
-                            ? 0
-                            : subscription.expirationTime,
-                        },
-                      }).then((response) => {
-                        console.info('Subscription to push service complete');
-                        console.log(response);
-                      });
-                    } else console.info('Subscription to push service failed');
-                  });
-              });
-            } else console.info('User is already subscribed to push service');
-          });
-        });
-      } else console.info('Push notification not supported');
-    };
-
     if (!tokenIsEmpty() && tokenIsValid()) {
       console.log(
         'Next token in : ',
@@ -123,23 +31,95 @@ const App = () => {
       console.log('no valid token');
     }
 
+    const handleNotification = () => {
+      if (isEmpty(notificationSource.current)) {
+        notificationSource.current = new EventSource(
+          `${
+            process.env.REACT_APP_API_URL
+          }/api/v1/users/stream/${localStorage.getItem('token')}`
+        );
+      }
+
+      notificationSource.current.addEventListener('error', (event) => {
+        //console.error('Erreur SSE, disconnected...');
+        if (!isEmpty(notificationSource.current))
+          notificationSource.current.close();
+        notificationSource.current = null;
+      });
+
+      notificationSource.current.addEventListener('action_project', (event) => {
+        //console.log(JSON.parse(event.data));
+        const data = JSON.parse(event.data);
+
+        dispatch(refreshMeeting());
+
+        new Notification('Tx Chat', {
+          body: data.message,
+          icon: '../image/logo192.png',
+          vibrate: [200, 100, 200],
+          renotify: true,
+          tag: 'txChatProject',
+          badge: '../image/logo72.png',
+          lang: 'EN',
+        });
+      });
+
+      notificationSource.current.addEventListener('action_message', (event) => {
+        //console.log(JSON.parse(event.data));
+        const data = JSON.parse(event.data);
+
+        new Notification('Tx Chat', {
+          body: data.message,
+          icon: '../image/logo192.png',
+          vibrate: [200, 100, 200],
+          renotify: true,
+          tag: 'txChatMessage',
+          badge: '../image/logo72.png',
+          lang: 'EN',
+        });
+      });
+
+      notificationSource.current.addEventListener('action_user', (event) => {
+        //console.log(JSON.parse(event.data));
+        const data = JSON.parse(event.data);
+
+        dispatch(getUser());
+        //dispatch(refreshToken());
+
+        new Notification('Tx Chat', {
+          body: data.message,
+          icon: '../image/logo192.png',
+          vibrate: [200, 100, 200],
+          renotify: true,
+          tag: 'txChatMessage',
+          badge: '../image/logo72.png',
+          lang: 'EN',
+        });
+      });
+    };
+
     if ('Notification' in window) {
-      if (Notification.permission === 'granted' && !tokenIsEmpty()) {
+      if (
+        Notification.permission === 'granted' &&
+        !tokenIsEmpty() &&
+        tokenIsValid()
+      ) {
         handleNotification();
-        handlePushNotification();
       } else if (
         Notification.permission !== 'denied' ||
         Notification.permission === 'default'
       ) {
         Notification.requestPermission((permission) => {
-          if (permission === 'granted' && !tokenIsEmpty()) {
+          if (permission === 'granted' && !tokenIsEmpty() && tokenIsValid()) {
             handleNotification();
-            handlePushNotification();
-          } else
-            console.log('Notifications are disabled or you are not logged in');
+          } else {
+            //console.log('Notifications are disabled or you are not logged in');
+            if (notificationSource.current !== null)
+              notificationSource.current.close();
+          }
         });
       }
-    } else console.log('Notifications are not supported by your browser');
+    } //else console.log('Notifications are not supported by your browser');
   }, [userStates.token, dispatch]);
 
   return (

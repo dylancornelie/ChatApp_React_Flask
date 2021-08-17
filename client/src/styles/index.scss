@@ -1,4 +1,5 @@
 $breakpoint-tablet: 768px;
+$breakpoint-large-screen: 1024px;
 $primary-color: #4f6d7a;
 $secondary-color: #dbe9ee;
 $accentuation-color: #166088;
@@ -12,7 +13,7 @@ $box-shadow: 0px 24px 48px 0 hsla(0, 0, 0, 0.15);
   font-size: 10px;
   @media (min-width: $breakpoint-tablet) {
     font-size: 16px;
-  }
+  }  
 }
 
 body,

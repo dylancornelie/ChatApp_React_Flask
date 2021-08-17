@@ -1,3 +1,4 @@
+import { ADMIN_ERROR } from '../actions/admin.action';
 import {
   ADD_PARTICIPANT,
   DELETE_MEETING,
@@ -6,11 +7,13 @@ import {
 } from '../actions/chat.action';
 import {
   ACCOUNT_DATA_CHANGE,
+  ACCOUNT_PICTURE_CHANGE,
   CHANGE_PASSWORD_ERROR,
   CREATE_MEETING,
   DISCONNECT_USER,
   GET_MEETINGS,
   GET_USER,
+  REFRESH_MEETINGS,
   REFRESH_TOKEN,
   SIGN_IN_USER,
   SIGN_UP_USER,
@@ -23,10 +26,10 @@ const initialState = {
   changePasswordError: '',
   createMeetingError: '',
   addByLoginError: '',
+  adminError:'',
   user: {},
   token: '',
   meetings: [],
-  meetingFetched: false,
 };
 
 export default function userReducer(state = initialState, action) {
@@ -51,21 +54,21 @@ export default function userReducer(state = initialState, action) {
     case GET_USER:
       return {
         ...state,
-        user: {
-          id: action.payload.user.id,
-          email: action.payload.user.email,
-          login: action.payload.user.username,
-          firstName: action.payload.user.first_name,
-          lastName: action.payload.user.last_name,
-        },
+        user: action.payload.user,
       };
     case ACCOUNT_DATA_CHANGE:
       return {
         ...state,
         user: {
-          firstName: action.payload.firstName,
-          lastName: action.payload.lastName,
+          ...state.user,
+          first_name: action.payload.firstName,
+          last_name: action.payload.lastName,
         },
+      };
+    case ACCOUNT_PICTURE_CHANGE:
+      return {
+        ...state,
+        user: { ...state.user, ava: action.payload.profilPicture },
       };
     case DISCONNECT_USER:
       return { initialState };
@@ -73,10 +76,14 @@ export default function userReducer(state = initialState, action) {
       return {
         ...state,
         meetings: action.payload.meetings,
-        meetingFetched: true,
+      };
+    case REFRESH_MEETINGS:
+      return {
+        ...state,
+        meetings: action.payload.meetings,
       };
     case CREATE_MEETING:
-      if (!isEmpty(action.payload.newMeeting))
+      if(!isEmpty(action.payload.newMeeting))
         state.meetings.push(action.payload.newMeeting);
       return {
         ...state,
@@ -121,6 +128,8 @@ export default function userReducer(state = initialState, action) {
       };
     case CHANGE_PASSWORD_ERROR:
       return { ...state, changePasswordError: action.payload.errorMessage };
+    case ADMIN_ERROR:
+      return {...state,adminError:action.payload.adminError}
     default:
       return { ...state };
   }

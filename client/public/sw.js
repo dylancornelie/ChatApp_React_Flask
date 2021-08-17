@@ -1,22 +1,11 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-restricted-globals */
-
-// ---------- Use for debug only ---------- //
-/* To modify serviceWorker, modify sw.js in the source folder */
-
 self.addEventListener('push', (event) => {
-  console.log('[Service Worker] : ', event);
-
-  const title = 'Tx Chat blablabla';
-  const options = {
-    body: 'Ca maaaarche !!!',
-  };
-
-  event.waitUntil(self.registration.showNotification(title, options));
-
-  /*event.waitUntil(
+  //console.log('[Service Worker] : ', JSON.parse(event.data.text()));
+  const data = JSON.parse(event.data.text());
+  event.waitUntil(
     self.registration.showNotification('Tx Chat', {
-      body: data.message,
+      body: data.data.message,
       icon: '../image/logo192.png',
       vibrate: [200, 100, 200],
       renotify: true,
@@ -24,7 +13,7 @@ self.addEventListener('push', (event) => {
       badge: '../image/logo72.png',
       lang: 'EN',
     })
-  );*/
+  );
 });
 
 self.addEventListener('notificationclick', (event) => {

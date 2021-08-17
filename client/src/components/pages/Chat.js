@@ -11,7 +11,8 @@ import ParticipantList from '../chat/ParticipantList';
 import ChatContextMenu from '../chat/ChatContextMenu';
 import AddParticipantPopUp from '../chat/AddParticipantPopUp';
 import {
-  refreshMeetingData,
+  addUserConnected,
+  removeUserConnected,
   sendMessage,
   showAddParticipant,
 } from '../../actions/chat.action';
@@ -23,18 +24,14 @@ const Chat = () => {
   const history = useHistory();
   const socket = useRef();
 
-  useEffect(() => {
-    if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
+  
+ useEffect(()=>{
+  if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
+  
+  if (chatStates.removeFromChat || isEmpty(chatStates.meeting)) history.push('/home')
+ },[chatStates.meeting, chatStates.removeFromChat, history])
 
-    if (!isEmpty(chatStates.meeting)) {
-      const meetingId = chatStates.meeting.id;
-      const refreshMeeting = userStates.meetings.find(
-        (meeting) => meeting.id === meetingId
-      );
-      if (!isEmpty(refreshMeeting))
-        dispatch(refreshMeetingData(refreshMeeting));
-      else history.push('/home');
-    } else history.push('/home');
+  useEffect(() => {
 
     if (isEmpty(socket.current) || !socket.current.status)
       socket.current = io(`${process.env.REACT_APP_API_URL}/ws/messages`, {
@@ -50,38 +47,55 @@ const Chat = () => {
         )
       );
 
-      socket.current.on('connect_error', (error) =>
+      /*socket.current.on('connect_error', (error) =>
         console.error(`Socket onnection error : ${error}`)
-      );
+      );*/
 
-      socket.current.on('error', (error) =>
+      /*socket.current.on('error', (error) =>
         console.error(`Error in socket : ${error}`)
-      );
+      );*/
 
       socket.current.on('receive_message', (data) => {
-        console.log(`Message received : `, data);
+        //console.log(`Message received : `, data);
         dispatch(sendMessage(data));
       });
 
-      socket.current.emit('join_project', {
-        project_id: chatStates.meeting.id,
-      });
+      socket.current.on('online', (data) =>
+        dispatch(addUserConnected([data.user_id]))
+      );
+
+      socket.current.on('offline', (data) =>
+        dispatch(removeUserConnected(data.user_id))
+      );
+
+      socket.current.emit(
+        'join_project',
+        {
+          project_id: chatStates.meeting.id,
+        },
+        (data) => {
+          if (data) {
+            if (data.length)
+              return dispatch(
+                addUserConnected([...data].map((element) => element.user_id))
+              );
+            else return dispatch(addUserConnected([data.user_id]));
+          }
+        }
+      );
     }
 
     return () => {
       if (!isEmpty(socket.current)) {
-        /*socket.current.on('disconnect', () =>
+        socket.current.on('disconnect', () =>
           console.log('Socket successfully disconnected')
-        );*/
-
-        socket.current.emit('leave_project', {
-          project_id: chatStates.meeting.id,
-        });
+        );
+        socket.current.emit('leave_project');
 
         //socket.current.disconnect();
       }
     };
-  }, [userStates.meetings, history, chatStates.meeting, dispatch]);
+  }, [chatStates.meeting.id, chatStates.meeting.title, dispatch]);
 
   return (
     <div className='chat-component-container'>
