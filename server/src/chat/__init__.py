@@ -31,6 +31,10 @@ def create_app(config_name):
     cors.init_app(app)
     mail.init_app(app)
     redis.init_app(app)
-    sio.init_app(app, cors_allowed_origins="*", async_mode='threading', message_queue=app.config['REDIS_URL'])
+    sio.init_app(app, cors_allowed_origins="*",
+                 async_mode=app.config['ASYNC_MODE'],
+                 message_queue=app.config['REDIS_URL'],
+                 always_connect=True,
+                 )
 
     return app

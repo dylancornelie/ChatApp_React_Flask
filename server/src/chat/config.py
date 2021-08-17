@@ -30,6 +30,9 @@ class Config:
     # Redis
     REDIS_URL = getenv('REDIS_URL', 'redis://localhost:6379/0')
 
+    # Socketio
+    ASYNC_MODE = 'threading'
+
     # File upload
     UPLOAD_FOLDER = path.join(basedir, '../..', 'public', 'files')
     ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'doc'}
