@@ -8,11 +8,9 @@ RUN pip install -r requirements.txt
 
 ADD . /server
 
-RUN export FLASK_APP=app.py \
-    && rm -rf migrations \
-    && flask db init \
+RUN flask db init \
     && flask db migrate \
     && flask db upgrade
 
-EXPOSE 5000 6379
+EXPOSE 5000
 CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
