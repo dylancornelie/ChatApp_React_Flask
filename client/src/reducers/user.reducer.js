@@ -18,6 +18,7 @@ import {
   SIGN_IN_USER,
   SIGN_UP_USER,
 } from '../actions/user.action';
+import { isEmpty } from '../utils/utils';
 
 const initialState = {
   signInError: '',
@@ -82,7 +83,8 @@ export default function userReducer(state = initialState, action) {
         meetings: action.payload.meetings,
       };
     case CREATE_MEETING:
-      state.meetings.push(action.payload.newMeeting);
+      if(!isEmpty(action.payload.newMeeting))
+        state.meetings.push(action.payload.newMeeting);
       return {
         ...state,
         createMeetingError: action.payload.createMeetingError,

@@ -47,7 +47,7 @@ const ParticipantList = () => {
     <div className='chat-participant-list'>
       <div className='chat-participant-item ' id='add-logo'>
         <IoAdd
-          style={{ height: '100%', width: 'auto', maxHeight: '7rem' }}
+          style={{ height: '5rem', width: 'auto' }}
           color='#4f6d7a'
           className='chat-participant-item-add-logo'
           onClick={() => dispatch(showAddParticipant())}

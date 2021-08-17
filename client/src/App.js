@@ -41,8 +41,9 @@ const App = () => {
       }
 
       notificationSource.current.addEventListener('error', (event) => {
-        console.error('Erreur SSE, disconnected...');
-        notificationSource.current.close();
+        //console.error('Erreur SSE, disconnected...');
+        if (!isEmpty(notificationSource.current))
+          notificationSource.current.close();
         notificationSource.current = null;
       });
 
@@ -77,14 +78,14 @@ const App = () => {
           lang: 'EN',
         });
       });
-   
+
       notificationSource.current.addEventListener('action_user', (event) => {
-        console.log(JSON.parse(event.data));
+        //console.log(JSON.parse(event.data));
         const data = JSON.parse(event.data);
-  
+
         dispatch(getUser());
-        dispatch(refreshToken());
-  
+        //dispatch(refreshToken());
+
         new Notification('Tx Chat', {
           body: data.message,
           icon: '../image/logo192.png',
@@ -96,7 +97,6 @@ const App = () => {
         });
       });
     };
-
 
     if ('Notification' in window) {
       if (
@@ -113,13 +113,13 @@ const App = () => {
           if (permission === 'granted' && !tokenIsEmpty() && tokenIsValid()) {
             handleNotification();
           } else {
-            console.log('Notifications are disabled or you are not logged in');
+            //console.log('Notifications are disabled or you are not logged in');
             if (notificationSource.current !== null)
               notificationSource.current.close();
           }
         });
       }
-    } else console.log('Notifications are not supported by your browser');
+    } //else console.log('Notifications are not supported by your browser');
   }, [userStates.token, dispatch]);
 
   return (

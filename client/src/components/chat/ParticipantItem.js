@@ -30,7 +30,7 @@ const ParticipantItem = ({ user, isCoach, isOwner }) => {
             ? { textDecoration: 'underline', fontStyle: 'italic' }
             : {}
         }
-      >{`${user.first_name} ${user.last_name}`}</p>
+      >{`${user.first_name}`}<br/>{`${user.last_name}`}</p>
     </div>
   );
 };

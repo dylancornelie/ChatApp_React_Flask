@@ -155,7 +155,8 @@ export const unsubscribeFromPushNotification = async () => {
     const swRegistration = await navigator.serviceWorker.ready;
     const pushManagerSubscription =
       await swRegistration.pushManager.getSubscription();
-    await pushManagerSubscription.unsubscribe();
+    if (pushManagerSubscription !== null)
+      await pushManagerSubscription.unsubscribe();
 
     await axios({
       method: 'DELETE',
@@ -166,8 +167,9 @@ export const unsubscribeFromPushNotification = async () => {
     });
     return true;
   } catch (err) {
-    console.error(`Error unsubscribingFromPushNotification : ${err}`);
-    return false;
+    //console.error(`Error unsubscribingFromPushNotification : ${err}`);
+    //Quand même ok si la clef n'est plus enregistré ou si elle n'a pas été supprimé
+    return true;
   }
 };
 

@@ -28,7 +28,6 @@ export const archiveUser = (login) => {
           },
         })
           .then((response) => {
-            console.log('here')
             dispatch({
               type: ARCHIVE_USER,
             });
@@ -86,7 +85,7 @@ export const unarchiveUser = (login) => {
           .catch((err) =>
             dispatch({
               type: ADMIN_ERROR,
-              payload: { adminError: 'User already unarchived' },
+              payload: { adminError: 'User not archived' },
             })
           );
       })
@@ -177,7 +176,7 @@ export const demoteUser = (login) => {
           .catch((err) =>
             dispatch({
               type: ADMIN_ERROR,
-              payload: { adminError: 'User already promoted' },
+              payload: { adminError: 'User already demoted' },
             })
           );
       })

@@ -47,13 +47,13 @@ const Chat = () => {
         )
       );
 
-      socket.current.on('connect_error', (error) =>
+      /*socket.current.on('connect_error', (error) =>
         console.error(`Socket onnection error : ${error}`)
-      );
+      );*/
 
-      socket.current.on('error', (error) =>
+      /*socket.current.on('error', (error) =>
         console.error(`Error in socket : ${error}`)
-      );
+      );*/
 
       socket.current.on('receive_message', (data) => {
         //console.log(`Message received : `, data);

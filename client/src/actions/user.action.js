@@ -144,7 +144,7 @@ export const refreshToken = () => {
         });
       })
       .catch((err) => {
-        console.err(err);
+        console.error(err);
         localStorage.clear();
       });
   };
@@ -242,8 +242,7 @@ export const accountPictureChange = (
 };
 
 export const createMeeting = (title) => {
-  return (dispatch) => {
-    console.log('create meeting response...', title);
+  return (dispatch) => {    
     axios({
       method: 'POST',
       url: `${process.env.REACT_APP_API_URL}/api/v1/projects/`,
@@ -268,7 +267,6 @@ export const createMeeting = (title) => {
           type: CREATE_MEETING,
           payload: {
             createMeetingError: 'Meeting name already used',
-            newMeeting: {},
           },
         });
       });
