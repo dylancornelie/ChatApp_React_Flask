@@ -12,6 +12,12 @@ services:
           - 6379:6379
       volumes:
         - redis_data:/data
+    client:
+      build: ./client
+      ports:
+          -  80:80
+          #comment next line for http only
+          -  443:443
 
 
 volumes:

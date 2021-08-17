@@ -1,5 +1,5 @@
 .chat-participant-list {
-  height: 9rem;
+  height: 20rem;
   min-height:7rem;
   background-color: $primary-color;
   display: flex;
@@ -23,7 +23,7 @@
   .chat-participant-item {
     position:relative;
     display: flex;
-    height: 90%;
+    //height: 90%;
     //max-height: 7rem;
     flex-direction: column;
     align-items: center;
