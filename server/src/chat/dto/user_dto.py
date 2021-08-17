@@ -66,7 +66,7 @@ user_password = api.schema_model('User_Password', {
     'type': 'object',
 })
 
-user_forget_password = api.schema_model('User_Password', {
+user_forget_password = api.schema_model('User_Forget_Password', {
     'required': ['email'],
     'properties': {
         'email': {

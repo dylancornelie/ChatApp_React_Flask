@@ -6,7 +6,7 @@ from http import HTTPStatus
 from typing import Dict, Tuple
 
 from flask import current_app
-from flask_mailman import EmailMessage
+from flask_mailman import EmailMultiAlternatives
 from werkzeug.exceptions import Conflict, InternalServerError, BadRequest
 
 from src.chat import db, redis
@@ -19,6 +19,31 @@ from src.chat.util.constant import TYPE_NOTIFICATION_ACTION_USER, TYPE_NOTIFICAT
     TYPE_NOTIFICATION_ARCHIVE_USER
 from src.chat.util.pagination import paginate
 from src.chat.util.stream import sub_webpush, publish
+
+STYLE_HTML = '''
+<style type="text/css">
+.email-container{
+    font-family:arial;
+    font-size:16px;
+    margin:20px 20px 20px 20px;
+}
+
+h1{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+p{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+em{
+    font-style: normal;
+    font-weight:bold;
+}
+</style>
+'''
 
 
 def save_new_user(data: Dict[str, str]) -> Tuple[Dict[str, str], int]:
@@ -110,11 +135,25 @@ def update_forget_password(email: str) -> Dict:
         raise InternalServerError("The server encountered an internal error and was unable to save your data.")
 
     try:
-        msg = EmailMessage(
+        html_content = f'''
+<div class="email-container">
+    <h1>{current_app.config['APPLICATION']}</h1>
+    <p>Hello <em>@{user.username}</em>, we received a request to reset your password.</p>
+    <p>Your new password is : <em>{new_password}</em>.</p>
+    <p>If you did not request to reset your password, please send an email to : <em>{current_app.config['MAIL_DEFAULT_SENDER']}</em>.</p>
+</div>
+{STYLE_HTML}
+        '''
+
+        msg = EmailMultiAlternatives(
             subject='Reset random password',
-            body=f"Hey {user.username}, sending you this email from {current_app.config['APPLICATION']}.\nYour new password is: {new_password}",
+            body=f"{current_app.config['APPLICATION']}\n"
+                 f"Hello @{user.username}, we received a request to reset your password.\n"
+                 f"Your new password is: {new_password}\n"
+                 f"If you did not request to reset your password, please send an email to : {current_app.config['MAIL_DEFAULT_SENDER']}.",
             to=[user.email]
         )
+        msg.attach_alternative(html_content, "text/html")
         msg.send()
     except Exception as e:
         current_app.logger.error(str(e), exc_info=True)
@@ -246,11 +285,24 @@ def archive_user(current_user_id: int, user_id: int, archive: bool = True) -> Di
             delete_data(push_subscription)
     else:
         try:
-            msg = EmailMessage(
+            html_content = f'''
+<div class="email-container">
+    <h1>{current_app.config['APPLICATION']}</h1>
+    <p>Hello <em>@{user.username}</em>, we received a request to unarchive your account.</p>
+    <p>You will now be able to connect to our app with your account.</p>
+    <p>If you do not want to unarchive your account, please send an email to : <em>{current_app.config['MAIL_DEFAULT_SENDER']}</em>.</p>
+</div>
+{STYLE_HTML}
+            '''
+            msg = EmailMultiAlternatives(
                 subject='Unarchived your account',
-                body=f"Your account was unarchived.",
+                body=f"{current_app.config['APPLICATION']}\n"
+                     f"Hello @{user.username}, we received a request to unarchive your account.\n"
+                     f"You will now be able to connect to our app with your account."
+                     f"If you do not want to unarchive your account, please send an email to : {current_app.config['MAIL_DEFAULT_SENDER']}.",
                 to=[user.email]
             )
+            msg.attach_alternative(html_content, "text/html")
             msg.send()
         except Exception as e:
             current_app.logger.error(str(e), exc_info=True)
