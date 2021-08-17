@@ -3,7 +3,7 @@
 from os import path, getenv
 
 # uncomment the line below for postgres database url from environment variable
-postgres_local_base = getenv('DATABASE_URL', '')
+postgres_local_base = getenv('SQLALCHEMY_DATABASE_URI', '')
 
 basedir = path.abspath(path.dirname(__file__))
 
@@ -49,7 +49,8 @@ class DevelopmentConfig(Config):
     # uncomment the line below to use postgres
     # SQLALCHEMY_DATABASE_URI = postgres_local_base
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + path.join(basedir, '../../flask_chat_main.db')
+    SQLALCHEMY_DATABASE_URI = postgres_local_base if postgres_local_base else 'sqlite:///' + path.join(basedir,
+                                                                                                       '../../flask_chat_main.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     TOKEN_EXPIRE_MINUTES = int(getenv('TOKEN_EXPIRE_MINUTES', '15'))
 
