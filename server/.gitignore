@@ -1,2 +1,6 @@
 # Enviroment
 venv
+
+# Database
+migrations
+*.db
