@@ -46,7 +46,7 @@ def save_new_message(data: Dict) -> Message:
         new_message.file_name = file_name
         new_message.file_base64 = file_base64
 
-    if receiver:
+    if receiver or receiver != 0:
         # Receiver must be a member
         if not (is_owner(receiver, project) or is_coach(receiver, project) or is_participant(receiver, project)):
             e = BadRequest()
