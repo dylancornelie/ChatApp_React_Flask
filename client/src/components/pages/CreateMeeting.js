@@ -11,7 +11,8 @@ const CreateMeeting = () => {
   const userState = useSelector((state) => state.userReducer);
   const history = useHistory();
   const [meetingName, setMeetingName] = useState('');
-
+  
+  // Handling case when user do not have a valid token or a token at all
   useEffect(() => {
     if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
   },[history]);
@@ -22,6 +23,9 @@ const CreateMeeting = () => {
     setMeetingName('');
   };
 
+   /**
+   * Action when leftIcon of header is clicked
+   */
   const leftIconAction = () => {
     history.push('/home');
   };

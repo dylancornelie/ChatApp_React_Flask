@@ -25,6 +25,8 @@ const Chat = () => {
   const history = useHistory();
   const socket = useRef();
 
+  // Handling case when user do not have a valid token or a token at all
+  // handling user rejection from chat when meeting is deleted or user is removed from meeting
   useEffect(() => {
     if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
 
@@ -32,6 +34,7 @@ const Chat = () => {
       history.push('/home');
   }, [chatStates.meeting, chatStates.removeFromChat, history]);
 
+  // Handling socket connection
   useEffect(() => {
     if (isEmpty(socket.current) || !socket.current.status)
       socket.current = io(`${API_URL}/ws/messages`, {

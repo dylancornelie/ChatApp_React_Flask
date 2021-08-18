@@ -15,12 +15,18 @@ const ChangePassword = () => {
   const [repeatNewPassword, setRepeatNewPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
 
+  // Handling case when user do not have a valid token or a token at all
   useEffect(() => {
     if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
   }, [history]);
 
-  const handleChangePassword = (e) => {
-    e.preventDefault();
+  /**
+   * Handle the password change with the API
+   * @param {object} event 
+   * @returns {void}
+   */
+  const handleChangePassword = (event) => {
+    event.preventDefault();
 
     if (repeatNewPassword !== newPassword)
       return dispatch(changePasswordError('Passwords do not match'));
@@ -52,6 +58,9 @@ const ChangePassword = () => {
       .catch(() => dispatch(changePasswordError('Wrong password')));
   };
 
+  /**
+   * Action when leftIcon of header is clicked
+   */
   const leftIconAction = () => {
     history.push('/account');
   };

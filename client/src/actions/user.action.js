@@ -13,6 +13,16 @@ export const GET_MEETINGS = 'GET_MEETINGS';
 export const REFRESH_MEETINGS = 'REFRESH_MEETINGS';
 export const CHANGE_PASSWORD_ERROR = 'CHANGE_PASSWORD_ERROR';
 
+/**
+ * Handle user register
+ * @param {string} email 
+ * @param {string} login 
+  @param {string} password 
+ * @param {string} repeatPassword 
+ * @param {string} firstName 
+ * @param {string} lastName 
+ * @returns {void}
+ */
 export const signUpUser = (
   email,
   login,
@@ -86,6 +96,12 @@ export const signUpUser = (
   };
 };
 
+/**
+ * Handle user sign in
+ * @param {string} email 
+ * @param {string} password 
+ * @returns {void}
+ */
 export const signInUser = (email, password) => {
   return (dispatch) =>
     axios({
@@ -121,6 +137,10 @@ export const signInUser = (email, password) => {
       });
 };
 
+/**
+ * Refresh the user's token
+ * @returns {void}
+ */
 export const refreshToken = () => {
   return (dispatch) => {
     axios({
@@ -150,6 +170,10 @@ export const refreshToken = () => {
   };
 };
 
+/**
+ * Fetch user's data
+ * @returns {void}
+ */
 export const getUser = () => {
   return (dispatch) => {
     axios({
@@ -166,6 +190,10 @@ export const getUser = () => {
   };
 };
 
+/**
+ * Disconnect the current user
+ * @returns {void}
+ */
 export const disconnectUser = () => {
   return (dispatch) => {
     axios({
@@ -183,6 +211,14 @@ export const disconnectUser = () => {
   };
 };
 
+/**
+ * Change user's firstname & lastname
+ * @param {string} login 
+ * @param {string} firstName 
+ * @param {string} lastName 
+ * @param {string} profilPicture Base64 string representing the picture
+ * @returns {void}
+ */
 export const accountDataChange = (
   login,
   firstName,
@@ -203,17 +239,24 @@ export const accountDataChange = (
         ava: profilPicture ? profilPicture : '',
       },
     })
-      .then((response) =>{
+      .then((response) => {
         dispatch({
           type: ACCOUNT_DATA_CHANGE,
           payload: { firstName, lastName },
-        })
-        dispatch(refreshMeeting())
-      }
-      )
+        });
+        dispatch(refreshMeeting());
+      })
       .catch((err) => console.error(err));
 };
 
+/**
+ * Change user's profile picture
+ * @param {string} login 
+ * @param {string} firstName 
+ * @param {string} lastName 
+ * @param {string} profilPicture Base64 string representing the picture
+ * @returns {void}
+ */
 export const accountPictureChange = (
   login,
   firstName,
@@ -234,15 +277,21 @@ export const accountPictureChange = (
         ava: profilPicture ? profilPicture : '',
       },
     })
-      .then((response) =>
+      .then((response) => {
         dispatch({
           type: ACCOUNT_PICTURE_CHANGE,
           payload: { profilPicture },
-        })
-      )
+        });
+        dispatch(refreshMeeting());
+      })
       .catch((err) => console.error(err));
 };
 
+/**
+ * Create a new meeting
+ * @param {string} title 
+ * @returns {void}
+ */
 export const createMeeting = (title) => {
   return (dispatch) => {
     axios({
@@ -275,6 +324,10 @@ export const createMeeting = (title) => {
   };
 };
 
+/**
+ * Fetch all meetings in which user is involved
+ * @returns {void}
+ */
 export const getMeetings = () => {
   return async (dispatch) => {
     try {
@@ -310,6 +363,10 @@ export const getMeetings = () => {
   };
 };
 
+/**
+ * Fetch latest meetings data in which user is involved
+ * @returns {void}
+ */
 export const refreshMeeting = () => {
   return async (dispatch) => {
     try {
@@ -345,6 +402,11 @@ export const refreshMeeting = () => {
   };
 };
 
+/**
+ * Set the message box for ChangePassword page
+ * @param {string} errorMessage 
+ * @returns {void}
+ */
 export const changePasswordError = (errorMessage) => ({
   type: CHANGE_PASSWORD_ERROR,
   payload: { errorMessage },

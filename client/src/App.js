@@ -12,10 +12,14 @@ const App = () => {
   const [firstConnection, setFirstConnection] = useState(true);
 
   useEffect(() => {
-    if(!tokenIsEmpty() && tokenIsValid() && firstConnection){
+    // Fetch a fresh token when the user connect for the first time
+    if (!tokenIsEmpty() && tokenIsValid() && firstConnection) {
       dispatch(refreshToken());
     }
-    setFirstConnection(false);
+    if(firstConnection)
+      setFirstConnection(false);
+    
+      // setting the next token refresh  
     if (!tokenIsEmpty() && tokenIsValid()) {
       console.log(
         'Next token in : ',
@@ -37,12 +41,10 @@ const App = () => {
       console.log('no valid token');
     }
 
-    const handleNotification = () => {
+    const handleSSE = (supportNotification) => {
       if (isEmpty(notificationSource.current)) {
         notificationSource.current = new EventSource(
-          `${
-            API_URL
-          }/api/v1/users/stream/${localStorage.getItem('token')}`
+          `${API_URL}/api/v1/users/stream/${localStorage.getItem('token')}`
         );
       }
 
@@ -59,30 +61,32 @@ const App = () => {
 
         dispatch(refreshMeeting());
 
-        new Notification('Tx Chat', {
-          body: data.message,
-          icon: '../image/logo192.png',
-          vibrate: [200, 100, 200],
-          renotify: true,
-          tag: 'txChatProject',
-          badge: '../image/logo72.png',
-          lang: 'EN',
-        });
+        if (supportNotification)
+          new Notification('Tx Chat', {
+            body: data.message,
+            icon: '../image/logo192.png',
+            vibrate: [200, 100, 200],
+            renotify: true,
+            tag: 'txChatProject',
+            badge: '../image/logo72.png',
+            lang: 'EN',
+          });
       });
 
       notificationSource.current.addEventListener('action_message', (event) => {
         //console.log(JSON.parse(event.data));
         const data = JSON.parse(event.data);
 
-        new Notification('Tx Chat', {
-          body: data.message,
-          icon: '../image/logo192.png',
-          vibrate: [200, 100, 200],
-          renotify: true,
-          tag: 'txChatMessage',
-          badge: '../image/logo72.png',
-          lang: 'EN',
-        });
+        if (supportNotification)
+          new Notification('Tx Chat', {
+            body: data.message,
+            icon: '../image/logo192.png',
+            vibrate: [200, 100, 200],
+            renotify: true,
+            tag: 'txChatMessage',
+            badge: '../image/logo72.png',
+            lang: 'EN',
+          });
       });
 
       notificationSource.current.addEventListener('action_user', (event) => {
@@ -91,39 +95,48 @@ const App = () => {
 
         dispatch(getUser());
         //dispatch(refreshToken());
-
-        new Notification('Tx Chat', {
-          body: data.message,
-          icon: '../image/logo192.png',
-          vibrate: [200, 100, 200],
-          renotify: true,
-          tag: 'txChatMessage',
-          badge: '../image/logo72.png',
-          lang: 'EN',
-        });
+        if (supportNotification)
+          new Notification('Tx Chat', {
+            body: data.message,
+            icon: '../image/logo192.png',
+            vibrate: [200, 100, 200],
+            renotify: true,
+            tag: 'txChatMessage',
+            badge: '../image/logo72.png',
+            lang: 'EN',
+          });
       });
     };
 
+    //Check if the client's browser support notification & calling handleSSE in consequence
     if ('Notification' in window) {
       if (
         Notification.permission === 'granted' &&
         !tokenIsEmpty() &&
         tokenIsValid()
       ) {
-        handleNotification();
+        handleSSE(true);
       } else if (
         Notification.permission !== 'denied' ||
         Notification.permission === 'default'
       ) {
         Notification.requestPermission((permission) => {
           if (permission === 'granted' && !tokenIsEmpty() && tokenIsValid()) {
-            handleNotification();
+            handleSSE(true);
+          } else if (!tokenIsEmpty() && tokenIsValid()) {
+            handleSSE(false);
           } else {
             //console.log('Notifications are disabled or you are not logged in');
             if (notificationSource.current !== null)
               notificationSource.current.close();
           }
         });
+      } else if (!tokenIsEmpty() && tokenIsValid()) {
+        handleSSE(false);
+      } else {
+        //console.log('Notifications are disabled or you are not logged in');
+        if (notificationSource.current !== null)
+          notificationSource.current.close();
       }
     } //else console.log('Notifications are not supported by your browser');
   }, [userStates.token, dispatch, firstConnection]);

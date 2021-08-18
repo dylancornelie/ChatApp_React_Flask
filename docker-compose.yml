@@ -16,7 +16,6 @@ services:
       build: ./client
       ports:
           -  80:80
-          #comment next line for http only
           -  443:443
 
 volumes:

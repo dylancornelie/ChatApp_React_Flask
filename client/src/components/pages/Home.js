@@ -17,11 +17,14 @@ const Home = () => {
   const [meetingFetched, setMeetingFetched] = useState(false);
   const [showAdminModal, setShowAdminModal] = useState(false);
 
+  // Handling case when user do not have a valid token or a token at all
+  // Handle fetching user's data
   useEffect(() => {
     if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
     if (isEmpty(userStates.user)) dispatch(getUser());
   }, [dispatch, history, userStates.user]);
 
+  // Handle fetching user's meeting data where he is involved
   useEffect(() => {
     if (isEmpty(userStates.meetings) && !meetingFetched) {
       dispatch(getMeetings());

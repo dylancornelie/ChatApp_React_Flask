@@ -12,21 +12,32 @@ const JoinMeeting = () => {
   const userStates = useSelector((state) => state.userReducer);
   const history = useHistory();
 
+  /**
+   * Calculate the max viewWidth of the window
+   */
   const viewWidth = Math.max(
     document.documentElement.clientWidth || 0,
     window.innerWidth || 0
   );
 
+  /**
+   * Calculate the max viewHeight of the window
+   */
   const viewHeight = Math.max(
     document.documentElement.clientHeight || 0,
     window.innerHeight || 0
   );
 
+  // Handling case when user do not have a valid token or a token at all
+  // Handle fetching user's data
   useEffect(() => {
     if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
     if (isEmpty(userStates.user)) dispatch(getUser());
   }, [dispatch, history, userStates.user]);
 
+  /**
+   * Action when leftIcon of header is clicked
+   */
   const handleHeaderArrowClick = () => {
     history.push('/home');
   };

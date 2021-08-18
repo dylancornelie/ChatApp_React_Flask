@@ -16,12 +16,13 @@ const SignUp = () => {
   const dispatch = useDispatch();
   const history = useHistory();
 
+  // Handling case when user already have logged in
   useEffect(() => {
     if (!tokenIsEmpty() && tokenIsValid()) history.push('/home');
   },[history,userStates.token]);
 
-  const handleSignUp = (e) => {
-    e.preventDefault();
+  const handleSignUp = (event) => {
+    event.preventDefault();
     dispatch(
       signUpUser(email, login, password, repeatPassword, firstName, lastName)
     );

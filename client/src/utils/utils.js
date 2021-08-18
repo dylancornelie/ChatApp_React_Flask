@@ -1,5 +1,10 @@
 import axios from 'axios';
 
+/**
+ * Check if a variable is empty or not
+ * @param {any} value 
+ * @returns {boolean}
+ */
 export const isEmpty = (value) => {
   return (
     value === undefined ||
@@ -9,6 +14,11 @@ export const isEmpty = (value) => {
   );
 };
 
+/**
+ * Check if a message contain a url
+ * @param {string} message 
+ * @returns  {boolean}
+ */
 export const checkUrl = (message) => {
   if (isEmpty(message)) return false;
 
@@ -22,6 +32,11 @@ export const checkUrl = (message) => {
   return true;
 };
 
+/**
+ * Extract all url from a message in a array
+ * @param {string} message 
+ * @returns {String[]}
+ */
 export const extractUrl = (message) => {
   if (isEmpty(message)) return null;
 
@@ -33,6 +48,11 @@ export const extractUrl = (message) => {
   );
 };
 
+/**
+ * Add anchor tag around all links in the message
+ * @param {string} message 
+ * @returns {string}
+ */
 export const addAnchorTag = (message) => {
   if (!checkUrl(message)) return message;
 
@@ -51,11 +71,19 @@ export const addAnchorTag = (message) => {
   return message;
 };
 
+/**
+ * Check if there is a token or not
+ * @returns {boolean}
+ */
 export const tokenIsEmpty = () =>
   isEmpty(localStorage.getItem('token')) ||
   isEmpty(localStorage.getItem('tokenExpiration')) ||
   localStorage.length === 0;
 
+/**
+ * Check if the token is valid
+ * @returns {boolean}
+ */
 export const tokenIsValid = () => {
   if (
     !(
@@ -67,20 +95,35 @@ export const tokenIsValid = () => {
   else return true;
 };
 
+/**
+ * Check with the filename if the file is an image
+ * @param {string} fileName 
+ * @returns {boolean}
+ */
 export const fileIsImage = (fileName) => {
   const regExp = /\.jpg$|\.jpeg$|\.png$|\.gif$/g;
   if (fileName.match(regExp)) return true;
   return false;
 };
 
+/**
+ * Check if the password is correct
+ * @param {string} password 
+ * @returns {boolean}
+ */
 export const passwordIsValid = (password) => {
   //8 character at least, 1 uppercase, 1 lowercase, 1 digit
   const passwordRegExp = new RegExp(
-    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/
   );
   return passwordRegExp.test(password);
 };
 
+/**
+ * Check if the email is correct
+ * @param {string} email 
+ * @returns {boolean}
+ */
 export const emailIsValid = (email) => {
   const emailRegExp = new RegExp(
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -89,6 +132,10 @@ export const emailIsValid = (email) => {
   return emailRegExp.test(email);
 };
 
+/**
+ * Check if the client's browser support push notification
+ * @returns {boolean}
+ */
 export const supportPushNotification = () => {
   if (
     'PushManager' in window &&
@@ -99,6 +146,10 @@ export const supportPushNotification = () => {
   else return false;
 };
 
+/**
+ * Check if the user is already subscribe to push notification service
+ * @returns {boolean}
+ */
 export const alreadySubscribeToPushNotification = async () => {
   if (supportPushNotification()) {
     const swRegistration = await navigator.serviceWorker.ready;
@@ -108,6 +159,10 @@ export const alreadySubscribeToPushNotification = async () => {
   } else return false;
 };
 
+/**
+ * Subscribe the user to push notification service
+ * @returns {void}
+ */
 export const subscribeToPushNotification = async () => {
   try {
     const swRegistration = await navigator.serviceWorker.ready;
@@ -150,6 +205,10 @@ export const subscribeToPushNotification = async () => {
   }
 };
 
+/**
+ * Unsubscribe the user from push notification service
+ * @returns {void}
+ */
 export const unsubscribeFromPushNotification = async () => {
   try {
     const swRegistration = await navigator.serviceWorker.ready;
@@ -173,6 +232,12 @@ export const unsubscribeFromPushNotification = async () => {
   }
 };
 
+/**
+ * Check if the user already particip to the meeting
+ * @param {number} userId 
+ * @param {object} meeting 
+ * @returns {boolean}
+ */
 export const userAlreadyParticipToMeeting = (userId, meeting) => {
   if (isEmpty(userId) || isEmpty(meeting)) return false;
 

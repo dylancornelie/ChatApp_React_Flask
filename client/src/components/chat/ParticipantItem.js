@@ -8,6 +8,9 @@ const ParticipantItem = ({ user, isCoach, isOwner }) => {
   const chatStates = useSelector((state) => state.chatReducer);
   const dispatch = useDispatch();
 
+  /**
+   * Handle the action when participant item get clicked
+   */
   const handleClick = () => {
     if (
       userStates.user.id === chatStates.meeting.owner.id ||

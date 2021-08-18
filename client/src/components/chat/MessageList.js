@@ -16,6 +16,7 @@ const MessageList = () => {
   const messageEnd = useRef(null);
   const [messagFetched, setMessagFetched] = useState(false)
 
+  // Fetching messages and scrolling message list to bottom
   useEffect(() => {
     if (isEmpty(chatStates.messages) && !messagFetched) {
       dispatch(fetchMessages(chatStates.meeting.id));
@@ -28,6 +29,7 @@ const MessageList = () => {
     }
   }, [chatStates.meeting.id, chatStates.messages, dispatch, chatStates.toScroll, messagFetched]);
 
+  // Fetching more messages, if all messages are not fetched
   useEffect(() => {
     const messageList = document.querySelector('.message-list');
     const loadMore = () => {
@@ -47,6 +49,9 @@ const MessageList = () => {
     };
   },[chatStates.canFetchMoreMessage, chatStates.hasNext?.hasNext, chatStates.hasNext?.linkToNext, dispatch]);
 
+  /**
+   * Scroll the message list to the bottom
+   */
   const scrollToBottom = () => {
     messageEnd.current.scrollIntoView({
       behavior: 'instant',

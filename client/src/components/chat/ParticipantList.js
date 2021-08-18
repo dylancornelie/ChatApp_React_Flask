@@ -8,6 +8,7 @@ const ParticipantList = () => {
   const chatStates = useSelector((state) => state.chatReducer);
   const dispatch = useDispatch();
 
+  // Allow the user to click and scroll the participant list
   useEffect(() => {
     let isDown = false;
     let startX = null;

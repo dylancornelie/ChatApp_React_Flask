@@ -19,10 +19,13 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
   store = createStore(rootReducer, applyMiddleware(thunk));
 }
 
+// Setting the base URL of the API
 export const API_URL =
   window.location.protocol === 'https:'
     ? `https://${window.location.hostname}:5000`
     : `http://${window.location.hostname}:5000`;
+
+// Telling axios what is the baseURL to use for the requests
 axios.defaults.baseURL = API_URL;
 
 ReactDOM.render(

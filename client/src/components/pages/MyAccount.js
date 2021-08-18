@@ -27,6 +27,11 @@ const MyAccount = () => {
   const [isSubscribeToPush, setIsSubscribeToPush] = useState(null);
   const [file, setFile] = useState(null);
 
+  // Max size = 2Mb
+  const MAX_FILE_SIZE = 2 * Math.pow(10, 6);
+
+  // Handling case when user do not have a valid token or a token at all
+  // Handle fetching user's data
   useEffect(() => {
     if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
     if (isEmpty(userStates.user)) dispatch(getUser());
@@ -57,18 +62,20 @@ const MyAccount = () => {
         accountPictureChange(userStates.user.username, firstName, lastName, '')
       );
     } else if (!isEmpty(file)) {
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file[0]);
-      fileReader.onload = () => {
-        dispatch(
-          accountPictureChange(
-            userStates.user.username,
-            firstName,
-            lastName,
-            fileReader.result
-          )
-        );
-      };
+      if (file[0].size <= MAX_FILE_SIZE) {
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(file[0]);
+        fileReader.onload = () => {
+          dispatch(
+            accountPictureChange(
+              userStates.user.username,
+              firstName,
+              lastName,
+              fileReader.result
+            )
+          );
+        };
+      }
     }
   };
 
@@ -87,6 +94,9 @@ const MyAccount = () => {
     }
   };
 
+  /**
+   * Action when leftIcon of header is clicked
+   */
   const leftIconAction = () => {
     history.push('/home');
   };
@@ -94,7 +104,7 @@ const MyAccount = () => {
   return (
     <>
       <HeaderWithArrow title={'My account'} leftIconAction={leftIconAction} />
-        <h1 className='myAccount-header'>Manage your account</h1>
+      <h1 className='myAccount-header'>Manage your account</h1>
       <div className='account-page'>
         <div className='change-profil-form'>
           {userStates.user.ava ? (
@@ -137,6 +147,11 @@ const MyAccount = () => {
           >
             Apply changes
           </button>
+          <p className='signin-form-infobox'>
+            {file &&
+              file[0].size > MAX_FILE_SIZE &&
+              'Max profile picture size is 2MB'}
+          </p>
         </div>
         <div className='signin-form-container'>
           <label htmlFor='firstName'>First Name</label>
@@ -167,23 +182,21 @@ const MyAccount = () => {
         </div>
       </div>
       <div className='red-button-container'>
-          <button
-            style={{ marginTop: '3rem' }}
-            className='button-style'
-            onClick={() =>
-              supportPushNotification() && handlePushSubscription()
-            }
-          >
-            {!supportPushNotification()
-              ? `Push notification not supported`
-              : isSubscribeToPush
-              ? `Unsubscribe from push notification`
-              : `Subscribe to push notification`}
-          </button>
-          <button onClick={handleDisconnect} className='red-button'>
-            Discconnect
-          </button>
-          </div>
+        <button
+          style={{ marginTop: '3rem' }}
+          className='button-style'
+          onClick={() => supportPushNotification() && handlePushSubscription()}
+        >
+          {!supportPushNotification()
+            ? `Push notification not supported`
+            : isSubscribeToPush
+            ? `Unsubscribe from push notification`
+            : `Subscribe to push notification`}
+        </button>
+        <button onClick={handleDisconnect} className='red-button'>
+          Discconnect
+        </button>
+      </div>
     </>
   );
 };

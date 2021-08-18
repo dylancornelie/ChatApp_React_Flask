@@ -12,12 +12,13 @@ const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  // Handling case when user already have logged in
   useEffect(() => {
     if (!tokenIsEmpty() && tokenIsValid()) history.push('/home');
-  },[history, userStates.token]);
+  }, [history, userStates.token]);
 
-  const handleSignIn = (e) => {
-    e.preventDefault();
+  const handleSignIn = (event) => {
+    event.preventDefault();
     dispatch(signInUser(email, password));
   };
 

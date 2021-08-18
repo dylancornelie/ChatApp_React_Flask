@@ -9,12 +9,17 @@ const SignIn = () => {
   const [infoBox, setInfoBox] = useState();
   const [email, setEmail] = useState('');
 
+  // Handling case when user do not have a valid token or a token at all
   useEffect(() => {
     if (!tokenIsEmpty() && tokenIsValid()) history.push('/home');
   }, [history]);
 
-  const forgotPassword = async (e) => {
-    e.preventDefault();
+  /**
+   * Handle the password reset request to the API
+   * @param {object} event
+   */
+  const forgotPassword = async (event) => {
+    event.preventDefault();
     axios({
       method: 'POST',
       url: `api/v1/users/me/forget-password`,

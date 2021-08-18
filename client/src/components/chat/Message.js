@@ -101,7 +101,11 @@ const Message = ({ message, position }) => {
               : { textAlign: 'left' }
           }
         >
-          {isEmpty(message.receiver) ? `For everyone` : `For you`}
+          {isEmpty(message.receiver)
+            ? `For everyone`
+            : position === 'left'
+            ? `For you`
+            : `For ${message.receiver.first_name} ${message.receiver.last_name}`}
         </p>
       </div>
     </div>

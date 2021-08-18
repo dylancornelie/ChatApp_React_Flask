@@ -15,9 +15,14 @@ const MessageInput = ({ socket }) => {
   const [message, setMessage] = useState('');
   const [file, setFile] = useState(null);
 
-  // Max size = 100Mb
-  const MAX_FILE_SIZE = 1 * Math.pow(10,8) ;
+  // Max size = 10Mb
+  const MAX_FILE_SIZE = 1 * Math.pow(10,7) ;
 
+    /**
+     * Returns the height of the textarea when new lines are inserted
+     * @param {number} value 
+     * @returns {number}
+     */
   function calcHeight(value) {
     const numberOfLineBreaks = (value.match(/\n/g) || []).length;
     if (numberOfLineBreaks > 5) return 25 + 5 * 20 + 0 + 0;
@@ -27,6 +32,9 @@ const MessageInput = ({ socket }) => {
     return newHeight;
   }
 
+  /**
+   * Send a message through socket connection
+   */
   const handleSendMessage = () => {
     if (isEmpty(file) && !isEmpty(message)) {
       socket.emit(
@@ -97,7 +105,7 @@ const MessageInput = ({ socket }) => {
       {!isEmpty(file) && isEmpty(chatStates.messageReceiver) && (
         <div className='messageInput-infobox'>
           <p className='messageInput-infobox-message'>
-            {file[0].size <= MAX_FILE_SIZE ? `Attached file : ${file[0].name}` : `Max file size is 100MB, ${file[0].name} won't be sent`}
+            {file[0].size <= MAX_FILE_SIZE ? `Attached file : ${file[0].name}` : `Max file size is 10MB, ${file[0].name} won't be sent`}
           </p>
           <IoAdd
             className='messageInput-infobox-logo'

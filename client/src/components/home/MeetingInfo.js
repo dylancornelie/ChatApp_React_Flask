@@ -25,7 +25,7 @@ const MeetingInfo = ({ meeting }) => {
     <div className='meetingInfo-container' onClick={(e) => e.stopPropagation()}>
       <p>Participants list</p>
       <div className='meetingInfo-participant-list'>
-        {[...meeting.participants, ...meeting.coaches,meeting.owner]
+        {[...meeting.participants, ...meeting.coaches, meeting.owner]
           .sort((a, b) => {
             if (a.first_name < b.first_name) return -1;
             if (a.first_name > b.first_name) return 1;
@@ -50,7 +50,8 @@ const MeetingInfo = ({ meeting }) => {
                 >
                   {`${participant.first_name} ${participant.last_name}`}
                 </p>
-              ); else return null;
+              );
+            else return null;
           })}
       </div>
       <div className='meetingInfo-button-container'>

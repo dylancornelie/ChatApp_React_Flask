@@ -6,6 +6,11 @@ export const PROMOTE_USER = 'PROMOTE_USER';
 export const DEMOTE_USER = 'DEMOTE_USER';
 export const ADMIN_ERROR = 'ADMIN_ERROR';
 
+/**
+ * Archive a user
+ * @param {string} login 
+ * @returns {void}
+ */
 export const archiveUser = (login) => {
   return (dispatch) => {
     axios({
@@ -52,6 +57,11 @@ export const archiveUser = (login) => {
   };
 };
 
+/**
+ * Unarchive a user
+ * @param {string} login 
+ * @returns {void}
+ */
 export const unarchiveUser = (login) => {
   return (dispatch) => {
     axios({
@@ -98,6 +108,11 @@ export const unarchiveUser = (login) => {
   };
 };
 
+/**
+ * Promote a user to be an admin
+ * @param {string} login 
+ * @returns {void}
+ */
 export const promoteUser = (login) => {
   return (dispatch) => {
     axios({
@@ -144,6 +159,11 @@ export const promoteUser = (login) => {
   };
 };
 
+/**
+ * Demote a user from being an admin
+ * @param {string} login 
+ * @returns {void}
+ */
 export const demoteUser = (login) => {
   return (dispatch) => {
     axios({
