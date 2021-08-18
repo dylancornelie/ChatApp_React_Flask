@@ -16,6 +16,7 @@ import {
   sendMessage,
   showAddParticipant,
 } from '../../actions/chat.action';
+import { API_URL } from '../..';
 
 const Chat = () => {
   const dispatch = useDispatch();
@@ -33,7 +34,7 @@ const Chat = () => {
 
   useEffect(() => {
     if (isEmpty(socket.current) || !socket.current.status)
-      socket.current = io(`  /ws/messages`, {
+      socket.current = io(`${API_URL}/ws/messages`, {
         extraHeaders: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },

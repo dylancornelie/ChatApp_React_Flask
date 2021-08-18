@@ -203,11 +203,13 @@ export const accountDataChange = (
         ava: profilPicture ? profilPicture : '',
       },
     })
-      .then((response) =>
+      .then((response) =>{
         dispatch({
           type: ACCOUNT_DATA_CHANGE,
           payload: { firstName, lastName },
         })
+        dispatch(refreshMeeting())
+      }
       )
       .catch((err) => console.error(err));
 };

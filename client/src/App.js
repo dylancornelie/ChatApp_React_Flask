@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { API_URL } from '.';
 import { getUser, refreshMeeting, refreshToken } from './actions/user.action';
@@ -9,8 +9,13 @@ const App = () => {
   const userStates = useSelector((state) => state.userReducer);
   const dispatch = useDispatch();
   const notificationSource = useRef(null);
+  const [firstConnection, setFirstConnection] = useState(true);
 
   useEffect(() => {
+    if(!tokenIsEmpty() && tokenIsValid() && firstConnection){
+      dispatch(refreshToken());
+    }
+    setFirstConnection(false);
     if (!tokenIsEmpty() && tokenIsValid()) {
       console.log(
         'Next token in : ',
@@ -121,7 +126,7 @@ const App = () => {
         });
       }
     } //else console.log('Notifications are not supported by your browser');
-  }, [userStates.token, dispatch]);
+  }, [userStates.token, dispatch, firstConnection]);
 
   return (
     <>
