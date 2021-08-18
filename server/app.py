@@ -122,17 +122,6 @@ def first_run():
             admin=True
         )
         db.session.add(admin)
-
-        test = user.User(
-            email='test@test.com',
-            username='test',
-            password='test',
-            first_name='test',
-            last_name='test',
-            admin=True
-        )
-        db.session.add(test)
-
         db.session.commit()
 
 
