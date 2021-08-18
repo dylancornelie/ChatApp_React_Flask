@@ -3,7 +3,7 @@
   "short_name": "Chat App",
   "description":"A chat app to enhance your meeting",
   "start_url": "/index.html",
-  "display": "standalone",
+  "display": "fullscreen",
   "theme_color": "#dbe9ee",
   "background_color": "#4f6d7a",
   "orientation": "portrait-primary",
