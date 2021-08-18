@@ -1,11 +1,19 @@
-FROM python:3.8-slim
+# pull official base image
+FROM python:3.8.3-slim-buster
 
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# install system dependencies
+RUN apt-get update && apt-get install -y netcat
+
+# install dependencies
+COPY requirements.txt /
+RUN pip install -r /requirements.txt
+
+# copy project
 WORKDIR /server
-
-ADD ./requirements.txt /server/requirements.txt
-
-RUN pip install -r requirements.txt
-
 ADD . /server
 
 RUN flask db init \
