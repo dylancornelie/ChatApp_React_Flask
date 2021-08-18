@@ -77,7 +77,7 @@ class TestProjectService(BaseTestCase):
     def test_required_owner_in_project(self):
         # It's owner
         self.assertIsNone(required_own_project(
-            current_user_id=self.owner.id,
+            user_id=self.owner.id,
             project=self.project
         ))
 

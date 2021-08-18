@@ -1,4 +1,5 @@
-"""Service logic for user """
+"""Service logic for user."""
+
 import json
 import random
 import string
@@ -47,6 +48,7 @@ em{
 
 
 def save_new_user(data: Dict[str, str]) -> Tuple[Dict[str, str], int]:
+    """Create new user."""
     user = User.query.filter((User.email == data.get('email')) | (User.username == data.get('username'))).first()
     if not user:
         new_user = User(
@@ -63,6 +65,12 @@ def save_new_user(data: Dict[str, str]) -> Tuple[Dict[str, str], int]:
 
 
 def get_all_users(filter_by) -> Pagination:
+    """
+    Get all user for pagination.
+
+    :param filter_by: The key want to filter
+    :return pagination for user
+    """
     query = User.query
 
     if filter_by:
@@ -76,10 +84,13 @@ def get_all_users(filter_by) -> Pagination:
 
 
 def get_a_user(id: int) -> User:
+    """Find user by id."""
     return User.query.filter_by(id=id).first_or_404('User Not Found')
 
 
 def update_a_user(id: int, new_data) -> Dict:
+    """Update user's data."""
+
     user = get_a_user(id)
 
     try:
@@ -95,6 +106,8 @@ def update_a_user(id: int, new_data) -> Dict:
 
 
 def update_a_user_password(id: int, data: Dict) -> Dict:
+    """Update new password."""
+
     user = get_a_user(id)
     errors = dict()
     if not user.check_password(data.get('older_password')):
@@ -120,7 +133,9 @@ def update_a_user_password(id: int, data: Dict) -> Dict:
         raise InternalServerError("The server encountered an internal error and was unable to save your data.")
 
 
-def update_forget_password(email: str) -> Dict:
+def update_password_forgotten(email: str) -> Dict:
+    """Reset the user's password when he forgot and send him an email."""
+
     user = User.query.filter_by(email=email).first_or_404(f'{email} is not exist.')
 
     letters = string.ascii_lowercase
@@ -163,10 +178,14 @@ def update_forget_password(email: str) -> Dict:
 
 
 def sub_user_channel(user_id: int) -> str:
+    """Create channel for subscribe."""
+
     return f"sub:user:{user_id}"
 
 
-def store_data_subscription_webpub(data: Dict, user_id: int) -> Dict:
+def save_data_subscription_webpub(data: Dict, user_id: int) -> Dict:
+    """Save the client's key when he subscribe webpub."""
+
     push_subscription = PushSubscription.query.filter_by(user_id=user_id).first()
     if not push_subscription:
         save_data(PushSubscription(
@@ -189,6 +208,8 @@ def store_data_subscription_webpub(data: Dict, user_id: int) -> Dict:
 
 
 def unsubscription_data_subscription_webpub(user_id: int) -> Dict:
+    """Delete the subscription webpub stored."""
+
     push_subscription = PushSubscription.query.filter_by(user_id=user_id) \
         .first_or_404('Service Worker Key was not found.')
     delete_data(push_subscription)
@@ -199,14 +220,18 @@ def unsubscription_data_subscription_webpub(user_id: int) -> Dict:
     return dict(message="Unsubscribed the client's key.")
 
 
-def transfer_data_subscription_from_db_to_redis() -> None:
+def transfer_subscription_to_redis() -> None:
+    """Transfer data subscription from db to redis."""
+
     push_subscriptions = PushSubscription.query.all()
     for push_subscription in push_subscriptions:
         channel = sub_webpush(sub_user_channel(push_subscription.user_id))
         redis.set(channel, json.dumps(push_subscription.subscription_json))
 
 
-def change_user_to_admin(current_user_id: int, user_id: int, admin: bool = True) -> Dict:
+def change_user_role(current_user_id: int, user_id: int, admin: bool = True) -> Dict:
+    """Admin will change user's role."""
+
     user = get_a_user(user_id)
 
     errors = dict()
@@ -242,6 +267,8 @@ def change_user_to_admin(current_user_id: int, user_id: int, admin: bool = True)
 
 
 def archive_user(current_user_id: int, user_id: int, archive: bool = True) -> Dict:
+    """Admin will archive/unarchive the user."""
+
     user = get_a_user(user_id)
 
     errors = dict()
@@ -312,5 +339,13 @@ def archive_user(current_user_id: int, user_id: int, archive: bool = True) -> Di
 
 
 def notify_one_user(user_id: int, data, type_publish: str = None) -> None:
+    """
+    Send notification to the user.
+
+    :param user_id: The receiver's id
+    :param data: The data want to be sent
+    :param type_publish: The event type.
+    """
+
     channel = sub_user_channel(user_id)
     publish(channel, data, type_publish)

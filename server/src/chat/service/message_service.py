@@ -76,8 +76,8 @@ def get_all_messages(user_id: int, project_id: int) -> Pagination:
     """
     Get all message for one user in project
 
-    :param user_id: int
-    :param project_id: int
+    :param user_id: The current user's id
+    :param project_id: The project which you want get its message.
     :return: Pagination for message
     """
 
@@ -93,14 +93,21 @@ def get_all_messages(user_id: int, project_id: int) -> Pagination:
 
 
 def notify_new_message_into_members_offline(message: Message, room: str = None,
-                                            only_receive: bool = False):
+                                            only_receiver: bool = False):
+    """
+    Notify the new message to all members offline.
+    :param message: Object Message
+    :param room: The chatting room
+    :param only_receiver: Check the notify for public or private
+    """
+
     data = dict(
         type=TYPE_NOTIFICATION_NEW_MESSAGE,
         message=f"'@{message.sender.username}' sent "
-                + f"{'a new message' if not only_receive else 'you a new private message'}.",
+                + f"{'a new message' if not only_receiver else 'you a new private message'}.",
         data=dict(project_title=message.project.title)
     )
-    if only_receive:
+    if only_receiver:
         notify_one_user(user_id=message.receiver_id, data=data,
                         type_publish=TYPE_NOTIFICATION_ACTION_MESSAGE)
     else:
@@ -111,6 +118,8 @@ def notify_new_message_into_members_offline(message: Message, room: str = None,
 
 
 def valid_input_room(data: Dict) -> Dict:
+    """Validate the project input."""
+
     errors = dict()
     if not data.get('project_id'):
         errors['project_id'] = "'project_id' is required."
@@ -130,6 +139,8 @@ def valid_input_room(data: Dict) -> Dict:
 
 
 def valid_input_message(data: Dict) -> Dict:
+    """Validate the message sent."""
+
     errors = dict()
     if not data.get('project_id'):
         errors['project_id'] = "'project_id' is required."
@@ -162,9 +173,13 @@ def valid_input_message(data: Dict) -> Dict:
 
 
 def _get_room_for_project(project_id: int) -> str:
+    """Create the chatting room's name."""
+
     return f"room:project:{project_id}"
 
 
 def _allowed_file(filename) -> bool:
+    """Check the attached file's the extension."""
+
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']

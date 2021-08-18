@@ -16,7 +16,7 @@ user_coaches_to_project = db.Table(
 
 
 class Project(db.Model):
-    """ Project Model for storing project related details """
+    """ Project Model for storing project related details."""
     __tablename__ = 'project'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -39,4 +39,4 @@ class Project(db.Model):
         return [self.owner_id] + [user.id for user in self.coaches] + [user.id for user in self.participants]
 
     def __repr__(self):
-        return "<Project '{}'>".format(self.title)
+        return "<project_id: {} title: {}>".format(self.id, self.title)

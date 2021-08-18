@@ -90,16 +90,15 @@ def publish(channel: str, data, type: str = None, id: int = None, retry: int = 3
     """
     Publish data as a server-sent event or as a webpush.
 
-    :param data: The event data. If it is not a string, it will be
-        serialized to JSON using the Flask application's.
-    :param type: An optional event type.
-    :param id: An optional event ID.
-    :param retry: An optional integer, to specify the reconnect time for
-        disconnected clients of this stream. Default: after 30s
     :param channel: If you want to direct different events to different
         clients, you may specify a channel for this event to go to.
         Only clients listening to the same channel will receive this event.
-        Defaults to "sse".
+    :param data: The event data. If it is not a string, it will be
+        serialized to JSON using the Flask application's.
+    :param type: An optional event type.
+    :param id: An optional event ID. (Only SSE)
+    :param retry: An optional integer, to specify the reconnect time for
+        disconnected clients of this stream. Default: after 30s (Only SSE)
     """
     # If channel exist, we will send notification
     sse_val = redis.get(sub_sse(channel))
@@ -139,9 +138,11 @@ def messages(channel: str = 'sse'):
             current_app.logger.error(str(e), exc_info=True)
 
 
-def stream(channel: str = 'sse'):
+def stream(channel: str = 'sse') -> Response:
     """
     A view function that streams server-sent events.
+    :param channel: The event for client's SSE.
+    :return: The context's stream with 'event-stream' mimetype
     """
     channel_sse = sub_sse(channel)
 
@@ -157,6 +158,12 @@ def stream(channel: str = 'sse'):
 
 
 def trigger_push_notifications_for_subscriptions(webpush_val, data, type: str = None) -> None:
+    """
+    The function to send the notification to the subscriber.
+    :param webpush_val: The public key's client is format string or bytes.
+    :param data: The event data.
+    :param type: An optional event type.
+    """
     try:
         if isinstance(webpush_val, bytes):
             webpush_val = webpush_val.decode('utf-8')
@@ -171,6 +178,7 @@ def trigger_push_notifications_for_subscriptions(webpush_val, data, type: str = 
 
 
 def sub_sse(channel: str) -> str:
+    """Convert channel into the SSE channel."""
     if 'webpush:' in channel:
         raise Exception("'webpush' is not in the sse channel.")
     if 'sse:' in channel:
@@ -179,6 +187,7 @@ def sub_sse(channel: str) -> str:
 
 
 def sub_webpush(channel: str) -> str:
+    """Convert channel into the Webpush channel."""
     if 'sse:' in channel:
         raise Exception("'sse' is not in the webpush channel.")
     if 'webpush:' in channel:

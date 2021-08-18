@@ -1,4 +1,5 @@
 """API endpoint definitions for /users namespace."""
+
 from http import HTTPStatus
 
 from flask import request, current_app
@@ -8,18 +9,16 @@ from src.chat.dto.auth_dto import auth_resp
 from src.chat.dto.user_dto import (api, user_item, user_list, user_post, user_params, user_put, user_password,
                                    user_forget_password, subscription_info)
 from src.chat.service.user_service import (save_new_user, get_all_users, get_a_user, update_a_user,
-                                           update_a_user_password, update_forget_password, sub_user_channel,
-                                           store_data_subscription_webpub, unsubscription_data_subscription_webpub,
-                                           change_user_to_admin, archive_user)
+                                           update_a_user_password, update_password_forgotten, sub_user_channel,
+                                           save_data_subscription_webpub, unsubscription_data_subscription_webpub,
+                                           change_user_role, archive_user)
 from src.chat.util.decorator import token_required, decode_auth_token, admin_token_required
 from src.chat.util.stream import stream
 
 
 @api.route('/')
 class List(Resource):
-    """
-       Collection for Users
-    """
+    """Collection for Users."""
 
     @token_required
     @api.doc('List_of_registered_users', params=user_params, security='Bearer')
@@ -29,7 +28,7 @@ class List(Resource):
     @api.response(int(HTTPStatus.FORBIDDEN), 'Provide a valid auth token.')
     @api.marshal_with(user_list)
     def get(self):
-        """List all registered users"""
+        """List all registered users."""
         filter_by = request.args.get('filter_by')
         return get_all_users(filter_by)
 
@@ -45,16 +44,14 @@ class List(Resource):
 
 @api.route('/me')
 class Me(Resource):
-    """
-        My Profile
-    """
+    """My Profile."""
 
     @token_required
     @api.doc('Get my profile', security='Bearer')
     @api.response(int(HTTPStatus.OK), 'Successfully get my profile.', user_item)
     @api.marshal_with(user_item)
     def get(self):
-        """Your profile"""
+        """Get all user's profile by herself."""
         return get_a_user(self.get.current_user_id)
 
     @token_required
@@ -65,16 +62,14 @@ class Me(Resource):
     @api.response(int(HTTPStatus.NOT_FOUND), 'Error not me.')
     @api.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), 'Error saving data.')
     def put(self):
-        """Edit your profile"""
+        """Edit your profile."""
         data = request.json
         return update_a_user(self.put.current_user_id, data)
 
 
 @api.route('/me/reset-password', endpoint='user_v1_reset_password')
 class Me_Reset_Password(Resource):
-    """
-        Reset my password
-    """
+    """Reset my password."""
 
     @token_required
     @api.doc('Edit my password', security='Bearer')
@@ -83,17 +78,14 @@ class Me_Reset_Password(Resource):
     @api.response(int(HTTPStatus.BAD_REQUEST), 'Error edit my password.')
     @api.response(int(HTTPStatus.INTERNAL_SERVER_ERROR), 'Error saving data.')
     def put(self):
-        """Edit your password"""
+        """Edit your password."""
         data = request.json
         return update_a_user_password(self.put.current_user_id, data)
 
 
 @api.route('/me/forget-password', endpoint='user_v1_forget_password')
 class Me_Forget_Password(Resource):
-    """
-        Forget my password
-        Send email new random password
-    """
+    """Forget my password."""
 
     @api.doc('Forgot my password')
     @api.expect(user_forget_password, validate=True)
@@ -102,12 +94,15 @@ class Me_Forget_Password(Resource):
     def post(self):
         """Send email new random password"""
         data = request.json
-        return update_forget_password(data['email'])
+        return update_password_forgotten(data['email'])
 
 
 @api.route('/stream/<string:token>')
 class Stream(Resource):
+    """Stream SSE"""
+
     def get(self, token: str):
+        """Connect the stream event SSE."""
         user_id, _ = decode_auth_token(token)
         channel = sub_user_channel(user_id)
         return stream(channel)
@@ -115,6 +110,8 @@ class Stream(Resource):
 
 @api.route('/subscription')
 class PubSub(Resource):
+    """Webpush"""
+
     @api.doc('Get public key', security='Bearer')
     @token_required
     def get(self):
@@ -127,7 +124,7 @@ class PubSub(Resource):
     def post(self):
         """Store the key of Service Worker"""
         data = request.json
-        return store_data_subscription_webpub(data, self.post.current_user_id)
+        return save_data_subscription_webpub(data, self.post.current_user_id)
 
     @api.doc('Unsubscription client key', security='Bearer')
     @token_required
@@ -138,29 +135,33 @@ class PubSub(Resource):
 
 @api.route('/admin/<int:user_id>')
 class Admin(Resource):
+    """Some admin's functions."""
+
     @api.doc("Change user's role to admin", security='Bearer')
     @admin_token_required
     def post(self, user_id: int):
-        """Change user's role to admin"""
-        return change_user_to_admin(self.post.current_user_id, user_id)
+        """Change user's role to admin."""
+        return change_user_role(self.post.current_user_id, user_id)
 
     @api.doc("Change user's role to normal", security='Bearer')
     @admin_token_required
     def delete(self, user_id: int):
-        """Change user's role to normal"""
-        return change_user_to_admin(self.delete.current_user_id, user_id, False)
+        """Change user's role to normal."""
+        return change_user_role(self.delete.current_user_id, user_id, False)
 
 
 @api.route('/archive/<int:user_id>')
 class Archive(Resource):
+    """Archive one user."""
+
     @api.doc("Archive user", security='Bearer')
     @admin_token_required
     def post(self, user_id: int):
-        """Archive user"""
+        """Admin archive user."""
         return archive_user(self.post.current_user_id, user_id)
 
     @api.doc("Change user's role to normal", security='Bearer')
     @admin_token_required
     def delete(self, user_id: int):
-        """Unarchive user"""
+        """Admin unarchive user."""
         return archive_user(self.delete.current_user_id, user_id, False)

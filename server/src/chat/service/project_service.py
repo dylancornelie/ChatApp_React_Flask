@@ -17,11 +17,11 @@ from src.chat.util.constant import *
 from src.chat.util.pagination import paginate
 
 
-def save_new_project(current_user_id: int, data: Dict) -> Project:
+def save_new_project(user_id: int, data: Dict) -> Project:
     """
     Save a new project with data
 
-    :param current_user_id: int
+    :param user_id: The user's id
     :param data: Dict['title', 'participants', 'coaches']
     :return: Project
     """
@@ -32,7 +32,7 @@ def save_new_project(current_user_id: int, data: Dict) -> Project:
 
     new_project = Project(
         title=data['title'],
-        owner_id=current_user_id,
+        owner_id=user_id,
     )
     save_data(new_project)
 
@@ -50,23 +50,23 @@ def save_new_project(current_user_id: int, data: Dict) -> Project:
             'data': marshal(new_project, project_item)}
     notify_all_member_in_project(users_id=new_project.get_id_members(), data=data,
                                  type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
-                                 exclude_users_id=[current_user_id])
+                                 exclude_users_id=[user_id])
 
     return new_project
 
 
-def get_all_projects(current_user_id: int, filter_by) -> Pagination:
+def get_all_projects(user_id: int, filter_by) -> Pagination:
     """
-    Get project of a member
+    Get all user's project.
 
-    :param current_user_id: int
-    :param filter_by: str | None
+    :param user_id: The user's id
+    :param filter_by: The key want to filter
     :return: Pagination for project
     """
 
-    query = Project.query.filter((Project.owner_id == current_user_id)
-                                 | (Project.coaches.any(User.id == current_user_id))
-                                 | (Project.participants.any(User.id == current_user_id))
+    query = Project.query.filter((Project.owner_id == user_id)
+                                 | (Project.coaches.any(User.id == user_id))
+                                 | (Project.participants.any(User.id == user_id))
                                  )
 
     if filter_by:
@@ -77,27 +77,27 @@ def get_all_projects(current_user_id: int, filter_by) -> Pagination:
 
 def get_project_item(id_project: int) -> Project:
     """
-    Find project with its id
+    Find project with its id.
 
-    :param id_project: int
+    :param id_project: the project's id
     :return: Project
     """
 
     return Project.query.filter_by(id=id_project).first_or_404('Project Not Found')
 
 
-def update_project(current_user_id: int, id_project: int, data: Dict) -> Project:
+def update_project(user_id: int, id_project: int, data: Dict) -> Project:
     """
     Update project with new data
 
-    :param current_user_id: int
-    :param id_project: int
+    :param user_id: The user's id
+    :param id_project: The project's id want to be modified.
     :param data: Dict['title']
     :return: Project
     """
 
     project = get_project_item(id_project)
-    required_own_project(current_user_id, project)
+    required_own_project(user_id, project)
 
     older_project_title = project.title
 
@@ -119,22 +119,22 @@ def update_project(current_user_id: int, id_project: int, data: Dict) -> Project
         )
         notify_all_member_in_project(users_id=project.get_id_members(), data=data,
                                      type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
-                                     exclude_users_id=[current_user_id])
+                                     exclude_users_id=[user_id])
 
     return project
 
 
-def delete_project(current_user_id: int, id_project: int) -> Dict:
+def delete_project(user_id: int, id_project: int) -> Dict:
     """
-    Delete project
+    Delete project.
 
-    :param current_user_id: int
-    :param id_project: int
-    :return: Message
+    :param user_id: The user's id.
+    :param id_project: The project's id want to be removed.
+    :return: message notification
     """
 
     project = get_project_item(id_project)
-    required_own_project(current_user_id, project)
+    required_own_project(user_id, project)
     older_project_title = project.title
     older_project_id = project.id
     owner_username = project.owner.username
@@ -155,19 +155,19 @@ def delete_project(current_user_id: int, id_project: int) -> Dict:
     return dict(message='Your project was successfully removed.')
 
 
-def invite_participant_into_project(current_user_id: int, id_project: int, data: Dict) -> User:
+def invite_participant_into_project(user_id: int, id_project: int, data: Dict) -> User:
     """
-    Invite new member into project
+    Invite new member into project.
 
-    :param current_user_id: int
-    :param id_project: int
+    :param user_id: The user's id
+    :param id_project: The project's id want to be added
     :param data: Dict['participant']
     :return: User
     """
 
     project = get_project_item(id_project)
 
-    required_member_in_project(user_id=current_user_id, project=project)
+    required_member_in_project(user_id=user_id, project=project)
 
     participant = get_a_user(data.get('participant'))
 
@@ -198,24 +198,24 @@ def invite_participant_into_project(current_user_id: int, id_project: int, data:
     )
     notify_all_member_in_project(users_id=project.get_id_members(), data=data,
                                  type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
-                                 exclude_users_id=[current_user_id, participant.id])
+                                 exclude_users_id=[user_id, participant.id])
 
     return participant
 
 
-def leave_from_project(current_user_id: int, id_project: int) -> Dict:
+def leave_from_project(user_id: int, id_project: int) -> Dict:
     """
     A member want to leave from project
 
-    :param current_user_id: int
-    :param id_project: int
-    :return: Message
+    :param user_id: The user's id
+    :param id_project: The project's id which user want to leave
+    :return: message
     """
 
     project = get_project_item(id_project)
-    current_user = get_a_user(current_user_id)
+    current_user = get_a_user(user_id)
 
-    required_member_in_project(user_id=current_user_id, project=project)
+    required_member_in_project(user_id=user_id, project=project)
 
     if project.owner == current_user:
         e = BadRequest()
@@ -243,30 +243,30 @@ def leave_from_project(current_user_id: int, id_project: int) -> Dict:
         data = dict(
             type=TYPE_NOTIFICATION_EDIT_PROJECT,
             message=f"'@{current_user.username}' left the project'{project.title}'.",
-            data=dict(user_id=current_user_id, project_id=project.id, project_title=project.title)
+            data=dict(user_id=user_id, project_id=project.id, project_title=project.title)
         )
         notify_all_member_in_project(users_id=project.get_id_members(), data=data,
                                      type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
-                                     exclude_users_id=[current_user_id])
+                                     exclude_users_id=[user_id])
 
     return dict(message='You left the project.')
 
 
-def designate_coach_into_project(current_user_id: int, id_project: int, data: Dict) -> Dict:
+def designate_coach_into_project(user_id: int, id_project: int, data: Dict) -> Dict:
     """
-    Owner or coach designate a participant becoming to be new coach
+    Owner or coach designate a participant becoming to be new coach.
 
-    :param current_user_id: int
-    :param id_project: int
+    :param user_id: The user's id
+    :param id_project: The project's which user want to designate a member
     :param data: Dict['coach']
-    :return: Message
+    :return: message
     """
 
     project = get_project_item(id_project)
-    required_own_or_coach_in_project(user_id=current_user_id, project=project)
-    user = get_a_user(data.get('coach'))
+    required_own_or_coach_in_project(user_id=user_id, project=project)
+    coach = get_a_user(data.get('coach'))
 
-    if user == project.owner or user in project.coaches:
+    if coach == project.owner or coach in project.coaches:
         e = BadRequest()
         e.data = dict(
             errors=dict(coach="You can't add an owner or a coach become a new coach."),
@@ -274,7 +274,7 @@ def designate_coach_into_project(current_user_id: int, id_project: int, data: Di
         )
         raise e
 
-    if user not in project.participants:
+    if coach not in project.participants:
         e = BadRequest()
         e.data = dict(
             errors=dict(coach="You can't add a not member become a new coach."),
@@ -284,10 +284,10 @@ def designate_coach_into_project(current_user_id: int, id_project: int, data: Di
 
     try:
         # Remove them from list participants
-        project.participants.remove(user)
+        project.participants.remove(coach)
 
         # Add them into list coaches
-        project.coaches.append(user)
+        project.coaches.append(coach)
 
         db.session.commit()
 
@@ -303,36 +303,36 @@ def designate_coach_into_project(current_user_id: int, id_project: int, data: Di
             message=f"You was designated new coach in the project '{project.title}'.",
             data=dict(project_id=project.id, project_title=project.title),
         )
-        notify_one_user(user_id=user.id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT)
+        notify_one_user(user_id=coach.id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT)
 
         # Notify to the other members
         data = dict(
             type=TYPE_NOTIFICATION_EDIT_PROJECT,
-            message=f"'@{user.username}' was designated new coach in the project '{project.title}'.",
-            data=dict(user_id=user.id, project_id=project.id, project_title=project.title)
+            message=f"'@{coach.username}' was designated new coach in the project '{project.title}'.",
+            data=dict(user_id=coach.id, project_id=project.id, project_title=project.title)
         )
         notify_all_member_in_project(users_id=project.get_id_members(), data=data,
                                      type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
-                                     exclude_users_id=[current_user_id, user.id])
+                                     exclude_users_id=[user_id, coach.id])
 
     return dict(message='You designated a new coach.')
 
 
-def withdraw_coach_in_project(current_user_id: int, id_project: int, data: Dict) -> Dict:
+def withdraw_coach_in_project(user_id: int, id_project: int, data: Dict) -> Dict:
     """
-    Owner or coach withdraw a coach become be participant
+    Owner or coach withdraw a coach become be participant.
 
-    :param current_user_id: int
-    :param id_project: int
+    :param user_id: The user's id
+    :param id_project: The project's id which user want to withdraw a coach
     :param data: Dict['coach']
-    :return: Message
+    :return: message
     """
 
     project = get_project_item(id_project)
-    required_own_or_coach_in_project(user_id=current_user_id, project=project)
-    user = get_a_user(data.get('coach'))
+    required_own_or_coach_in_project(user_id=user_id, project=project)
+    coach = get_a_user(data.get('coach'))
 
-    if user == project.owner or user not in project.coaches:
+    if coach == project.owner or coach not in project.coaches:
         e = BadRequest()
         e.data = dict(
             errors=dict(coach="You can't withdraw a not coach become a participant."),
@@ -342,10 +342,10 @@ def withdraw_coach_in_project(current_user_id: int, id_project: int, data: Dict)
 
     try:
         # Remove them from list coaches
-        project.coaches.remove(user)
+        project.coaches.remove(coach)
 
         # Add them into list participant
-        project.participants.append(user)
+        project.participants.append(coach)
 
         db.session.commit()
 
@@ -361,33 +361,33 @@ def withdraw_coach_in_project(current_user_id: int, id_project: int, data: Dict)
             message=f"You was withdrawn from coach in the project '{project.title}'.",
             data=dict(project_id=project.id, project_title=project.title),
         )
-        notify_one_user(user_id=user.id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT)
+        notify_one_user(user_id=coach.id, data=data, type_publish=TYPE_NOTIFICATION_ACTION_PROJECT)
 
         # Notify to the other members
         data = dict(
             type=TYPE_NOTIFICATION_EDIT_PROJECT,
-            message=f"'@{user.username}' was withdrew from coach, he will be a participant the project'{project.title}'.",
-            data=dict(user_id=user.id, project_id=project.id, project_title=project.title)
+            message=f"'@{coach.username}' was withdrew from coach, he will be a participant the project'{project.title}'.",
+            data=dict(user_id=coach.id, project_id=project.id, project_title=project.title)
         )
         notify_all_member_in_project(users_id=project.get_id_members(), data=data,
                                      type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
-                                     exclude_users_id=[current_user_id, user.id])
+                                     exclude_users_id=[user_id, coach.id])
 
     return dict(message='You withdrew a coach. He will be a participant.')
 
 
-def remove_participant_in_project(current_user_id: int, id_project: int, data: Dict) -> Dict:
+def remove_participant_in_project(user_id: int, id_project: int, data: Dict) -> Dict:
     """
-    Owner or coach remove a participant from project
+    Owner or coach remove a participant from project.
 
-    :param current_user_id: int
-    :param id_project: int
-    :param data: Dict['coach']
-    :return: Message
+    :param user_id: The user's id
+    :param id_project: The project's id which user want to remove a member
+    :param data: Dict['participant']
+    :return: message
     """
 
     project = get_project_item(id_project)
-    required_own_or_coach_in_project(user_id=current_user_id, project=project)
+    required_own_or_coach_in_project(user_id=user_id, project=project)
     participant = get_a_user(data.get('participant'))
 
     if is_owner(user_id=participant.id, project=project) or is_coach(user_id=participant.id, project=project):
@@ -433,28 +433,28 @@ def remove_participant_in_project(current_user_id: int, id_project: int, data: D
         )
         notify_all_member_in_project(users_id=project.get_id_members(), data=data,
                                      type_publish=TYPE_NOTIFICATION_ACTION_PROJECT,
-                                     exclude_users_id=[current_user_id, participant.id])
+                                     exclude_users_id=[user_id, participant.id])
 
     return dict(message='You removed a participant.')
 
 
-def required_own_project(current_user_id: int, project: Project) -> None:
+def required_own_project(user_id: int, project: Project) -> None:
     """
-    Check user is owner
+    Check user is owner.
 
-    :param current_user_id: int
+    :param user_id: The user's id
     :param project: Project
     """
 
-    if project.owner_id != current_user_id:
+    if project.owner_id != user_id:
         raise Forbidden("You must be the project's owner.")
 
 
 def required_own_or_coach_in_project(user_id: int, project: Project) -> None:
     """
-    Check user is owner or coach
+    Check user is owner or coach.
 
-    :param user_id: int
+    :param user_id: The user's id
     :param project: Project
     """
 
@@ -464,9 +464,9 @@ def required_own_or_coach_in_project(user_id: int, project: Project) -> None:
 
 def required_member_in_project(user_id: int, project: Project) -> None:
     """
-    Check user is member
+    Check user is member.
 
-    :param user_id: int
+    :param user_id: The user's id
     :param project: Project
     """
 
@@ -476,9 +476,9 @@ def required_member_in_project(user_id: int, project: Project) -> None:
 
 def insert_participants(id_project: int, participants: List[int]) -> None:
     """
-    Add list participants into project
+    Add list participants into project.
 
-    :param id_project: int
+    :param id_project: The project's id want to be added new participants.
     :param participants: List[int]
     """
 
@@ -488,9 +488,9 @@ def insert_participants(id_project: int, participants: List[int]) -> None:
 
 def insert_coaches(id_project: int, coaches: List[int]) -> None:
     """
-    Add list coaches into project
+    Add list coaches into project.
 
-    :param id_project: int
+    :param id_project: The project's id want to be added new coaches
     :param coaches: List[int]
     """
 
@@ -499,19 +499,27 @@ def insert_coaches(id_project: int, coaches: List[int]) -> None:
 
 
 def is_owner(user_id: int, project: Project) -> bool:
+    """Verify the user is an owner."""
+
     return project.owner_id == user_id
 
 
 def is_coach(user_id: int, project: Project) -> bool:
+    """Verify the user is a coach."""
+
     return any(user_id == user.id for user in project.coaches)
 
 
 def is_participant(user_id: int, project: Project) -> bool:
+    """Verify the user is a participant."""
+
     return any(user_id == user.id for user in project.participants)
 
 
 def notify_all_member_in_project(users_id: List[int], data, type_publish: str = None,
                                  exclude_users_id: List[int] = None) -> None:
+    """Notify all the member in project."""
+
     if exclude_users_id:
         users_id = list(set(users_id) - set(exclude_users_id))
     for user_id in users_id:

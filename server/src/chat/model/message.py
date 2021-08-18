@@ -6,7 +6,7 @@ from src.chat import db
 
 
 class Message(db.Model):
-    """ Project Model for storing project related details """
+    """ Project Model for storing project related details."""
     __tablename__ = 'message'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -37,4 +37,4 @@ class Message(db.Model):
         return self._registered_on.strftime('%m/%d/%Y, %H:%M')
 
     def __repr__(self):
-        return "<Message '{}'>".format(self.id)
+        return "<message_id: {}>".format(self.id)

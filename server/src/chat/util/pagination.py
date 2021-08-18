@@ -1,20 +1,21 @@
-"""Simple helper to paginate query
-"""
+"""Simple helper to paginate query"""
 
 from flask import url_for, request
-from flask_sqlalchemy import BaseQuery
 from flask_restx import fields
+from flask_sqlalchemy import BaseQuery
 
 from src.chat.model.pagination import Pagination
 
 
 def extract_pagination(page=None, per_page=None, **request_args):
+    """Get extract page and per_page"""
     page = int(page) if page is not None else Pagination.DEFAULT_PAGE_NUMBER
     per_page = int(per_page) if per_page is not None else Pagination.DEFAULT_PAGE_SIZE
     return page, per_page, request_args
 
 
 def paginate(query: BaseQuery) -> Pagination:
+    """Get a pagination and data's object from Query"""
     page, per_page, other_request_args = extract_pagination(**request.args)
     page_obj = query.paginate(page=page, per_page=per_page)
     next_ = url_for(
@@ -44,6 +45,7 @@ def paginate(query: BaseQuery) -> Pagination:
 
 
 def list_model(data):
+    """Model for collection data"""
     return {
         'total': fields.Integer(description='The total number of items'),
         'pages': fields.Integer(description='The total number of pages'),
@@ -51,7 +53,8 @@ def list_model(data):
         'has_prev': fields.Boolean(description='True if a previous page exists'),
         'next': fields.String(description='A pagination for the next page'),
         'prev': fields.String(description='A pagination object for the previous page'),
-        'data': fields.List(fields.Nested(data, allow_null=True, skip_none=True), description='The items for the current page'),
+        'data': fields.List(fields.Nested(data, allow_null=True, skip_none=True),
+                            description='The items for the current page'),
     }
 
 

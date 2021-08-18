@@ -4,9 +4,7 @@ from src.chat import db
 
 
 class BlacklistedToken(db.Model):
-    """
-    Token Model for storing JWT tokens
-    """
+    """Token Model for storing JWT tokens."""
     __tablename__ = 'blacklisted_tokens'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -16,4 +14,4 @@ class BlacklistedToken(db.Model):
         self.token = token
 
     def __repr__(self):
-        return '<id: token: {}'.format(self.token)
+        return '<token: {}'.format(self.token)

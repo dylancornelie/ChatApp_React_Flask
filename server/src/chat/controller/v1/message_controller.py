@@ -11,9 +11,7 @@ from src.chat.util.decorator import token_required
 
 @api.route('/<int:project_id>')
 class List(Resource):
-    """
-       Collection for Message in Project
-    """
+    """Collection for Message in Project"""
 
     @token_required
     @api.doc('List of message', params=message_params, security='Bearer')
@@ -23,5 +21,5 @@ class List(Resource):
     @api.response(int(HTTPStatus.FORBIDDEN), 'Provide a valid auth token.')
     @api.marshal_with(message_list, skip_none=True)
     def get(self, project_id: int):
-        """List all registered message in project"""
+        """List all registered message in project."""
         return get_all_messages(user_id=self.get.current_user_id, project_id=project_id)

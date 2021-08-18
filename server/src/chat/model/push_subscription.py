@@ -4,9 +4,7 @@ from src.chat import db
 
 
 class PushSubscription(db.Model):
-    """
-    Token Model for storing JWT tokens
-    """
+    """Token Model for storing JWT tokens."""
     __tablename__ = 'push_subscription'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -14,4 +12,4 @@ class PushSubscription(db.Model):
     subscription_json = db.Column(db.Text, unique=True, nullable=False)
 
     def __repr__(self):
-        return '<user_id: {}>'.format(self.user_id)
+        return '<user_id: {} subscription: {}>'.format(self.user_id, self.subscription_json)

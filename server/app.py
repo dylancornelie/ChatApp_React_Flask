@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 
 from src.chat import create_app, db, sio, redis
 from src.chat.model import user, token_blacklist, project, message, push_subscription
-from src.chat.service.user_service import transfer_data_subscription_from_db_to_redis
+from src.chat.service.user_service import transfer_subscription_to_redis
 
 load_dotenv()  # take environment variables from .env.
 
@@ -122,9 +122,21 @@ def first_run():
             admin=True
         )
         db.session.add(admin)
+
+        test = user.User(
+            email='test@test.com',
+            username='test',
+            password='test',
+            first_name='test',
+            last_name='test',
+            admin=True
+        )
+        db.session.add(test)
+
         db.session.commit()
 
-    transfer_data_subscription_from_db_to_redis()
+
+    transfer_subscription_to_redis()
 
 
 if __name__ == '__main__':

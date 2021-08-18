@@ -1,4 +1,5 @@
-"""Service logic for data """
+"""Service logic for data."""
+
 from flask import current_app
 from werkzeug.exceptions import InternalServerError
 
@@ -6,6 +7,8 @@ from src.chat import db
 
 
 def save_data(data) -> None:
+    """Save the object."""
+
     try:
         db.session.add(data)
         db.session.commit()
@@ -16,6 +19,8 @@ def save_data(data) -> None:
 
 
 def insert_data(query, data) -> None:
+    """Insert data by query."""
+
     try:
         db.session.execute(query.insert(), data)
         db.session.commit()
@@ -26,6 +31,8 @@ def insert_data(query, data) -> None:
 
 
 def delete_data(data) -> None:
+    """Delete the object."""
+
     try:
         db.session.delete(data)
         db.session.commit()

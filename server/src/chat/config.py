@@ -34,7 +34,6 @@ class Config:
     ASYNC_MODE = 'threading'
 
     # File upload
-    UPLOAD_FOLDER = path.join(basedir, '../..', 'public', 'files')
     ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'doc'}
 
     # Vapid

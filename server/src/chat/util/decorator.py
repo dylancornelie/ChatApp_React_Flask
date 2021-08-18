@@ -7,6 +7,7 @@ from src.chat.service.auth_service import decode_auth_token, decode_auth_admin_t
 
 
 def token_required(f):
+    """Execute function if request contains valid access token."""
     @wraps(f)
     def decorated(*args, **kwargs):
         auth_token = _get_auth_token()
@@ -22,6 +23,7 @@ def token_required(f):
 
 
 def admin_token_required(f):
+    """Execute function if request contains valid access token AND user is admin."""
     @wraps(f)
     def decorated(*args, **kwargs):
         auth_token = _get_auth_token()
@@ -37,6 +39,7 @@ def admin_token_required(f):
 
 
 def _get_auth_token() -> str:
+    """Access the headers from the current request"""
     auth_header = request.headers.get('Authorization')
     if not auth_header:
         raise Forbidden('Provide a valid auth token.')

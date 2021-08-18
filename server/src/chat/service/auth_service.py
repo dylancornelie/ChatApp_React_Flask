@@ -1,4 +1,4 @@
-"""Service logic for auth """
+"""Service logic for auth."""
 
 from datetime import datetime, timezone, timedelta
 from typing import Dict, Tuple
@@ -10,13 +10,16 @@ from werkzeug.exceptions import Unauthorized
 from src.chat.model.user import User
 from src.chat.service.blacklist_service import save_token_into_blacklist, check_blacklist
 
+
 def encode_auth_token(user_id: int, admin: bool = False) -> Tuple[str, int]:
     """
-    Generates the Auth Token ex
+    Generates the Auth Token.
 
-    :param user_id: integer
-    :return: string, int: JWT and expire_in
+    :param user_id: The user's id
+    :param admin: The user's admin
+    :return: JWT and expire_in
     """
+
     now = datetime.now(timezone.utc)
 
     if current_app.config["TESTING"]:
@@ -40,9 +43,10 @@ def decode_auth_token(auth_token: str) -> Tuple[int, bool]:
     """
     Decodes the auth token
 
-    :param auth_token: string : JWT
-    :return: integer|string: User's ID or Error message
+    :param auth_token: JWT
+    :return: User's id and role
     """
+
     try:
         payload = jwt.decode(auth_token, key=current_app.config.get("SECRET_KEY"), algorithms=['HS256'])
         if not check_blacklist(auth_token):
@@ -58,9 +62,10 @@ def decode_auth_admin_token(auth_token: str) -> int:
     """
     Decodes the auth admin token
 
-    :param auth_token: string : JWT
-    :return: integer|string: User's ID or Error message
+    :param auth_token : JWT
+    :return: User's ID
     """
+
     sub, admin = decode_auth_token(auth_token)
     if admin:
         return sub
@@ -71,10 +76,11 @@ def login_user(email: str, password: str) -> Dict:
     """
     Login by user's email
 
-    :param email: str
-    :param password: str
-    :return: object: Object message JWT
+    :param email: user's email
+    :param password: user's password
+    :return: Object message JWT
     """
+
     # fetch the user data
     user = User.query.filter_by(email=email).first()
     if user and user.check_password(password):
@@ -84,41 +90,44 @@ def login_user(email: str, password: str) -> Dict:
     raise Unauthorized('Email or Password does not match.')
 
 
-def logout_user(auth_token: str) -> Dict:
+def logout_user(token: str) -> Dict:
     """
-    Logout account
+    Logout account. Save this token to the blacklist.
 
-    :param auth_token: str
-    :return: object: Object message
+    :param token: JWT
+    :return: Object message
     """
 
     # mark the token as blacklisted
-    save_token_into_blacklist(token=auth_token)
+    save_token_into_blacklist(token=token)
     response_object = dict(
         message='Successfully logged out.',
     )
     return response_object
 
 
-def refresh_token(current_user_id: int) -> Dict:
+def refresh_token(user_id: int) -> Dict:
     """
-    Refresh token
+    Refresh token.
 
-    :param current_user_id: int
-    :return: Dict: Object message JWT
+    :param user_id: The user's id
+    :return: Object message JWT
     """
-    user = User.query.filter_by(id=current_user_id).first_or_404('User Not Found')
+
+    user = User.query.filter_by(id=user_id).first_or_404('User Not Found')
     return generate_token(user_id=user.id, message='Successfully refresh token.', admin=user.admin)
 
 
 def generate_token(user_id: int, message: str, admin: bool = False) -> Dict:
     """
-    Generate the auth token
+    Generate the auth token.
 
-    :param user_id: int
-    :param message: str
-    :return: Dict: Object consist JWT
+    :param user_id: The user's id
+    :param message: The message notification
+    :param admin: The user's role
+    :return: Object consist JWT
     """
+
     auth_token, expire = encode_auth_token(user_id, admin)
     response_object = dict(
         message=message,
