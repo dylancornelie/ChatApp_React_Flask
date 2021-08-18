@@ -128,4 +128,7 @@ def first_run():
 
 
 if __name__ == '__main__':
-    sio.run(app)
+    sio.run(app,
+            port=5000,
+            host='0.0.0.0',
+            ssl_context=(app.config['SSL_CERTIFICATE_KEY'], app.config['SSL_PRIVATE_KEY']))
