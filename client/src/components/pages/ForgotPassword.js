@@ -11,13 +11,13 @@ const SignIn = () => {
 
   useEffect(() => {
     if (!tokenIsEmpty() && tokenIsValid()) history.push('/home');
-  },[history]);
+  }, [history]);
 
   const forgotPassword = async (e) => {
     e.preventDefault();
     axios({
       method: 'POST',
-      url: `${process.env.REACT_APP_API_URL}/api/v1/users/me/forget-password`,
+      url: `api/v1/users/me/forget-password`,
       data: {
         email,
       },

@@ -114,7 +114,7 @@ export const subscribeToPushNotification = async () => {
 
     const responseFetchingPublicKey = await axios({
       method: 'GET',
-      url: `${process.env.REACT_APP_API_URL}/api/v1/users/subscription`,
+      url: `api/v1/users/subscription`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
@@ -128,7 +128,7 @@ export const subscribeToPushNotification = async () => {
 
     await axios({
       method: 'POST',
-      url: `${process.env.REACT_APP_API_URL}/api/v1/users/subscription`,
+      url: `api/v1/users/subscription`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
@@ -160,7 +160,7 @@ export const unsubscribeFromPushNotification = async () => {
 
     await axios({
       method: 'DELETE',
-      url: `${process.env.REACT_APP_API_URL}/api/v1/users/subscription`,
+      url: `api/v1/users/subscription`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },

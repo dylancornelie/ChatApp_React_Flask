@@ -24,17 +24,16 @@ const Chat = () => {
   const history = useHistory();
   const socket = useRef();
 
-  
- useEffect(()=>{
-  if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
-  
-  if (chatStates.removeFromChat || isEmpty(chatStates.meeting)) history.push('/home')
- },[chatStates.meeting, chatStates.removeFromChat, history])
+  useEffect(() => {
+    if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
+
+    if (chatStates.removeFromChat || isEmpty(chatStates.meeting))
+      history.push('/home');
+  }, [chatStates.meeting, chatStates.removeFromChat, history]);
 
   useEffect(() => {
-
     if (isEmpty(socket.current) || !socket.current.status)
-      socket.current = io(`${process.env.REACT_APP_API_URL}/ws/messages`, {
+      socket.current = io(`  /ws/messages`, {
         extraHeaders: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },

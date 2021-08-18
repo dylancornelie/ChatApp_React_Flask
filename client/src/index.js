@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
+import axios from 'axios';
 import rootReducer from './reducers';
 
 let store;
@@ -17,6 +18,12 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV === 'development') {
   // production code
   store = createStore(rootReducer, applyMiddleware(thunk));
 }
+
+export const API_URL =
+  window.location.protocol === 'https:'
+    ? `https://${window.location.hostname}:5000`
+    : `http://${window.location.hostname}:5000`;
+axios.defaults.baseURL = API_URL;
 
 ReactDOM.render(
   <Provider store={store}>

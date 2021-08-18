@@ -10,7 +10,7 @@ export const archiveUser = (login) => {
   return (dispatch) => {
     axios({
       method: 'GET',
-      url: `${process.env.REACT_APP_API_URL}/api/v1/users/?page=1&per_page=50&filter_by=${login}`,
+      url: `api/v1/users/?page=1&per_page=50&filter_by=${login}`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
@@ -22,7 +22,7 @@ export const archiveUser = (login) => {
 
         axios({
           method: 'POST',
-          url: `${process.env.REACT_APP_API_URL}/api/v1/users/archive/${userToArchive.id}`,
+          url: `api/v1/users/archive/${userToArchive.id}`,
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -56,7 +56,7 @@ export const unarchiveUser = (login) => {
   return (dispatch) => {
     axios({
       method: 'GET',
-      url: `${process.env.REACT_APP_API_URL}/api/v1/users/?page=1&per_page=50&filter_by=${login}`,
+      url: `api/v1/users/?page=1&per_page=50&filter_by=${login}`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
@@ -68,7 +68,7 @@ export const unarchiveUser = (login) => {
 
         axios({
           method: 'DELETE',
-          url: `${process.env.REACT_APP_API_URL}/api/v1/users/archive/${userToUnarchive.id}`,
+          url: `api/v1/users/archive/${userToUnarchive.id}`,
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -102,7 +102,7 @@ export const promoteUser = (login) => {
   return (dispatch) => {
     axios({
       method: 'GET',
-      url: `${process.env.REACT_APP_API_URL}/api/v1/users/?page=1&per_page=50&filter_by=${login}`,
+      url: `api/v1/users/?page=1&per_page=50&filter_by=${login}`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
@@ -114,7 +114,7 @@ export const promoteUser = (login) => {
 
         axios({
           method: 'POST',
-          url: `${process.env.REACT_APP_API_URL}/api/v1/users/admin/${userToUnarchive.id}`,
+          url: `api/v1/users/admin/${userToUnarchive.id}`,
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -148,7 +148,7 @@ export const demoteUser = (login) => {
   return (dispatch) => {
     axios({
       method: 'GET',
-      url: `${process.env.REACT_APP_API_URL}/api/v1/users/?page=1&per_page=50&filter_by=${login}`,
+      url: `api/v1/users/?page=1&per_page=50&filter_by=${login}`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
@@ -159,7 +159,7 @@ export const demoteUser = (login) => {
         );
         axios({
           method: 'DELETE',
-          url: `${process.env.REACT_APP_API_URL}/api/v1/users/admin/${userToUnarchive.id}`,
+          url: `api/v1/users/admin/${userToUnarchive.id}`,
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
