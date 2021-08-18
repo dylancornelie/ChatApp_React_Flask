@@ -28,7 +28,7 @@ def get_user_id_by_sid() -> Optional[int]:
 
 def get_sid_by_user_id_in_room(user_id: int, room: str) -> Optional[str]:
     data = redis.sscan(room, 0, f'*user_id*{user_id}*')[1]
-    return _transfer_data(data).get('sid') if data else None
+    return _transfer_data(data[len(data)-1]).get('sid') if data else None
 
 
 def get_all_user_in_room(room: str) -> List:
