@@ -17,7 +17,7 @@ const ChangePassword = () => {
 
   useEffect(() => {
     if (tokenIsEmpty() || !tokenIsValid()) history.push('/');
-  },[history]);
+  }, [history]);
 
   const handleChangePassword = (e) => {
     e.preventDefault();
@@ -34,7 +34,7 @@ const ChangePassword = () => {
 
     axios({
       method: 'PUT',
-      url: `${process.env.REACT_APP_API_URL}/api/v1/users/me/reset-password`,
+      url: `api/v1/users/me/reset-password`,
 
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,

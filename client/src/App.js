@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { API_URL } from '.';
 import { getUser, refreshMeeting, refreshToken } from './actions/user.action';
 import Routes from './components/routes/Routes';
 import { isEmpty, tokenIsEmpty, tokenIsValid } from './utils/utils';
@@ -35,7 +36,7 @@ const App = () => {
       if (isEmpty(notificationSource.current)) {
         notificationSource.current = new EventSource(
           `${
-            process.env.REACT_APP_API_URL
+            API_URL
           }/api/v1/users/stream/${localStorage.getItem('token')}`
         );
       }

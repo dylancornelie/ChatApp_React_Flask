@@ -51,7 +51,7 @@ export const signUpUser = (
   return (dispatch) => {
     axios({
       method: 'POST',
-      url: `${process.env.REACT_APP_API_URL}/api/v1/users/`,
+      url: `api/v1/users/`,
       data: {
         email,
         username: login,
@@ -90,7 +90,7 @@ export const signInUser = (email, password) => {
   return (dispatch) =>
     axios({
       method: 'POST',
-      url: `${process.env.REACT_APP_API_URL}/auth/login`,
+      url: `auth/login`,
       data: {
         email,
         password,
@@ -125,7 +125,7 @@ export const refreshToken = () => {
   return (dispatch) => {
     axios({
       method: 'GET',
-      url: `${process.env.REACT_APP_API_URL}/auth/refresh-token`,
+      url: `auth/refresh-token`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
@@ -154,7 +154,7 @@ export const getUser = () => {
   return (dispatch) => {
     axios({
       method: 'GET',
-      url: `${process.env.REACT_APP_API_URL}/api/v1/users/me`,
+      url: `api/v1/users/me`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
@@ -170,7 +170,7 @@ export const disconnectUser = () => {
   return (dispatch) => {
     axios({
       method: 'GET',
-      url: `${process.env.REACT_APP_API_URL}/auth/logout`,
+      url: `auth/logout`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
@@ -192,7 +192,7 @@ export const accountDataChange = (
   return (dispatch) =>
     axios({
       method: 'PUT',
-      url: `${process.env.REACT_APP_API_URL}/api/v1/users/me`,
+      url: `api/v1/users/me`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
@@ -221,7 +221,7 @@ export const accountPictureChange = (
   return (dispatch) =>
     axios({
       method: 'PUT',
-      url: `${process.env.REACT_APP_API_URL}/api/v1/users/me`,
+      url: `api/v1/users/me`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
@@ -242,10 +242,10 @@ export const accountPictureChange = (
 };
 
 export const createMeeting = (title) => {
-  return (dispatch) => {    
+  return (dispatch) => {
     axios({
       method: 'POST',
-      url: `${process.env.REACT_APP_API_URL}/api/v1/projects/`,
+      url: `api/v1/projects/`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
@@ -278,7 +278,7 @@ export const getMeetings = () => {
     try {
       let response = await axios({
         method: 'GET',
-        url: `${process.env.REACT_APP_API_URL}/api/v1/projects/`,
+        url: `api/v1/projects/`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -289,7 +289,7 @@ export const getMeetings = () => {
       while (fetchMore) {
         response = await axios({
           method: 'GET',
-          url: `${process.env.REACT_APP_API_URL}${nextLink}`,
+          url: `${nextLink}`,
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -313,7 +313,7 @@ export const refreshMeeting = () => {
     try {
       let response = await axios({
         method: 'GET',
-        url: `${process.env.REACT_APP_API_URL}/api/v1/projects/`,
+        url: `api/v1/projects/`,
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -324,7 +324,7 @@ export const refreshMeeting = () => {
       while (fetchMore) {
         response = await axios({
           method: 'GET',
-          url: `${process.env.REACT_APP_API_URL}${nextLink}`,
+          url: `${nextLink}`,
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },

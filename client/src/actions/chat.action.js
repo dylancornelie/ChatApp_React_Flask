@@ -24,7 +24,7 @@ export const addParticipant = (meetingId, login) => {
   return (dispatch) => {
     axios({
       method: 'GET',
-      url: `${process.env.REACT_APP_API_URL}/api/v1/users/?page=1&per_page=50&filter_by=${login}`,
+      url: `api/v1/users/?page=1&per_page=50&filter_by=${login}`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
@@ -35,7 +35,7 @@ export const addParticipant = (meetingId, login) => {
         );
         axios({
           method: 'POST',
-          url: `${process.env.REACT_APP_API_URL}/api/v1/projects/${meetingId}/invite`,
+          url: `api/v1/projects/${meetingId}/invite`,
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
@@ -73,7 +73,7 @@ export const removeParticipant = (meetingId, userId) => {
   return (dispatch) => {
     axios({
       method: 'DELETE',
-      url: `${process.env.REACT_APP_API_URL}/api/v1/projects/${meetingId}/remove-participant`,
+      url: `api/v1/projects/${meetingId}/remove-participant`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
@@ -95,7 +95,7 @@ export const deleteMeeting = (meetingId) => {
   return (dispatch) => {
     axios({
       method: 'DELETE',
-      url: `${process.env.REACT_APP_API_URL}/api/v1/projects/${meetingId}`,
+      url: `api/v1/projects/${meetingId}`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
@@ -111,7 +111,7 @@ export const leaveMeeting = (meetingId) => {
   return (dispatch) => {
     axios({
       method: 'DELETE',
-      url: `${process.env.REACT_APP_API_URL}/api/v1/projects/${meetingId}/leave`,
+      url: `api/v1/projects/${meetingId}/leave`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
@@ -132,7 +132,7 @@ export const designateCoach = (meetingId, user) => {
   return (dispatch) => {
     axios({
       method: 'POST',
-      url: `${process.env.REACT_APP_API_URL}/api/v1/projects/${meetingId}/designate-coach`,
+      url: `api/v1/projects/${meetingId}/designate-coach`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
@@ -154,7 +154,7 @@ export const removePrivileges = (meetingId, user) => {
   return (dispatch) => {
     axios({
       method: 'DELETE',
-      url: `${process.env.REACT_APP_API_URL}/api/v1/projects/${meetingId}/designate-coach`,
+      url: `api/v1/projects/${meetingId}/designate-coach`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
@@ -176,7 +176,7 @@ export const fetchMessages = (meetingId) => {
   return (dispatch) =>
     axios({
       method: 'GET',
-      url: `${process.env.REACT_APP_API_URL}/api/v1/messages/${meetingId}?page=1&per_page=30`,
+      url: `api/v1/messages/${meetingId}?page=1&per_page=30`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
@@ -213,7 +213,7 @@ export const fetchMoreMessages = (urlToNext) => {
   return (dispatch) =>
     axios({
       method: 'GET',
-      url: `${process.env.REACT_APP_API_URL}${urlToNext}`,
+      url: `${urlToNext}`,
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
       },
@@ -229,6 +229,12 @@ export const fetchMoreMessages = (urlToNext) => {
 
 export const stopFetchMoreMessage = () => ({ type: STOP_FETCH_MORE_MESSAGES });
 
-export const addUserConnected = (userId) => ({type:ADD_USER_CONNECTED, payload:{userId:[...userId]}})
+export const addUserConnected = (userId) => ({
+  type: ADD_USER_CONNECTED,
+  payload: { userId: [...userId] },
+});
 
-export const removeUserConnected = (userId) => ({type:REMOVE_USER_CONNECTED, payload:{userId}})
+export const removeUserConnected = (userId) => ({
+  type: REMOVE_USER_CONNECTED,
+  payload: { userId },
+});
