@@ -41,14 +41,17 @@ window.onbeforeunload = (event) => {
     // Cancel the event
     e.preventDefault();
     if (e) {
-        e.returnValue = ''; // Legacy method for cross browser support
-        axios.delete('/api/v1/users/stream',{
-            headers: {'Authorization': 'Bearer ' + token}
-        })
-    }
-    return ''; // Legacy method for cross browser support
-};
+        e.returnValue = '';
 
+        sse.close(); // close SSE in client before close tab/browser
+
+        // Client notify the server that he quit the site
+        axios.delete('/api/v1/users/stream', {
+            headers: {'Authorization': 'Bearer ' + token}
+        });
+    }
+    return '';
+};
 ````
 
 ### Notify
