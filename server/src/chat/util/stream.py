@@ -120,9 +120,6 @@ def messages(channel: str = 'sse'):
     pubsub = redis.pubsub()
     pubsub.subscribe(channel)
 
-    # Remove older stream
-    disconnect_sse(channel, pubsub)
-
     # Mark existence channel
     redis.set(channel, channel)
 
