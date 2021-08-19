@@ -16,15 +16,9 @@ RUN pip install -r /requirements.txt
 WORKDIR /server
 ADD . /server
 
-#RUN flask db init \
-#    && flask db migrate \
-#    && flask db upgrade
-
-
+# permissions file
 RUN chmod 755 entrypoint.sh
 
 EXPOSE 5000
 
 ENTRYPOINT ["/server/entrypoint.sh"]
-
-#CMD ["python", "app.py"]

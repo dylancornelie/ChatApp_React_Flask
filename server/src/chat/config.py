@@ -31,7 +31,7 @@ class Config:
     REDIS_URL = getenv('REDIS_URL', 'redis://localhost:6379/0')
 
     # Socketio
-    ASYNC_MODE = 'threading'
+    ASYNC_MODE = getenv('ASYNC_MODE')
 
     # File upload
     ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'doc'}

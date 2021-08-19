@@ -124,7 +124,6 @@ def first_run():
         db.session.add(admin)
         db.session.commit()
 
-
     transfer_subscription_to_redis()
 
 
