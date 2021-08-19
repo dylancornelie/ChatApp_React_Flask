@@ -130,7 +130,7 @@ class PubSub(Resource):
     @token_required
     def delete(self):
         """Unsubscription the key of Service Worker"""
-        return unsubscription_data_subscription_webpub(self.post.current_user_id)
+        return unsubscription_data_subscription_webpub(self.delete.current_user_id)
 
 
 @api.route('/admin/<int:user_id>')

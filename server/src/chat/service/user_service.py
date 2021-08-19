@@ -188,10 +188,11 @@ def save_data_subscription_webpub(data: Dict, user_id: int) -> Dict:
 
     push_subscription = PushSubscription.query.filter_by(user_id=user_id).first()
     if not push_subscription:
-        save_data(PushSubscription(
+        push_subscription = PushSubscription(
             user_id=user_id,
             subscription_json=json.dumps(data)
-        ))
+        )
+        save_data(push_subscription)
     else:
         try:
             push_subscription.subscription_json = json.dumps(data)
