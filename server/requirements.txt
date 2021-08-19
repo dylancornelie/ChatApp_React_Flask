@@ -37,6 +37,7 @@ mkdocs==1.2.2
 mkdocs-material==7.2.4
 mkdocs-material-extensions==1.0.1
 packaging==21.0
+psycopg2-binary==2.9.1
 py-vapid==1.8.2
 pycparser==2.20
 Pygments==2.10.0
