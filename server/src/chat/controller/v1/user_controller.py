@@ -101,16 +101,18 @@ class Me_Forget_Password(Resource):
 class Stream(Resource):
     """Stream SSE"""
 
+    @api.doc('Connect the stream SSE')
     @api.expect(token_parser)
     def get(self):
-        """Connect the stream event SSE."""
+        """Connect the stream SSE."""
         token = token_parser.parse_args()['token']
         user_id, _ = decode_auth_token(token)
         return stream(user_id)
 
     @token_required
-    @api.doc('Edit my password', security='Bearer')
+    @api.doc('Delete channel in stream SSE', security='Bearer')
     def delete(self):
+        """Delete channel in stream SSE"""
         disconnect_sse(user_id=self.delete.current_user_id)
         return ''
 
