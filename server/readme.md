@@ -42,8 +42,7 @@ window.onbeforeunload = (event) => {
     e.preventDefault();
     if (e) {
         e.returnValue = ''; // Legacy method for cross browser support
-        axios({
-            method: 'DELETE',
+        axios.delete('/api/v1/users/stream',{
             headers: {'Authorization': 'Bearer ' + token}
         })
     }
