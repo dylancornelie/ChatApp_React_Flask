@@ -142,11 +142,14 @@ def messages(channel: str = 'sse'):
 def disconnect_sse(channel: str = 'sse', pubsub: PubSub = None, user_id: int = None) -> None:
     """A function will remove all older data SSE"""
 
+    # Create new channel follow user's id
+    if user_id:
+        channel = sub_sse(sub_user_channel(user_id))
+
     # unsubscribe older channel
     if pubsub:
         pubsub.unsubscribe(channel)
-    if user_id:
-        channel = sub_sse(sub_user_channel(user_id))
+
     # Delete older channel
     redis.delete(channel)
 
