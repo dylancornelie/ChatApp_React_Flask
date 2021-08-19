@@ -5,6 +5,7 @@ from collections import OrderedDict
 
 from flask import stream_with_context, Response, current_app
 from pywebpush import webpush, WebPushException
+from redis.client import PubSub
 
 from src.chat import redis
 
@@ -119,6 +120,9 @@ def messages(channel: str = 'sse'):
     pubsub = redis.pubsub()
     pubsub.subscribe(channel)
 
+    # Remove older stream
+    disconnect_sse(channel, pubsub)
+
     # Mark existence channel
     redis.set(channel, channel)
 
@@ -129,22 +133,31 @@ def messages(channel: str = 'sse'):
                 yield Message(**msg_dict)
     finally:
         try:
-            pubsub.unsubscribe(channel)
-
-            # Delete the mark when finish
-            redis.delete(channel)
+            disconnect_sse(channel, pubsub)
 
         except ConnectionError as e:
             current_app.logger.error(str(e), exc_info=True)
 
 
-def stream(channel: str = 'sse') -> Response:
+def disconnect_sse(channel: str = 'sse', pubsub: PubSub = None, user_id: int = None) -> None:
+    """A function will remove all older data SSE"""
+
+    # unsubscribe older channel
+    if pubsub:
+        pubsub.unsubscribe(channel)
+    if user_id:
+        channel = sub_sse(sub_user_channel(user_id))
+    # Delete older channel
+    redis.delete(channel)
+
+
+def stream(user_id: int) -> Response:
     """
     A view function that streams server-sent events.
-    :param channel: The event for client's SSE.
+    :param user_id: The user's id for event SSE.
     :return: The context's stream with 'event-stream' mimetype
     """
-    channel_sse = sub_sse(channel)
+    channel_sse = sub_sse(sub_user_channel(user_id))
 
     @stream_with_context
     def generator():
@@ -193,3 +206,9 @@ def sub_webpush(channel: str) -> str:
     if 'webpush:' in channel:
         return channel
     return f'webpush:{channel}'
+
+
+def sub_user_channel(user_id: int) -> str:
+    """Create channel for subscribe."""
+
+    return f"sub:user:{user_id}"

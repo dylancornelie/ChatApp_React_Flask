@@ -26,11 +26,30 @@
 ### Registered
 
 ````js
-const sse = new EventSource('/api/v1/users/stream/<token>');
+const sse = new EventSource('/api/v1/users/stream?token=<token>');
 
 sse.addEventListener(event, (event) => {
     console.log(JSON.parse(event.data))
 })
+````
+
+### Disconnect
+
+````js
+window.onbeforeunload = (event) => {
+    const e = event || window.event;
+    // Cancel the event
+    e.preventDefault();
+    if (e) {
+        e.returnValue = ''; // Legacy method for cross browser support
+        axios({
+            method: 'DELETE',
+            headers: {'Authorization': 'Bearer ' + token}
+        })
+    }
+    return ''; // Legacy method for cross browser support
+};
+
 ````
 
 ### Notify
@@ -181,6 +200,7 @@ sse.addEventListener(event, (event) => {
         - archive_user:
             - _You was archived._ => data: `{user_id: int, archive: bool}`
             - To ***unarchive*** => Server will send an email.
+
 ## Webpush
 
 ### Document

@@ -19,7 +19,7 @@ from src.chat.service.auth_service import generate_token
 from src.chat.util.constant import TYPE_NOTIFICATION_ACTION_USER, TYPE_NOTIFICATION_ADMIN_USER, \
     TYPE_NOTIFICATION_ARCHIVE_USER
 from src.chat.util.pagination import paginate
-from src.chat.util.stream import sub_webpush, publish
+from src.chat.util.stream import sub_webpush, publish, sub_user_channel
 
 STYLE_HTML = '''
 <style type="text/css">
@@ -175,12 +175,6 @@ def update_password_forgotten(email: str) -> Dict:
         raise InternalServerError("The server encountered an internal error and was unable to send your email.")
 
     return dict(message=f'Your new password was successfully sent your email {email}.')
-
-
-def sub_user_channel(user_id: int) -> str:
-    """Create channel for subscribe."""
-
-    return f"sub:user:{user_id}"
 
 
 def save_data_subscription_webpub(data: Dict, user_id: int) -> Dict:

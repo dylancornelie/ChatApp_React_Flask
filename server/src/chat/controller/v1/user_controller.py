@@ -7,13 +7,13 @@ from flask_restx import Resource
 
 from src.chat.dto.auth_dto import auth_resp
 from src.chat.dto.user_dto import (api, user_item, user_list, user_post, user_params, user_put, user_password,
-                                   user_forget_password, subscription_info)
+                                   user_forget_password, subscription_info, token_parser)
 from src.chat.service.user_service import (save_new_user, get_all_users, get_a_user, update_a_user,
-                                           update_a_user_password, update_password_forgotten, sub_user_channel,
+                                           update_a_user_password, update_password_forgotten,
                                            save_data_subscription_webpub, unsubscription_data_subscription_webpub,
                                            change_user_role, archive_user)
 from src.chat.util.decorator import token_required, decode_auth_token, admin_token_required
-from src.chat.util.stream import stream
+from src.chat.util.stream import stream, disconnect_sse
 
 
 @api.route('/')
@@ -97,15 +97,22 @@ class Me_Forget_Password(Resource):
         return update_password_forgotten(data['email'])
 
 
-@api.route('/stream/<string:token>')
+@api.route('/stream')
 class Stream(Resource):
     """Stream SSE"""
 
-    def get(self, token: str):
+    @api.expect(token_parser)
+    def get(self):
         """Connect the stream event SSE."""
+        token = token_parser.parse_args()['token']
         user_id, _ = decode_auth_token(token)
-        channel = sub_user_channel(user_id)
-        return stream(channel)
+        return stream(user_id)
+
+    @token_required
+    @api.doc('Edit my password', security='Bearer')
+    def delete(self):
+        disconnect_sse(user_id=self.delete.current_user_id)
+        return ''
 
 
 @api.route('/subscription')

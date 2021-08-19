@@ -103,3 +103,6 @@ subscription_info = api.model('Subscription_info', {
         'auth': fields.String(required=True)
     }))
 })
+
+token_parser = api.parser()
+token_parser.add_argument('token', required=True, help="User's Token!")
