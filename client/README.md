@@ -10,6 +10,14 @@ Ensuite il faut **se déplacer dans le dossier client** du projet et lancer la c
 
 Une fois cela effectué, il suffit de lancer la commande : ``yarn start``.
 
+## Lancer le projet en HTTPS
+
+Pour lancer le projet en https, il suffit de lancer la commande ``yarn run start_https`` dans le dossier client.
+
+## Build le projet
+
+Pour obtenir une version de production, lancer la commande ``yarn run build``. Une fois la version de production construite, installer ``serve`` avec la commande ``npm install -g serve`` et lancer la commande ``serve -s build`` dans le dossier client pour servir le contenu nouvellement créé par le biais d'un serveur static.
+
 ## Lancer un conteneur docker
 
 Pour déployer l'application sous forme de conteneur docker, un ``Dockerfile`` a été créé afin de créer une image docker.

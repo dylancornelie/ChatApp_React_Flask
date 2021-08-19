@@ -114,7 +114,7 @@ export const fileIsImage = (fileName) => {
 export const passwordIsValid = (password) => {
   //8 character at least, 1 uppercase, 1 lowercase, 1 digit
   const passwordRegExp = new RegExp(
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]{8,}$/
   );
   return passwordRegExp.test(password);
 };

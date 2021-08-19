@@ -72,6 +72,7 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 
-  event.waitUntil(clients.openWindow('https://google.com'));
+  // Open the link in browser when user click on notification
+  //event.waitUntil(clients.openWindow('https://www.tx_chat.com'));
 });
 

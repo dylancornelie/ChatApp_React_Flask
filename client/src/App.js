@@ -47,7 +47,6 @@ const App = () => {
 
     const handleSSE = (displayNotification) => {
       if (isEmpty(SSE.current) && !isEmpty(userStates.token)) {
-        console.log('Creating a new EventSource');
         SSE.current = new EventSource(
           `${API_URL}/api/v1/users/stream?token=${localStorage.getItem(
             'token'
@@ -55,7 +54,7 @@ const App = () => {
         );
 
         SSE.current.addEventListener('error', (event) => {
-          console.log('Erreur SSE : ', event);
+          console.error('Erreur SSE : ', event);
         });
 
         SSE.current.addEventListener('action_project', (event) => {
@@ -142,7 +141,6 @@ const App = () => {
 
     // function use to close SSE connection when closing the tab or browser
     window.onbeforeunload = (event) => {
-      console.log('Removing SSE');
       const e = event || window.event;
       e.preventDefault();
       if (e) {
@@ -154,7 +152,7 @@ const App = () => {
               Authorization: `Bearer ${localStorage.getItem('token')}`,
             },
             url: 'api/v1/users/stream',
-          }).then((res) => console.log('SSE successfully close'));
+          });
           SSE.current.close();
         }
       }
@@ -166,7 +164,6 @@ const App = () => {
         // User is now disconnected
         SSE.current.close();
         SSE.current = null;
-        console.log('Closing SSE connection');
       }
     };
   }, [userStates.token, dispatch]);

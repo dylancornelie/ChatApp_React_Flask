@@ -16,4 +16,4 @@ Start Docker Compose in detached mode:
 `docker-compose up -d`
 
 - Link Server: [localhost:5000/](http://localhost:5000/)
-- Lin Client: [localhost:443](https://localhost)
+- Link Client: [localhost:443](https://localhost)

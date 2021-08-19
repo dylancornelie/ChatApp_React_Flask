@@ -53,11 +53,11 @@ const JoinMeeting = () => {
         <QRCode
           className='qrcode'
           value={JSON.stringify({
-            id:userStates.user.id,
+            id: userStates.user.id,
             username: userStates.user.username,
             email: userStates.user.email,
-            firstName: userStates.user.first_name,
-          lastName: userStates.user.last_name,
+            first_name: userStates.user.first_name,
+            last_name: userStates.user.last_name,
           })}
           size={
             viewWidth * 0.6 > viewHeight * 0.5
