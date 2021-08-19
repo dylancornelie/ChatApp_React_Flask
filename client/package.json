@@ -38,7 +38,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "start_https": "HTTPS=true react-scripts start",
+    "start_https": "HTTPS=true SSL_CRT_FILE=./https/tx_chat-certificate.crt SSL_KEY_FILE=./https/tx_chat.key react-scripts start",
     "build": "react-scripts build && node sw-build.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

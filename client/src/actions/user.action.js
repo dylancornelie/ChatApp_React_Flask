@@ -98,8 +98,8 @@ export const signUpUser = (
 
 /**
  * Handle user sign in
- * @param {string} email 
- * @param {string} password 
+ * @param {string} email
+ * @param {string} password
  * @returns {void}
  */
 export const signInUser = (email, password) => {
@@ -197,15 +197,24 @@ export const getUser = () => {
 export const disconnectUser = () => {
   return (dispatch) => {
     axios({
-      method: 'GET',
-      url: `auth/logout`,
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      url: 'api/v1/users/stream',
     })
       .then((response) => {
-        localStorage.clear();
-        dispatch({ type: DISCONNECT_USER });
+        console.log('successfully disconnected from SSE');
+        axios({
+          method: 'GET',
+          url: `auth/logout`,
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        })
+          .then((response) => {
+            localStorage.clear();
+            dispatch({ type: DISCONNECT_USER });
+          })
+          .catch((err) => console.error(err));
       })
       .catch((err) => console.error(err));
   };
@@ -213,9 +222,9 @@ export const disconnectUser = () => {
 
 /**
  * Change user's firstname & lastname
- * @param {string} login 
- * @param {string} firstName 
- * @param {string} lastName 
+ * @param {string} login
+ * @param {string} firstName
+ * @param {string} lastName
  * @param {string} profilPicture Base64 string representing the picture
  * @returns {void}
  */
@@ -251,9 +260,9 @@ export const accountDataChange = (
 
 /**
  * Change user's profile picture
- * @param {string} login 
- * @param {string} firstName 
- * @param {string} lastName 
+ * @param {string} login
+ * @param {string} firstName
+ * @param {string} lastName
  * @param {string} profilPicture Base64 string representing the picture
  * @returns {void}
  */
@@ -289,7 +298,7 @@ export const accountPictureChange = (
 
 /**
  * Create a new meeting
- * @param {string} title 
+ * @param {string} title
  * @returns {void}
  */
 export const createMeeting = (title) => {
@@ -404,7 +413,7 @@ export const refreshMeeting = () => {
 
 /**
  * Set the message box for ChangePassword page
- * @param {string} errorMessage 
+ * @param {string} errorMessage
  * @returns {void}
  */
 export const changePasswordError = (errorMessage) => ({
