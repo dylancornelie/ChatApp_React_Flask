@@ -87,7 +87,7 @@ const Home = () => {
           Create a meeting
         </button>
         <button onClick={() => history.push('/meeting/join')}>
-          Join a new meeting
+          Show QR CODE
         </button>
         {userStates?.user?.admin && (
           <button onClick={() => setShowAdminModal(!showAdminModal)}>
